@@ -25,8 +25,9 @@ WindowsWindowing::WindowsWindowing(int sizex, int sizey, string title)
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
 
-    cout << ((glewInit() == GLEW_OK) ? "GLEW INITIALIZED" : "GLEW INIT FAILED") << endl;
-
+    int gec = glewInit();
+    cout << ((gec == GLEW_OK) ? "GLEW INITIALIZED" : "GLEW INIT FAILED") << endl;
+    cout << "error code: " << gec << endl;
     cout << glGetString(GL_VERSION) << endl;
 
     // Enable depth test
