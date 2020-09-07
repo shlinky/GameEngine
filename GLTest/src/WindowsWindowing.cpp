@@ -13,7 +13,7 @@ WindowsWindowing::WindowsWindowing(int sizex, int sizey, string title)
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
     glfwWindowHint(GLFW_SAMPLES, 4); // 4x antialiasing
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4); // We want OpenGL 3.3
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     window = glfwCreateWindow(sizex, sizey, title.c_str(), NULL, NULL);
     if (!window)
@@ -27,7 +27,8 @@ WindowsWindowing::WindowsWindowing(int sizex, int sizey, string title)
 
     int gec = glewInit();
     cout << ((gec == GLEW_OK) ? "GLEW INITIALIZED" : "GLEW INIT FAILED") << endl;
-    cout << "error code: " << gec << endl;
+    if (gec) cout << "error code: " << gec << endl;
+    if (gec) cout << glewGetErrorString(gec) << endl;
     cout << glGetString(GL_VERSION) << endl;
 
     // Enable depth test
