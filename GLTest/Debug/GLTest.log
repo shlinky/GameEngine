@@ -1,0 +1,12 @@
+﻿  OGLShaderProgram.cpp
+C:\Users\shloks\source\repos\GLTest\GLTest\src\OGLShaderProgram.cpp(84,16): warning C4244: 'initializing': conversion from 'std::streamoff' to 'int', possible loss of data
+  window.cpp
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(142,27): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(144,26): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(146,28): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(148,25): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(155,18): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(156,20): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(167,28): warning C4305: 'argument': truncation from 'double' to 'float'
+  Generating Code...
+  GLTest.vcxproj -> C:\Users\shloks\source\repos\GLTest\Debug\GLTest.exe

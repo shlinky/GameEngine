@@ -1,0 +1,134 @@
+#include "Camera.h"
+
+Camera::Camera(float* pos)
+{
+	if (pos != NULL)
+		position = glm::make_vec3(pos);
+	else
+		position = glm::vec3(0.0);
+
+	camYaw = glm::radians(-90.0f);
+	camPitch = 0.0f;
+	forwardDir = glm::vec3(0, 0, -1);
+	upDir = glm::vec3(0, 1, 0);
+	sensitivity = 1;
+
+
+	yawLim[0] = -1 * (glm::pi<float>() * 2) - 1;
+	yawLim[1] = (glm::pi<float>() * 2) + 1;
+	pitchLim[0] = -1 * (glm::pi<float>() * 2) - 1;
+	pitchLim[1] = (glm::pi<float>() * 2) + 1;
+}
+
+Camera::Camera(float x, float y, float z)
+{
+	position = glm::vec3(x, y, z);
+	camYaw = glm::radians(-90.0f);
+	camPitch = 0.0f;
+	forwardDir = glm::vec3(0, 0, -1);
+	upDir = glm::vec3(0, 1, 0);
+	sensitivity = 1;
+
+	yawLim[0] = -1 * (glm::pi<float>() * 2) - 1;
+	yawLim[1] = (glm::pi<float>() * 2) + 1;
+	pitchLim[0] = -1 * (glm::pi<float>() * 2) - 1;
+	pitchLim[1] = (glm::pi<float>() * 2) + 1;
+}
+
+Camera::~Camera()
+{
+}
+
+void Camera::rotateYaw(float degrees)
+{
+	float newValue = camYaw + glm::float32(sensitivity) * glm::radians(degrees);
+	if ((newValue < yawLim[1]) && (newValue > yawLim[0])) {
+		camYaw = fmod(newValue, (glm::pi<float>() * 2));
+	}
+}
+
+void Camera::rotatePitch(float degrees)
+{
+	float newValue = camPitch + glm::float32(sensitivity) * glm::radians(degrees);
+	if ((newValue < pitchLim[1]) && (newValue > pitchLim[0])) {
+		camPitch = fmod(newValue, (glm::pi<float>() * 2));
+	}
+}
+
+float Camera::getYaw()
+{
+	return camYaw;
+}
+
+float Camera::getPitch()
+{
+	return camPitch;
+}
+
+void Camera::moveForward(float amount)
+{
+	glm::float32 multiplier(amount);
+	position += multiplier * forwardDir;
+}
+
+void Camera::moveRight(float amount)
+{
+	glm::float32 multiplier(amount);
+	position += multiplier * rightDir;
+}
+
+void Camera::setPostion(float* pos)
+{
+	position.x = pos[0];
+	position.y = pos[1];
+	position.z = pos[2];
+}
+
+void Camera::setPostion(float x, float y, float z)
+{
+	position.x = x;
+	position.y = y;
+	position.z = z;
+}
+
+void Camera::getPosition(float* pos)
+{
+	pos[0] = position.x;
+	pos[1] = position.y;
+	pos[2] = position.z;
+}
+
+float* Camera::getViewMat()
+{
+	viewMat = glm::lookAt(
+		position,
+		position + forwardDir, 
+		upDir
+	);
+	return &viewMat[0][0];
+}
+
+void Camera::computeVectors()
+{
+	forwardDir.x = cos(camYaw) * cos(camPitch);
+	forwardDir.y = sin(camPitch);
+	forwardDir.z = sin(camYaw) * cos(camPitch);
+	rightDir = glm::normalize(glm::cross(forwardDir, upDir));
+}
+
+void Camera::setSensitivity(float s)
+{
+	sensitivity = s;
+}
+
+void Camera::setYawLimits(float min, float max)
+{
+	yawLim[0] = glm::radians(min);
+	yawLim[1] = glm::radians(max);
+}
+
+void Camera::setPitchLimits(float min, float max)
+{
+	pitchLim[0] = glm::radians(min);
+	pitchLim[1] = glm::radians(max);
+}
