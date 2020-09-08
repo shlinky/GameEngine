@@ -9,6 +9,9 @@ WindowsWindowing::WindowsWindowing(int sizex, int sizey, string title)
     if (!glfwInit())
         cout << "window failed" << endl;
         //applicationErrorCallback("Failed to init GLFW");
+    else {
+        cout << "windowing succeeded" << endl;
+    }
 
     /* Create a windowed mode window and its OpenGL context */
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
