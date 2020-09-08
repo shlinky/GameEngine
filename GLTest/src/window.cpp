@@ -163,7 +163,7 @@ int main(void)
     WindowsWindowing window(1920, 1080, "Application");
 
     startGLDebug();
-    //applicationErrorCallback("dumb message");
+    applicationErrorCallback("dumb message");
 
     Camera cam(0, 0, 3);
     cam.setSensitivity(0.05);
