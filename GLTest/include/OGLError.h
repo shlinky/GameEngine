@@ -1,6 +1,9 @@
 #pragma once
 #include <GL/glew.h>
 #include <iostream>
+#define DEBUG
+//#define USING_MICROSOFT_BRKPTS
+
 using namespace std;
 
 inline void GLAPIENTRY errorCallback(GLenum source,
@@ -14,16 +17,23 @@ inline void GLAPIENTRY errorCallback(GLenum source,
     cout << message << endl;
 #ifdef USING_MICROSOFT_BRKPTS
     __debugbreak();
+#else
+    int __r;
+    cin >> __r;
 #endif
 }
 
 //replace with a macro
 inline void applicationErrorCallback(const string message) {
+    //cout << "message" << endl;
 #ifdef DEBUG
     cout << "Application Error: " << endl;
     cout << message << endl;
 #ifdef USING_MICROSOFT_BRKPTS 
     __debugbreak();
+#else
+    int __r;
+    cin >> __r;
 #endif
 #endif
 }

@@ -1,9 +1,9 @@
 #define GLEW_STATIC
-#define DEBUG
 //#define USING_MICROSOFT_BRKPTS
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#define DEBUG
 #include "OGLError.h"
 #include "OGLShaderProgram.h"
 #include "OGLVertexObject.h"
@@ -163,6 +163,7 @@ int main(void)
     WindowsWindowing window(1920, 1080, "Application");
 
     startGLDebug();
+    //applicationErrorCallback("dumb message");
 
     Camera cam(0, 0, 3);
     cam.setSensitivity(0.05);
