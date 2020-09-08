@@ -12,7 +12,9 @@ inline void GLAPIENTRY errorCallback(GLenum source,
     const void* userParam) {
     cout << "OPENGL ERROR: " << type << ':' << endl;
     cout << message << endl;
+#ifdef USING_MICROSOFT_BRKPTS
     __debugbreak();
+#endif
 }
 
 //replace with a macro
@@ -20,7 +22,9 @@ inline void applicationErrorCallback(const string message) {
 #ifdef DEBUG
     cout << "Application Error: " << endl;
     cout << message << endl;
+#ifdef USING_MICROSOFT_BRKPTS 
     __debugbreak();
+#endif
 #endif
 }
 

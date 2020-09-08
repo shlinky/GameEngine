@@ -7,8 +7,7 @@ WindowsWindowing::WindowsWindowing(int sizex, int sizey, string title)
 
     /* Initialize the library */
     if (!glfwInit())
-        cout << "window failed" << endl;
-        //applicationErrorCallback("Failed to init GLFW");
+        applicationErrorCallback("Failed to init GLFW");
     else {
         cout << "windowing succeeded" << endl;
     }
@@ -22,9 +21,8 @@ WindowsWindowing::WindowsWindowing(int sizex, int sizey, string title)
     window = glfwCreateWindow(sizex, sizey, title.c_str(), NULL, NULL);
     if (!window)
     {
-        cout << "window creation failed" << endl;
+        applicationErrorCallback("Failed to create window");
         glfwTerminate();
-        //applicationErrorCallback("Failed to create window");
     }
     else {
         cout << "window creation succeeded" << endl;

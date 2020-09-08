@@ -1,5 +1,6 @@
 #define GLEW_STATIC
-//#define DEBUG
+#define DEBUG
+//#define USING_MICROSOFT_BRKPTS
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
