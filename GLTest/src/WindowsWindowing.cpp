@@ -22,8 +22,12 @@ WindowsWindowing::WindowsWindowing(int sizex, int sizey, string title)
     window = glfwCreateWindow(sizex, sizey, title.c_str(), NULL, NULL);
     if (!window)
     {
+        cout << "window creation failed" << endl;
         glfwTerminate();
-        applicationErrorCallback("Failed to create window");
+        //applicationErrorCallback("Failed to create window");
+    }
+    else {
+        cout << "window creation succeeded" << endl;
     }
 
     /* Make the window's context current */
