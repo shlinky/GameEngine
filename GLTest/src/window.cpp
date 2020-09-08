@@ -1,5 +1,5 @@
 #define GLEW_STATIC
-#define DEBUG
+//#define DEBUG
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
