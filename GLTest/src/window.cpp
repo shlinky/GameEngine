@@ -1,5 +1,5 @@
 #define GLEW_STATIC
-//#define USING_MICROSOFT_BRKPTS
+#define USING_MICROSOFT_BRKPTS
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -140,13 +140,13 @@ float cameraPosition[3] = {
 
 void keyInput(WindowsWindowing* w, Camera* c) {
     if (w->isKeyPressed(GLFW_KEY_W))
-        c->moveForward(0.1);
+        c->moveForward(0.2);
     if (w->isKeyPressed(GLFW_KEY_A))
-        c->moveRight(-0.1);
+        c->moveRight(-0.2);
     if (w->isKeyPressed(GLFW_KEY_S))
-        c->moveForward(-0.1);
+        c->moveForward(-0.2);
     if (w->isKeyPressed(GLFW_KEY_D))
-        c->moveRight(0.1);
+        c->moveRight(0.2);
 }
 
 void updateCameraAngle(double* cPos, double* lPos, Camera* c) {
@@ -160,14 +160,15 @@ void updateCameraAngle(double* cPos, double* lPos, Camera* c) {
 
 int main(void)
 {
-    WindowsWindowing window(1920, 1080, "Application");
+    WindowsWindowing window(640, 480, "Application");
 
     startGLDebug();
-    applicationErrorCallback("dumb message");
 
-    Camera cam(0, 0, 3);
+    int sizex = window.getSizeX();
+    int sizey = window.getSizeY();
+    Camera cam(0.0f, 0.0f, 3.0f, &sizex, &sizey);
     cam.setSensitivity(0.05);
-    cam.setPitchLimits(-90, 90);
+    cam.setPitchLimits(-87, 87);
 
     OGLVertexObject model(24, 3);
     model.addAttribute(0, 3, vertices);
@@ -189,14 +190,13 @@ int main(void)
     double lmpos[2] = {};
     double cmpos[2] = {};
 
-    glm::mat4 p = glm::perspective<float>(glm::radians(30.0f), (float)window.getSizeX() / window.getSizeY(), 0.1f, 1000.f);
     window.getMousePos(lmpos);
     
+    window.prepareForNextFrame();
     /* Loop until the user closes the window */
     while (!window.isWindowClosing())
     {
         /* Render here */
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         window.getMousePos(cmpos);
         updateCameraAngle(cmpos, lmpos, &cam);
@@ -209,8 +209,8 @@ int main(void)
         cam.getPosition(campos);
         shaderp.updateUniformData("camera_position", (void*)&campos);
 
-        glm::mat4 v = glm::make_mat4(cam.getViewMat());
-        glm::mat4 mvp = p * v * glm::identity<glm::mat4>();
+        glm::mat4 v = glm::make_mat4(cam.getTransMat());
+        glm::mat4 mvp = v * glm::identity<glm::mat4>();
         shaderp.updateUniformData("coolbeans", &mvp);
         shaderp.bindShaderProgram();
 

@@ -1,16 +1,37 @@
-﻿  window.cpp
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(459,5): warning MSB8028: The intermediate directory (Release\) contains files shared from another project (GLTest.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  Camera.cpp
+C:\Users\shloks\source\repos\GLTest\GLTest\src\Camera.cpp(66,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\shloks\source\repos\GLTest\GLTest\src\Camera.cpp(74,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\shloks\source\repos\GLTest\GLTest\src\Camera.cpp(82,9): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+C:\Users\shloks\source\repos\GLTest\GLTest\src\Camera.cpp(87,9): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
+C:\Users\shloks\source\repos\GLTest\GLTest\src\Camera.cpp(136,29): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\shloks\source\repos\GLTest\GLTest\src\Camera.cpp(137,20): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\shloks\source\repos\GLTest\GLTest\src\Camera.cpp(138,29): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+  window.cpp
 C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(143,27): warning C4305: 'argument': truncation from 'double' to 'float'
 C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(145,26): warning C4305: 'argument': truncation from 'double' to 'float'
 C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(147,28): warning C4305: 'argument': truncation from 'double' to 'float'
 C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(149,25): warning C4305: 'argument': truncation from 'double' to 'float'
 C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(156,18): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
 C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(157,20): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(169,28): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(170,28): warning C4305: 'argument': truncation from 'double' to 'float'
 LINK : warning LNK4098: defaultlib 'LIBCMT' conflicts with use of other libs; use /NODEFAULTLIB:library
   Generating code
-  1 of 599 functions ( 0.2%) were compiled, the rest were copied from previous compilation.
+  16 of 600 functions ( 2.7%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    12 functions had inline decision re-evaluated but remain unchanged
+    23 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
 LINK : warning LNK4286: symbol '___glewLinkProgram' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLShaderProgram.obj'
 LINK : warning LNK4286: symbol '___glewDeleteShader' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLShaderProgram.obj'
@@ -38,4 +59,4 @@ LINK : warning LNK4286: symbol '___glewEnableVertexAttribArray' defined in 'glew
 LINK : warning LNK4286: symbol '_glewInit@0' defined in 'glew32s.lib(glew.obj)' is imported by 'WindowsWindowing.obj'
 LINK : warning LNK4286: symbol '_glewGetErrorString@4' defined in 'glew32s.lib(glew.obj)' is imported by 'WindowsWindowing.obj'
 glew32s.lib(glew.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'glew32s.lib(glew.obj)' or at 'C:\Users\shloks\source\repos\GLTest\Release\vc120.pdb'; linking object as if no debug info
-  GLTest.vcxproj -> C:\Users\shloks\source\repos\GLTest\Release\GLTest.exe
+  GLTest.vcxproj -> C:\Users\shloks\source\repos\GLTest\Release\Engine.exe

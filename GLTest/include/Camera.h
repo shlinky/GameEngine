@@ -10,8 +10,8 @@
 class Camera
 {
 public:
-	Camera(float* pos = nullptr);
-	Camera(float x, float y, float z);
+	Camera(int* winsizex = nullptr, int* winsizey = nullptr, float* pos = nullptr);
+	Camera(float x, float y, float z, int* winsizex = nullptr, int* winsizey = nullptr);
 	~Camera();
 	void rotateYaw(float degrees);
 	void rotatePitch(float degrees);
@@ -27,7 +27,7 @@ public:
 	void getPosition(float* pos);
 	float getYaw();
 	float getPitch();
-	float* getViewMat();
+	float* getTransMat();
 
 	void computeVectors();
 private:
@@ -36,10 +36,14 @@ private:
 	glm::vec3 forwardDir;
 	glm::vec3 rightDir;
 	glm::mat4 viewMat;
+	glm::mat4 projMat;
+	glm::mat4 camTransMat;
 	double camYaw;
 	double camPitch;
 	double sensitivity;
 	float yawLim[2];
 	float pitchLim[2];
+	int* winsizex;
+	int* winsizey;
 };
 

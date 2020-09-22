@@ -1,27 +1,41 @@
 #include "Camera.h"
 
-Camera::Camera(float* pos)
+Camera::Camera(int* winsizex, int* winsizey, float* pos)
 {
 	if (pos != NULL)
 		position = glm::make_vec3(pos);
 	else
 		position = glm::vec3(0.0);
 
+	//setting angles and vecors
 	camYaw = glm::radians(-90.0f);
 	camPitch = 0.0f;
 	forwardDir = glm::vec3(0, 0, -1);
 	upDir = glm::vec3(0, 1, 0);
 	sensitivity = 1;
-
-
+	
+	//setting angular limits
 	yawLim[0] = -1 * (glm::pi<float>() * 2) - 1;
 	yawLim[1] = (glm::pi<float>() * 2) + 1;
 	pitchLim[0] = -1 * (glm::pi<float>() * 2) - 1;
 	pitchLim[1] = (glm::pi<float>() * 2) + 1;
+	
+	//setting window sizes
+	if ((winsizex == NULL) || (winsizey == NULL)) {
+		int x = 1;
+		int y = 1;
+		winsizex = &x;
+		winsizey = &y;
+	}
+	this->winsizex = winsizex;
+	this->winsizey = winsizey;
+
+	projMat = glm::perspective<float>(glm::radians(30.0f), (float)*winsizex / *winsizey, 0.1f, 1000.f);
 }
 
-Camera::Camera(float x, float y, float z)
+Camera::Camera(float x, float y, float z, int* winsizex, int* winsizey)
 {
+	//setting angles and vecors
 	position = glm::vec3(x, y, z);
 	camYaw = glm::radians(-90.0f);
 	camPitch = 0.0f;
@@ -29,10 +43,23 @@ Camera::Camera(float x, float y, float z)
 	upDir = glm::vec3(0, 1, 0);
 	sensitivity = 1;
 
+	//setting angular limits
 	yawLim[0] = -1 * (glm::pi<float>() * 2) - 1;
 	yawLim[1] = (glm::pi<float>() * 2) + 1;
 	pitchLim[0] = -1 * (glm::pi<float>() * 2) - 1;
 	pitchLim[1] = (glm::pi<float>() * 2) + 1;
+
+	//setting window sizes
+	if ((winsizex == NULL) || (winsizey == NULL)) {
+		int x = 1;
+		int y = 1;
+		winsizex = &x;
+		winsizey = &y;
+	}
+	this->winsizex = winsizex;
+	this->winsizey = winsizey;
+
+	projMat = glm::perspective<float>(glm::radians(30.0f), ((float)(*winsizex) / (*winsizey)), 0.1f, 1000.f);
 }
 
 Camera::~Camera()
@@ -98,14 +125,15 @@ void Camera::getPosition(float* pos)
 	pos[2] = position.z;
 }
 
-float* Camera::getViewMat()
+float* Camera::getTransMat()
 {
 	viewMat = glm::lookAt(
 		position,
 		position + forwardDir, 
 		upDir
 	);
-	return &viewMat[0][0];
+	camTransMat = projMat * viewMat;
+	return &camTransMat[0][0];
 }
 
 void Camera::computeVectors()

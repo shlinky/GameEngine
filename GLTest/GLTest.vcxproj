@@ -23,6 +23,7 @@
     <ProjectGuid>{0C51002D-2DE3-4990-9349-4CFA88AEE1A7}</ProjectGuid>
     <RootNamespace>GLTest</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Engine</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
