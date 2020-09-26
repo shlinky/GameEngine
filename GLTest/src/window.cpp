@@ -3,6 +3,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <iomanip>
 #define DEBUG
 #include "OGLError.h"
 #include "OGLShaderProgram.h"
@@ -10,6 +11,7 @@
 #include "WindowsWindowing.h"
 #include "OGLImageTexture.h"
 #include "Camera.h"
+#include "ModelLoader.h"
 #include <GLM/glm.hpp>
 #include <GLM/gtc/matrix_transform.hpp>
 #include <GLM/ext.hpp>
@@ -135,7 +137,7 @@ float lightColor[3] = {
 float cameraPosition[3] = {
     0.0f,
     0.0f,
-    6.0f
+    10.0f
 };
 
 void keyInput(WindowsWindowing* w, Camera* c) {
@@ -170,11 +172,13 @@ int main(void)
     cam.setSensitivity(0.05);
     cam.setPitchLimits(-87, 87);
 
-    OGLVertexObject model(24, 3);
-    model.addAttribute(0, 3, vertices);
-    model.addAttribute(1, 3, normals);
-    model.addAttribute(2, 2, UV);
-    model.addIndexing(vertOrder, 36);
+    int vcount;
+    auto vAttribs = loadModelFromOBJ("res/models/test.txt", &vcount);
+    OGLVertexObject model(vcount, 3);
+    model.addAttribute(0, 3, vAttribs[0]);
+    model.addAttribute(1, 3, vAttribs[1]);
+    model.addAttribute(2, 2, vAttribs[2]);
+    model.addIndexing((unsigned int*)(vAttribs[3]), vcount);
     model.bind();
 
     OGLShaderProgram shaderp("res/shaders/b.vert", "res/shaders/b.frag", 4);
@@ -215,7 +219,7 @@ int main(void)
         shaderp.bindShaderProgram();
 
         
-        glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
+        glDrawElements(GL_TRIANGLES, vcount, GL_UNSIGNED_INT, (void*)0);
 
         window.prepareForNextFrame();
     }

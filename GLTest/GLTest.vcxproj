@@ -149,6 +149,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\ModelLoader.cpp" />
     <ClCompile Include="src\OGLImageTexture.cpp" />
     <ClCompile Include="src\OGLShaderProgram.cpp" />
     <ClCompile Include="src\OGLUniforms.cpp" />
@@ -162,6 +163,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Camera.h" />
+    <ClInclude Include="include\ModelLoader.h" />
     <ClInclude Include="include\OGLError.h" />
     <ClInclude Include="include\OGLImageTexture.h" />
     <ClInclude Include="include\OGLShaderProgram.h" />

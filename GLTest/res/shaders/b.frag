@@ -40,6 +40,6 @@ void main() {
 
 	//display_world_vector(normals_raw)
 	//lighting * base_color + (specular_lighting * light_color)
-	color = vec4(display_world_vector(pos_raw.xyz), 1);
+	color = vec4(display_world_vector(normals_raw), 1);
 	//color = vec4(0.5, 0, 1, 1);
 }
