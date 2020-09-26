@@ -162,7 +162,7 @@ void updateCameraAngle(double* cPos, double* lPos, Camera* c) {
 
 int main(void)
 {
-    WindowsWindowing window(640, 480, "Application");
+    WindowsWindowing window(1920, 1080, "Application");
 
     startGLDebug();
 
