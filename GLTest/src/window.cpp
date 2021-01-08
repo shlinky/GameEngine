@@ -4,128 +4,44 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <iomanip>
+#include <string>
 #define DEBUG
 #include "OGLError.h"
 #include "OGLShaderProgram.h"
 #include "OGLVertexObject.h"
 #include "WindowsWindowing.h"
-#include "OGLImageTexture.h"
+#include "OGLTexturedShader.h"
 #include "Camera.h"
 #include "ModelLoader.h"
+#include <math.h>
 #include <GLM/glm.hpp>
 #include <GLM/gtc/matrix_transform.hpp>
 #include <GLM/ext.hpp>
 #include <GLM/gtx/string_cast.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/transform.hpp>
 using namespace std;
 
-float vertices[72] = {
-       -1.0f, -1.0f,  1.0f, //0
-        1.0f, -1.0f,  1.0f, //1
-        1.0f,  1.0f,  1.0f,
-       -1.0f,  1.0f,  1.0f,
-       -1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f,
-        1.0f,  1.0f, -1.0f,
-       -1.0f,  1.0f, -1.0f,
-//second set
-       -1.0f, -1.0f,  1.0f, //8
-        1.0f, -1.0f,  1.0f, //9
-        1.0f,  1.0f,  1.0f,
-       -1.0f,  1.0f,  1.0f,
-       -1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f,
-        1.0f,  1.0f, -1.0f,
-       -1.0f,  1.0f, -1.0f,
-//third set
-       -1.0f, -1.0f,  1.0f, //16
-        1.0f, -1.0f,  1.0f, //17
-        1.0f,  1.0f,  1.0f,
-       -1.0f,  1.0f,  1.0f,
-       -1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f,
-        1.0f,  1.0f, -1.0f,
-       -1.0f,  1.0f, -1.0f,
-};
-
-float normals[72] = {
-        0.0f,  0.0f,  1.0f, //0
-        0.0f,  0.0f,  1.0f, //1
-        0.0f,  0.0f,  1.0f,
-        0.0f,  0.0f,  1.0f,
-        0.0f,  0.0f, -1.0f,
-        0.0f,  0.0f, -1.0f,
-        0.0f,  0.0f, -1.0f,
-        0.0f,  0.0f, -1.0f,
-//second set
-       -1.0f,  0.0f,  0.0f, //8
-        1.0f,  0.0f,  0.0f, //9
-        1.0f,  0.0f,  0.0f,
-       -1.0f,  0.0f,  0.0f,
-       -1.0f,  0.0f,  0.0f,
-        1.0f,  0.0f,  0.0f,
-        1.0f,  0.0f,  0.0f,
-       -1.0f,  0.0f,  0.0f,
-//third set
-        0.0f, -1.0f,  0.0f, //16
-        0.0f, -1.0f,  0.0f, //17
-        0.0f,  1.0f,  0.0f,
-        0.0f,  1.0f,  0.0f,
-        0.0f, -1.0f,  0.0f,
-        0.0f, -1.0f,  0.0f,
-        0.0f,  1.0f,  0.0f,
-        0.0f,  1.0f,  0.0f,
-};
-
-float UV[48] = {
-        0.0f,  0.0f,//0
-        1.0f,  0.0f,//1
-        1.0f,  1.0f,
-        0.0f,  1.0f,
-        0.0f,  0.0f,
-        1.0f,  0.0f,
-        1.0f,  1.0f,
-        0.0f,  1.0f,
-//second set
-        0.0f,  0.0f,//0
-        1.0f,  0.0f,//1
-        1.0f,  1.0f,
-        0.0f,  1.0f,
-        0.0f,  0.0f,
-        1.0f,  0.0f,
-        1.0f,  1.0f,
-        0.0f,  1.0f,
-//third set
-        0.0f,  0.0f,//0
-        1.0f,  0.0f,//1
-        1.0f,  1.0f,
-        0.0f,  1.0f,
-        0.0f,  0.0f,
-        1.0f,  0.0f,
-        1.0f,  1.0f,
-        0.0f,  1.0f,
-};
-
-
-unsigned int vertOrder[36] = {
-    0, 1, 2,
-    0, 3, 2,
-    4, 5, 6,
-    4, 7, 6,
-    8, 11, 15,
-    8, 12, 15,
-    9, 13, 14,
-    9, 10, 14,
-    16, 17, 21,
-    16, 20, 21,
-    18, 19, 23,
-    18, 22, 23
-};
+//add scenemesh class
+//add scene class
+//HASH connecting names to objects
+//multiple cameras if only one select that one
+//lights
+//map class
+//portals
+//collisions
+//animations and skeletal meshes bones
+//blurred map
+//lihgts as scene objects
+//collisions
+//physics
+//ray casting (path tracing)
+//ui through imgui
 
 float lightPosition[3] = {
-    0.0f,
-    3.0f,
-    0.0f
+    1.0f,
+    2.0f,
+    4.0f
 };
 
 float lightColor[3] = {
@@ -134,21 +50,36 @@ float lightColor[3] = {
     1.0f
 };
 
-float cameraPosition[3] = {
-    0.0f,
-    0.0f,
-    10.0f
+string cubeMapbadNames[6] = {
+    "res/Storforsen3/posx.jpg",
+    "res/Storforsen3/negx.jpg",
+    "res/Storforsen3/posy.jpg",
+    "res/Storforsen3/negy.jpg",
+    "res/Storforsen3/posz.jpg",
+    "res/Storforsen3/negz.jpg"
 };
+
+string cubeMapNames[6] = {
+    "res/skybox1/skybox/right.jpg",
+    "res/skybox1/skybox/left.jpg",
+    "res/skybox1/skybox/top.jpg",
+    "res/skybox1/skybox/bottom.jpg",
+    "res/skybox1/skybox/front.jpg",
+    "res/skybox1/skybox/back.jpg"
+};
+
 
 void keyInput(WindowsWindowing* w, Camera* c) {
     if (w->isKeyPressed(GLFW_KEY_W))
-        c->moveForward(0.2);
+        c->moveForward(0.5);
     if (w->isKeyPressed(GLFW_KEY_A))
-        c->moveRight(-0.2);
+        c->moveRight(-0.5);
     if (w->isKeyPressed(GLFW_KEY_S))
-        c->moveForward(-0.2);
+        c->moveForward(-0.5);
     if (w->isKeyPressed(GLFW_KEY_D))
-        c->moveRight(0.2);
+        c->moveRight(0.5);
+    if (w->isKeyPressed(GLFW_KEY_SPACE))
+        c->moveUp(0.5);
 }
 
 void updateCameraAngle(double* cPos, double* lPos, Camera* c) {
@@ -162,34 +93,52 @@ void updateCameraAngle(double* cPos, double* lPos, Camera* c) {
 
 int main(void)
 {
-    WindowsWindowing window(1920, 1080, "Application");
+    WindowsWindowing window(1920, 1080, "Application", false);
 
     startGLDebug();
 
     int sizex = window.getSizeX();
     int sizey = window.getSizeY();
-    Camera cam(0.0f, 0.0f, 3.0f, &sizex, &sizey);
+    Camera cam(0.0f, 0.0f, 0.0f, &sizex, &sizey);
     cam.setSensitivity(0.05);
     cam.setPitchLimits(-87, 87);
 
-    int vcount;
-    auto vAttribs = loadModelFromOBJ("res/models/test.txt", &vcount);
-    OGLVertexObject model(vcount, 3);
-    model.addAttribute(0, 3, vAttribs[0]);
-    model.addAttribute(1, 3, vAttribs[1]);
-    model.addAttribute(2, 2, vAttribs[2]);
-    model.addIndexing((unsigned int*)(vAttribs[3]), vcount);
-    model.bind();
+    OGLVertexObject model("res/models/test.txt", true);
+    OGLVertexObject model1("res/models/gucci.txt", true);
+    OGLVertexObject envcube("res/models/basic.obj");
 
-    OGLShaderProgram shaderp("res/shaders/b.vert", "res/shaders/b.frag", 4);
+    OGLTexturedShader shaderp("res/shaders/b.vert", "res/shaders/dir1.frag", 5, 4);
     shaderp.addUniform<OGLUniformMat4FV>("coolbeans");
+    shaderp.addUniform<OGLUniformMat4FV>("world");
     shaderp.addUniform<OGLUniform3FV>("light_position", &lightPosition);
     shaderp.addUniform<OGLUniform3FV>("light_color", &lightColor);
-    shaderp.addUniform<OGLUniform3FV>("camera_position", &cameraPosition);
-    shaderp.bindShaderProgram();
+    shaderp.addUniform<OGLUniform3FV>("camera_position");
+    shaderp.addCubemapTexture(cubeMapNames);
+    shaderp.addTexture("res/models/kcolor.png");
+    shaderp.addTexture("res/models/knorm.png");
+    shaderp.addTexture("res/models/korm.png");
 
-    OGLImageTexture texture("res/shaders/cloth_seat.jpg");
-    texture.bindTexture(0);
+    OGLTexturedShader* sp[4] = { 0 };
+    for (int i = 0; i < 4; i++) {
+        sp[i] = new OGLTexturedShader("res/shaders/b.vert", "res/shaders/metallic_sphere.frag", 5, 4);
+        sp[i]->addUniform<OGLUniformMat4FV>("coolbeans");
+        sp[i]->addUniform<OGLUniformMat4FV>("world");
+        sp[i]->addUniform<OGLUniform3FV>("light_position", &lightPosition);
+        sp[i]->addUniform<OGLUniform3FV>("light_color", &lightColor);
+        sp[i]->addUniform<OGLUniform3FV>("camera_position");
+        sp[i]->addCubemapTexture(cubeMapNames);
+        sp[i]->addTexture("res/models/PreviewSphere" + to_string(i) + "_Sphere_BaseColor.png");
+        sp[i]->addTexture("res/models/PreviewSphere" + to_string(i) + "_Sphere_Normal.png");
+        sp[i]->addTexture("res/models/PreviewSphere" + to_string(i) + "_Sphere_OcclusionRoughnessMetallic.png");
+    }
+    //shaderp.addTexture("res/shaders/cloth_seat.jpg");
+
+    OGLTexturedShader shaderpc("res/shaders/bc.vert", "res/shaders/wcube.frag", 4, 1);
+    shaderpc.addUniform<OGLUniformMat4FV>("coolbeans");
+    shaderpc.addUniform<OGLUniform3FV>("light_position", &lightPosition);
+    shaderpc.addUniform<OGLUniform3FV>("light_color", &lightColor);
+    shaderpc.addUniform<OGLUniform3FV>("camera_position");
+    shaderpc.addCubemapTexture(cubeMapNames);
 
     double lmpos[2] = {};
     double cmpos[2] = {};
@@ -200,8 +149,6 @@ int main(void)
     /* Loop until the user closes the window */
     while (!window.isWindowClosing())
     {
-        /* Render here */
-
         window.getMousePos(cmpos);
         updateCameraAngle(cmpos, lmpos, &cam);
         keyInput(&window, &cam);
@@ -212,14 +159,45 @@ int main(void)
         float campos[3]; 
         cam.getPosition(campos);
         shaderp.updateUniformData("camera_position", (void*)&campos);
+        shaderpc.updateUniformData("camera_position", (void*)&campos);
 
         glm::mat4 v = glm::make_mat4(cam.getTransMat());
-        glm::mat4 mvp = v * glm::identity<glm::mat4>();
+        glm::mat4 mvp = v;
+        glm::mat4 i = glm::identity<glm::mat4>();
         shaderp.updateUniformData("coolbeans", &mvp);
-        shaderp.bindShaderProgram();
+        shaderp.updateUniformData("world", &i);
+        mvp = v * glm::translate(glm::vec3(1, 1, 1));
 
+        for (int i = 0; i < 4; i++) {
+            mvp = v * glm::translate(glm::vec3(1 + (2 * i), 1, 1));
+            glm::mat4 trans1 = glm::translate(glm::vec3(1 + (2 * i), 1, 1));
+
+            sp[i]->updateUniformData("camera_position", (void*)&campos);
+            sp[i]->updateUniformData("coolbeans", &mvp);
+            sp[i]->updateUniformData("world", &trans1);
+        }
+
+        v = glm::make_mat4(cam.getTransMat(false));
+        glm::mat4 mvpc = v * glm::scale(glm::identity<glm::mat4>(), glm::vec3(100, 100, 100));
+        shaderpc.updateUniformData("coolbeans", &mvpc);
         
-        glDrawElements(GL_TRIANGLES, vcount, GL_UNSIGNED_INT, (void*)0);
+        //make a render function in env cube class
+        //bind and render function in scene objects; render calls bind
+        /**glDepthMask(GL_FALSE);
+        envcube.bind();
+        shaderpc.bindShaderProgram();
+        glDrawElements(GL_TRIANGLES, envcube.getVertexCount(), GL_UNSIGNED_INT, (void*)0);
+        glDepthMask(GL_TRUE);**/
+
+        model.bind();
+        shaderp.bindShaderProgram();        
+        //glDrawElements(GL_TRIANGLES, model.getVertexCount(), GL_UNSIGNED_INT, (void*)0);
+
+        for (int i = 0; i < 4; i++) {
+            model1.bind();
+            sp[i]->bindShaderProgram();
+            glDrawElements(GL_TRIANGLES, model1.getVertexCount(), GL_UNSIGNED_INT, (void*)0);
+        }
 
         window.prepareForNextFrame();
     }

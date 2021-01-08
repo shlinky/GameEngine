@@ -8,7 +8,7 @@ using namespace std;
 class WindowsWindowing
 {
 public:
-	WindowsWindowing(int sizex, int sizey, string title);
+	WindowsWindowing(int sizex, int sizey, string title, bool fullscreen = false);
 	~WindowsWindowing();
 	bool isWindowClosing();
 	void prepareForNextFrame();

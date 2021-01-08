@@ -17,7 +17,7 @@ public:
 	void bindShaderProgram();
 	template<typename U> void addUniform(string name, void* buffer = nullptr);
 	void updateUniformData(string name, void* buffer);
-private:
+protected:
 	unsigned int CreateShaderProgram(string vs, string fs);
 	unsigned int CreateShader(char* source, unsigned int type);
 	void readShaderFile(string fname, char** contents);

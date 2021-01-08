@@ -17,6 +17,7 @@ public:
 	void rotatePitch(float degrees);
 	void moveForward(float amount);
 	void moveRight(float amount);
+	void moveUp(float amount);
 
 	void setPostion(float* pos);
 	void setPostion(float x, float y, float z);
@@ -27,7 +28,8 @@ public:
 	void getPosition(float* pos);
 	float getYaw();
 	float getPitch();
-	float* getTransMat();
+	float* getTransMat(bool motion = true);
+	float* getTransMatOrtho(bool motion = true);
 
 	void computeVectors();
 private:
@@ -37,6 +39,7 @@ private:
 	glm::vec3 rightDir;
 	glm::mat4 viewMat;
 	glm::mat4 projMat;
+	glm::mat4 projMatOrtho;
 	glm::mat4 camTransMat;
 	double camYaw;
 	double camPitch;

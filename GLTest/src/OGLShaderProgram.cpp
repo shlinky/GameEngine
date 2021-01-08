@@ -4,7 +4,7 @@
 OGLShaderProgram::OGLShaderProgram(string vs, string fs, int numUniforms)
 {
 	pid = CreateShaderProgram(vs, fs);
-    uniforms = (OGLUniform**)malloc(numUniforms * sizeof(OGLUniform*));
+    uniforms = new OGLUniform*[numUniforms];
     uniformsAdded = 0;
     this->numUniforms = numUniforms;
 }
@@ -12,7 +12,7 @@ OGLShaderProgram::OGLShaderProgram(string vs, string fs, int numUniforms)
 OGLShaderProgram::~OGLShaderProgram()
 {
     glDeleteProgram(pid);
-    free(uniforms);
+    delete[] uniforms;
 }
 
 void OGLShaderProgram::bindShaderProgram()
@@ -80,6 +80,9 @@ unsigned int OGLShaderProgram::CreateShader(char* source, unsigned int type)
 void OGLShaderProgram::readShaderFile(string fname, char** contents)
 {
     std::ifstream fin(fname);
+    if (!fin) {
+        applicationErrorCallback("No such shader file.");
+    }
     fin.seekg(0, ios::end);
     int length = fin.tellg();
     fin.seekg(0, ios::beg);

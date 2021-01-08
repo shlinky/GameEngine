@@ -148,10 +148,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\graphcalc.cpp" />
+    <ClCompile Include="src\OGLCubeMapTexture.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\ModelLoader.cpp" />
     <ClCompile Include="src\OGLImageTexture.cpp" />
     <ClCompile Include="src\OGLShaderProgram.cpp" />
+    <ClCompile Include="src\OGLTexturedShader.cpp" />
     <ClCompile Include="src\OGLUniforms.cpp" />
     <ClCompile Include="src\OGLVertexObject.cpp" />
     <ClCompile Include="src\window.cpp" />
@@ -164,9 +167,11 @@
   <ItemGroup>
     <ClInclude Include="include\Camera.h" />
     <ClInclude Include="include\ModelLoader.h" />
+    <ClInclude Include="include\OGLCubeMapTexture.h" />
     <ClInclude Include="include\OGLError.h" />
     <ClInclude Include="include\OGLImageTexture.h" />
     <ClInclude Include="include\OGLShaderProgram.h" />
+    <ClInclude Include="include\OGLTexturedShader.h" />
     <ClInclude Include="include\OGLUniforms.h" />
     <ClInclude Include="include\OGLVertexObject.h" />
     <ClInclude Include="include\WindowsWindowing.h" />

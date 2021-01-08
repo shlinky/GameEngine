@@ -1,5 +1,6 @@
 #include "Camera.h"
 
+//set rotation
 Camera::Camera(int* winsizex, int* winsizey, float* pos)
 {
 	if (pos != NULL)
@@ -31,6 +32,7 @@ Camera::Camera(int* winsizex, int* winsizey, float* pos)
 	this->winsizey = winsizey;
 
 	projMat = glm::perspective<float>(glm::radians(30.0f), (float)*winsizex / *winsizey, 0.1f, 1000.f);
+	projMatOrtho = glm::ortho<float>(0.0f, (float)*winsizex, 0.0f, (float)*winsizey);
 }
 
 Camera::Camera(float x, float y, float z, int* winsizex, int* winsizey)
@@ -60,6 +62,7 @@ Camera::Camera(float x, float y, float z, int* winsizex, int* winsizey)
 	this->winsizey = winsizey;
 
 	projMat = glm::perspective<float>(glm::radians(30.0f), ((float)(*winsizex) / (*winsizey)), 0.1f, 1000.f);
+	projMatOrtho = glm::ortho<float>(0.0f, (float)*winsizex, 0.0f, (float)*winsizey);
 }
 
 Camera::~Camera()
@@ -104,6 +107,12 @@ void Camera::moveRight(float amount)
 	position += multiplier * rightDir;
 }
 
+void Camera::moveUp(float amount)
+{
+	glm::float32 multiplier(amount);
+	position += multiplier * upDir;
+}
+
 void Camera::setPostion(float* pos)
 {
 	position.x = pos[0];
@@ -125,14 +134,35 @@ void Camera::getPosition(float* pos)
 	pos[2] = position.z;
 }
 
-float* Camera::getTransMat()
+float* Camera::getTransMat(bool motion)
 {
 	viewMat = glm::lookAt(
 		position,
 		position + forwardDir, 
 		upDir
 	);
-	camTransMat = projMat * viewMat;
+	if (motion) {
+		camTransMat = projMat * viewMat;
+	}
+	else {
+		camTransMat = projMat * glm::mat4(glm::mat3(viewMat));
+	}
+	return &camTransMat[0][0];
+}
+
+float* Camera::getTransMatOrtho(bool motion)
+{
+	viewMat = glm::lookAt(
+		position,
+		position + forwardDir,
+		upDir
+	);
+	if (motion) {
+		camTransMat = projMatOrtho * viewMat;
+	}
+	else {
+		camTransMat = projMatOrtho * glm::mat4(glm::mat3(viewMat));
+	}
 	return &camTransMat[0][0];
 }
 

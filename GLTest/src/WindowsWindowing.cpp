@@ -1,6 +1,8 @@
 #include "WindowsWindowing.h"
 
-WindowsWindowing::WindowsWindowing(int sizex, int sizey, string title)
+//add a delta mouse function with a sensitivity option
+//get time function
+WindowsWindowing::WindowsWindowing(int sizex, int sizey, string title, bool fullscreen)
 {
     this->sizex = sizex;
     this->sizey = sizey;
@@ -18,7 +20,10 @@ WindowsWindowing::WindowsWindowing(int sizex, int sizey, string title)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4); // We want OpenGL 3.3
     //glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    window = glfwCreateWindow(sizex, sizey, title.c_str(), NULL, NULL);
+    if (fullscreen)
+        window = glfwCreateWindow(sizex, sizey, title.c_str(), glfwGetPrimaryMonitor(), NULL);
+    else
+        window = glfwCreateWindow(sizex, sizey, title.c_str(), NULL, NULL);
     if (!window)
     {
         applicationErrorCallback("Failed to create window");
@@ -41,6 +46,7 @@ WindowsWindowing::WindowsWindowing(int sizex, int sizey, string title)
     glEnable(GL_DEPTH_TEST);
     // Accept fragment if it closer to the camera than the former one
     glDepthFunc(GL_LESS);
+    glEnable(GL_MULTISAMPLE);
 
     glfwSwapInterval(1);
 
