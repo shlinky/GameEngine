@@ -11,6 +11,7 @@
 #include "OGLVertexObject.h"
 #include "WindowsWindowing.h"
 #include "OGLTexturedShader.h"
+#include "OGLFrameBuffer.h"
 #include "Camera.h"
 #include "ModelLoader.h"
 #include <math.h>
@@ -103,20 +104,25 @@ int main(void)
     cam.setSensitivity(0.05);
     cam.setPitchLimits(-87, 87);
 
-    OGLVertexObject model("res/models/test.txt", true);
-    OGLVertexObject model1("res/models/gucci.txt", true);
-    OGLVertexObject envcube("res/models/basic.obj");
+    OGLFrameBuffer fb;
+    OGLImageTexture col(sizex, sizey);
+    fb.attachColorTexture(&col);
+    fb.bind();
 
-    OGLTexturedShader shaderp("res/shaders/b.vert", "res/shaders/dir1.frag", 5, 4);
-    shaderp.addUniform<OGLUniformMat4FV>("coolbeans");
-    shaderp.addUniform<OGLUniformMat4FV>("world");
-    shaderp.addUniform<OGLUniform3FV>("light_position", &lightPosition);
-    shaderp.addUniform<OGLUniform3FV>("light_color", &lightColor);
-    shaderp.addUniform<OGLUniform3FV>("camera_position");
-    shaderp.addCubemapTexture(cubeMapNames);
-    shaderp.addTexture("res/models/kcolor.png");
-    shaderp.addTexture("res/models/knorm.png");
-    shaderp.addTexture("res/models/korm.png");
+    //OGLVertexObject model("res/models/test.txt", true);
+    OGLVertexObject model1("res/models/gucci.txt", true);
+    //OGLVertexObject envcube("res/models/basic.obj");
+
+    //OGLTexturedShader shaderp("res/shaders/b.vert", "res/shaders/dir1.frag", 5, 4);
+    //shaderp.addUniform<OGLUniformMat4FV>("coolbeans");
+    //shaderp.addUniform<OGLUniformMat4FV>("world");
+    //shaderp.addUniform<OGLUniform3FV>("light_position", &lightPosition);
+    //shaderp.addUniform<OGLUniform3FV>("light_color", &lightColor);
+    //shaderp.addUniform<OGLUniform3FV>("camera_position");
+    //shaderp.addCubemapTexture(cubeMapNames);
+    //shaderp.addTexture("res/models/kcolor.png");
+    //shaderp.addTexture("res/models/knorm.png");
+    //shaderp.addTexture("res/models/korm.png");
 
     OGLTexturedShader* sp[4] = { 0 };
     for (int i = 0; i < 4; i++) {
@@ -133,12 +139,12 @@ int main(void)
     }
     //shaderp.addTexture("res/shaders/cloth_seat.jpg");
 
-    OGLTexturedShader shaderpc("res/shaders/bc.vert", "res/shaders/wcube.frag", 4, 1);
-    shaderpc.addUniform<OGLUniformMat4FV>("coolbeans");
-    shaderpc.addUniform<OGLUniform3FV>("light_position", &lightPosition);
-    shaderpc.addUniform<OGLUniform3FV>("light_color", &lightColor);
-    shaderpc.addUniform<OGLUniform3FV>("camera_position");
-    shaderpc.addCubemapTexture(cubeMapNames);
+    //OGLTexturedShader shaderpc("res/shaders/bc.vert", "res/shaders/wcube.frag", 4, 1);
+    //shaderpc.addUniform<OGLUniformMat4FV>("coolbeans");
+    //shaderpc.addUniform<OGLUniform3FV>("light_position", &lightPosition);
+    //shaderpc.addUniform<OGLUniform3FV>("light_color", &lightColor);
+    //shaderpc.addUniform<OGLUniform3FV>("camera_position");
+    //shaderpc.addCubemapTexture(cubeMapNames);
 
     double lmpos[2] = {};
     double cmpos[2] = {};
@@ -158,18 +164,18 @@ int main(void)
 
         float campos[3]; 
         cam.getPosition(campos);
-        shaderp.updateUniformData("camera_position", (void*)&campos);
-        shaderpc.updateUniformData("camera_position", (void*)&campos);
+        //shaderp.updateUniformData("camera_position", (void*)&campos);
+        //shaderpc.updateUniformData("camera_position", (void*)&campos);
 
         glm::mat4 v = glm::make_mat4(cam.getTransMat());
-        glm::mat4 mvp = v;
-        glm::mat4 i = glm::identity<glm::mat4>();
-        shaderp.updateUniformData("coolbeans", &mvp);
-        shaderp.updateUniformData("world", &i);
-        mvp = v * glm::translate(glm::vec3(1, 1, 1));
+        //glm::mat4 mvp = v;
+        //glm::mat4 i = glm::identity<glm::mat4>();
+        //shaderp.updateUniformData("coolbeans", &mvp);
+        //shaderp.updateUniformData("world", &i);
+        //mvp = v * glm::translate(glm::vec3(1, 1, 1));
 
         for (int i = 0; i < 4; i++) {
-            mvp = v * glm::translate(glm::vec3(1 + (2 * i), 1, 1));
+            glm::mat4 mvp = v * glm::translate(glm::vec3(1 + (2 * i), 1, 1));
             glm::mat4 trans1 = glm::translate(glm::vec3(1 + (2 * i), 1, 1));
 
             sp[i]->updateUniformData("camera_position", (void*)&campos);
@@ -177,9 +183,9 @@ int main(void)
             sp[i]->updateUniformData("world", &trans1);
         }
 
-        v = glm::make_mat4(cam.getTransMat(false));
-        glm::mat4 mvpc = v * glm::scale(glm::identity<glm::mat4>(), glm::vec3(100, 100, 100));
-        shaderpc.updateUniformData("coolbeans", &mvpc);
+        //v = glm::make_mat4(cam.getTransMat(false));
+        //glm::mat4 mvpc = v * glm::scale(glm::identity<glm::mat4>(), glm::vec3(100, 100, 100));
+        //shaderpc.updateUniformData("coolbeans", &mvpc);
         
         //make a render function in env cube class
         //bind and render function in scene objects; render calls bind
@@ -189,8 +195,8 @@ int main(void)
         glDrawElements(GL_TRIANGLES, envcube.getVertexCount(), GL_UNSIGNED_INT, (void*)0);
         glDepthMask(GL_TRUE);**/
 
-        model.bind();
-        shaderp.bindShaderProgram();        
+        //model.bind();
+        //shaderp.bindShaderProgram();        
         //glDrawElements(GL_TRIANGLES, model.getVertexCount(), GL_UNSIGNED_INT, (void*)0);
 
         for (int i = 0; i < 4; i++) {

@@ -15,4 +15,5 @@
 #include <math.h>
 using namespace std;
 
+//create saving as own engine type .gmdl file
 float** loadModelFromOBJ(string fname, int* vCount, int groups = 1, bool tangents = false);

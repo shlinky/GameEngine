@@ -1,5 +1,6 @@
 #include "OGLCubeMapTexture.h"
 
+//create constructors with no params and id param
 OGLCubeMapTexture::OGLCubeMapTexture(string* texturePaths)
 {
     unsigned int textureID;
