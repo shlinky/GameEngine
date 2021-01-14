@@ -37,5 +37,5 @@ void main() {
 	//display_world_vector(normals_raw)
 	//lighting * base_color + (specular_lighting * light_color)
 	//vec3 base_color = display_world_vector(pos_raw.xyz);
-	color = vec4(lighting * base_color + specular_lighting * light_color, 1);
+	color = vec4(specular_lighting * vec3(1), 1);
 }

@@ -2,6 +2,8 @@
 
 //add a delta mouse function with a sensitivity option
 //get time function
+//get mouse clicks
+//set antialiasing
 WindowsWindowing::WindowsWindowing(int sizex, int sizey, string title, bool fullscreen)
 {
     this->sizex = sizex;

@@ -158,6 +158,8 @@
     <ClCompile Include="src\OGLTexturedShader.cpp" />
     <ClCompile Include="src\OGLUniforms.cpp" />
     <ClCompile Include="src\OGLVertexObject.cpp" />
+    <ClCompile Include="src\SceneMeshObject.cpp" />
+    <ClCompile Include="src\SceneObject.cpp" />
     <ClCompile Include="src\window.cpp" />
     <ClCompile Include="src\WindowsWindowing.cpp" />
   </ItemGroup>
@@ -176,6 +178,8 @@
     <ClInclude Include="include\OGLTexturedShader.h" />
     <ClInclude Include="include\OGLUniforms.h" />
     <ClInclude Include="include\OGLVertexObject.h" />
+    <ClInclude Include="include\SceneMeshObject.h" />
+    <ClInclude Include="include\SceneObject.h" />
     <ClInclude Include="include\WindowsWindowing.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

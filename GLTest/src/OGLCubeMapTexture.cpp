@@ -7,7 +7,6 @@ OGLCubeMapTexture::OGLCubeMapTexture(string* texturePaths)
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
 
-    int width, height;
     for (unsigned int i = 0; i < 6; i++)
     {
         unsigned char* data;

@@ -7,8 +7,10 @@ OGLTexturedShader::OGLTexturedShader(string vs, string fs, int numUniforms, int 
 	texturesAdded = 0;
 }
 
+//make parent virtual maybe
 OGLTexturedShader::~OGLTexturedShader()
 {
+	//OGLShaderProgram::~OGLShaderProgram();
 	delete[] textures;
 }
 
@@ -27,6 +29,7 @@ void OGLTexturedShader::addTexture(OGLImageTexture* texture)
 		applicationErrorCallback("No more textures available, already added max amount");
 	}
 	textures[texturesAdded] = texture;
+	texturesAdded++;
 }
 
 void OGLTexturedShader::addCubemapTexture(string* tNames)

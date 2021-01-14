@@ -1,6 +1,8 @@
 #include "Camera.h"
 
 //set rotation
+//look at
+//get bacl glm types
 Camera::Camera(int* winsizex, int* winsizey, float* pos)
 {
 	if (pos != NULL)
@@ -75,6 +77,7 @@ void Camera::rotateYaw(float degrees)
 	if ((newValue < yawLim[1]) && (newValue > yawLim[0])) {
 		camYaw = fmod(newValue, (glm::pi<float>() * 2));
 	}
+	computeVectors();
 }
 
 void Camera::rotatePitch(float degrees)
@@ -83,6 +86,13 @@ void Camera::rotatePitch(float degrees)
 	if ((newValue < pitchLim[1]) && (newValue > pitchLim[0])) {
 		camPitch = fmod(newValue, (glm::pi<float>() * 2));
 	}
+	computeVectors();
+}
+
+void Camera::lookAtDir(float x, float y, float z)
+{
+	forwardDir = glm::vec3(x, y, z);
+	rightDir = glm::cross(forwardDir, upDir);
 }
 
 float Camera::getYaw()
@@ -113,18 +123,25 @@ void Camera::moveUp(float amount)
 	position += multiplier * upDir;
 }
 
-void Camera::setPostion(float* pos)
+void Camera::setPosition(float* pos)
 {
 	position.x = pos[0];
 	position.y = pos[1];
 	position.z = pos[2];
 }
 
-void Camera::setPostion(float x, float y, float z)
+void Camera::setPosition(float x, float y, float z)
 {
 	position.x = x;
 	position.y = y;
 	position.z = z;
+}
+
+void Camera::setRotation(float yaw, float pitch)
+{
+	this->camYaw = yaw;
+	this->camPitch = pitch;
+	computeVectors();
 }
 
 void Camera::getPosition(float* pos)
@@ -134,7 +151,12 @@ void Camera::getPosition(float* pos)
 	pos[2] = position.z;
 }
 
-float* Camera::getTransMat(bool motion)
+glm::vec3 Camera::getPosition()
+{
+	return position;
+}
+
+glm::mat4 Camera::getTransMat(bool motion)
 {
 	viewMat = glm::lookAt(
 		position,
@@ -147,10 +169,10 @@ float* Camera::getTransMat(bool motion)
 	else {
 		camTransMat = projMat * glm::mat4(glm::mat3(viewMat));
 	}
-	return &camTransMat[0][0];
+	return camTransMat;
 }
 
-float* Camera::getTransMatOrtho(bool motion)
+glm::mat4  Camera::getTransMatOrtho(bool motion)
 {
 	viewMat = glm::lookAt(
 		position,
@@ -163,7 +185,7 @@ float* Camera::getTransMatOrtho(bool motion)
 	else {
 		camTransMat = projMatOrtho * glm::mat4(glm::mat3(viewMat));
 	}
-	return &camTransMat[0][0];
+	return camTransMat;
 }
 
 void Camera::computeVectors()

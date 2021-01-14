@@ -8,14 +8,14 @@ out vec4 pos_raw;
 out vec3 normals_raw;
 out vec2 UV;
 out vec3 tangents_raw;
-uniform mat4 coolbeans;
+uniform mat4 mvp;
 uniform mat4 world;
 uniform vec3 light_position;
 uniform vec3 light_color;
 uniform vec3 camera_position;
 
 void main() {
-	gl_Position = coolbeans * vec4(position, 1);                                                               
+	gl_Position = mvp * vec4(position, 1);                                                               
 
 	pos_raw = world * vec4(position, 1);
 	normals_raw = normalize(vec3(world * vec4(normals, 0)));
