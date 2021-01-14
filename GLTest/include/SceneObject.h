@@ -31,7 +31,6 @@ public:
 	void setRotation(float x, float y, float z);
 	void setScale(float x, float y, float z);
 protected:
-	bool renderable;
 	glm::vec3 position;
 	glm::vec3 rotation;
 	glm::vec3 scale;

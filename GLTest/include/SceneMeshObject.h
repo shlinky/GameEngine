@@ -1,6 +1,7 @@
 #pragma once
 #include "SceneObject.h"
 
+//hidden objects
 class SceneMeshObject :
 	public SceneObject
 {

@@ -3,7 +3,6 @@
 
 SceneMeshObject::SceneMeshObject()
 {
-	renderable = true;
 	position = glm::vec3(0, 0, 0);
 	scale = glm::vec3(1, 1, 1);
 	rotation = glm::vec3(0, 0, 0);
