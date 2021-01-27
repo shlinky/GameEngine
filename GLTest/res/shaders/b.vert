@@ -18,10 +18,11 @@ void main() {
 	gl_Position = mvp * vec4(position, 1);                                                               
 
 	pos_raw = world * vec4(position, 1);
-	normals_raw = normalize(vec3(world * vec4(normals, 0)));
+	normals_raw = vec3(world * vec4(normals, 0));
 
 	UV = uv;
-	tangents_raw = tangents;
+	tangents_raw = vec3(world * vec4(tangents, 0));
 }
+
 
 

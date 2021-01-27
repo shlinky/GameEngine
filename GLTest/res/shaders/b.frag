@@ -20,7 +20,7 @@ vec3 display_world_vector(vec3 v) {
 void main() {
 	vec3 base_color = vec3(0.2, 0.8, 0.7);
 
-	l = light_position - pos_raw.xyz;
+	l = vec3(1, 2, 4) - pos_raw.xyz;
 	float distance = length(l);
 	float light_factor = clamp(dot(normalize(l), normals_raw), 0, 1);
 	float light_strength = 2;
@@ -32,10 +32,10 @@ void main() {
 	float spec = pow(clamp(dot(c, reflection), 0, 1), 8);
 	float specular_lighting = 1.0 * spec / (distance); 
 
-	vec3 lighting = (diffuse_lighting + ambient_lighting) * light_color;
+	vec3 lighting = (diffuse_lighting + ambient_lighting) * vec3(1, 1, 1);
 
 	//display_world_vector(normals_raw)
 	//lighting * base_color + (specular_lighting * light_color)
 	//vec3 base_color = display_world_vector(pos_raw.xyz);
-	color = vec4(specular_lighting * vec3(1), 1);
+	color = vec4(lighting * base_color + (specular_lighting * light_color), 1);
 }

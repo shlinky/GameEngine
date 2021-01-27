@@ -1,42 +1,41 @@
 #include "SceneMeshObject.h"
-#include "..\include\SceneMeshObject.h"
 
 SceneMeshObject::SceneMeshObject()
 {
-	position = glm::vec3(0, 0, 0);
-	scale = glm::vec3(1, 1, 1);
-	rotation = glm::vec3(0, 0, 0);
+	setPosition(0, 0, 0);
+	setScale(1, 1, 1);
+	setScale(0, 0, 0);
 }
 
 SceneMeshObject::SceneMeshObject(string model)
 {
 	mesh = new OGLVertexObject(model, true, 4);
-	position = glm::vec3(0, 0, 0);
-	scale = glm::vec3(1, 1, 1);
-	rotation = glm::vec3(0, 0, 0);
+	setPosition(0, 0, 0);
+	setScale(1, 1, 1);
+	setScale(0, 0, 0);
 }
 
 SceneMeshObject::SceneMeshObject(OGLVertexObject* model)
 {
 	mesh = model;
-	position = glm::vec3(0, 0, 0);
-	scale = glm::vec3(1, 1, 1);
-	rotation = glm::vec3(0, 0, 0);
+	setPosition(0, 0, 0);
+	setScale(1, 1, 1);
+	setRotation(0, 0, 0);
 }
 
 SceneMeshObject::SceneMeshObject(float x, float y, float z)
 {
-	position = glm::vec3(x, y, z);
-	scale = glm::vec3(1, 1, 1);
-	rotation = glm::vec3(0, 0, 0);
+	setPosition(x, y, z);
+	setScale(1, 1, 1);
+	setRotation(0, 0, 0);
 }
 
 SceneMeshObject::SceneMeshObject(string model, float x, float y, float z)
 {
 	mesh = new OGLVertexObject(model, true, 4);
-	position = glm::vec3(x, y, z);
-	scale = glm::vec3(1, 1, 1);
-	rotation = glm::vec3(0, 0, 0);
+	setPosition(x, y, z);
+	setScale(1, 1, 1);
+	setRotation(0, 0, 0);
 }
 
 void SceneMeshObject::setMesh(OGLVertexObject* model)
@@ -76,11 +75,17 @@ void SceneMeshObject::render(Camera* cam)
 {
 	//creating mvp matrix
 	glm::mat4 vp = cam->getTransMat();
-	glm::mat4 modelmat = glm::scale(scale);
-	modelmat = glm::rotate(rotation.z, glm::vec3(0, 0, 1)) 
-		* glm::rotate(rotation.y, glm::vec3(0, 1, 0)) 
-		* glm::rotate(rotation.x, glm::vec3(1, 0, 0)) * modelmat;
-	modelmat = glm::translate(position) * modelmat;
+	glm::mat4 modelmat = glm::scale(getScale());
+	modelmat = glm::toMat4(rotation) * modelmat;
+	modelmat = glm::translate(getPosition()) * modelmat;
+	if (isComponent) {
+		//cout << glm::to_string(glm::eulerAngles(parentObject->getQuatRotation())) << endl;
+		//cout << glm::to_string(parentObject->getPosition()) << endl;
+		modelmat = glm::scale(parentObject->getScale()) * modelmat;
+		modelmat = glm::toMat4(parentObject->getQuatRotation()) * modelmat;
+		modelmat = glm::translate(parentObject->getPosition()) * modelmat;
+		//cout << glm::to_string(modelmat) << endl;
+	}
 	mvp = vp * modelmat;
 
 	glm::vec3 campos = cam->getPosition();

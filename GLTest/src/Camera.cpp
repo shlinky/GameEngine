@@ -3,7 +3,10 @@
 //set rotation
 //look at
 //get bacl glm types
-Camera::Camera(int* winsizex, int* winsizey, float* pos)
+//changed winsize from pointers to non
+
+//change this constructor into glm::vec3
+Camera::Camera(int winsizex, int winsizey, float* pos)
 {
 	if (pos != NULL)
 		position = glm::make_vec3(pos);
@@ -24,20 +27,14 @@ Camera::Camera(int* winsizex, int* winsizey, float* pos)
 	pitchLim[1] = (glm::pi<float>() * 2) + 1;
 	
 	//setting window sizes
-	if ((winsizex == NULL) || (winsizey == NULL)) {
-		int x = 1;
-		int y = 1;
-		winsizex = &x;
-		winsizey = &y;
-	}
 	this->winsizex = winsizex;
 	this->winsizey = winsizey;
 
-	projMat = glm::perspective<float>(glm::radians(30.0f), (float)*winsizex / *winsizey, 0.1f, 1000.f);
-	projMatOrtho = glm::ortho<float>(0.0f, (float)*winsizex, 0.0f, (float)*winsizey);
+	projMat = glm::perspective<float>(glm::radians(30.0f), (float)winsizex / winsizey, 0.1f, 1000.f);
+	projMatOrtho = glm::ortho<float>(0.0f, (float)winsizex, 0.0f, (float)winsizey);
 }
 
-Camera::Camera(float x, float y, float z, int* winsizex, int* winsizey)
+Camera::Camera(float x, float y, float z, int winsizex, int winsizey)
 {
 	//setting angles and vecors
 	position = glm::vec3(x, y, z);
@@ -54,17 +51,11 @@ Camera::Camera(float x, float y, float z, int* winsizex, int* winsizey)
 	pitchLim[1] = (glm::pi<float>() * 2) + 1;
 
 	//setting window sizes
-	if ((winsizex == NULL) || (winsizey == NULL)) {
-		int x = 1;
-		int y = 1;
-		winsizex = &x;
-		winsizey = &y;
-	}
 	this->winsizex = winsizex;
 	this->winsizey = winsizey;
 
-	projMat = glm::perspective<float>(glm::radians(30.0f), ((float)(*winsizex) / (*winsizey)), 0.1f, 1000.f);
-	projMatOrtho = glm::ortho<float>(0.0f, (float)*winsizex, 0.0f, (float)*winsizey);
+	projMat = glm::perspective<float>(glm::radians(30.0f), (float)winsizex / winsizey, 0.1f, 1000.f);
+	projMatOrtho = glm::ortho<float>(0.0f, (float)winsizex, 0.0f, (float)winsizey);
 }
 
 Camera::~Camera()
@@ -97,12 +88,12 @@ void Camera::lookAtDir(float x, float y, float z)
 
 float Camera::getYaw()
 {
-	return camYaw;
+	return glm::degrees(camYaw);
 }
 
 float Camera::getPitch()
 {
-	return camPitch;
+	return glm::degrees(camPitch);
 }
 
 void Camera::moveForward(float amount)
@@ -139,8 +130,8 @@ void Camera::setPosition(float x, float y, float z)
 
 void Camera::setRotation(float yaw, float pitch)
 {
-	this->camYaw = yaw;
-	this->camPitch = pitch;
+	this->camYaw = glm::radians(yaw);
+	this->camPitch = glm::radians(pitch);
 	computeVectors();
 }
 
@@ -186,6 +177,11 @@ glm::mat4  Camera::getTransMatOrtho(bool motion)
 		camTransMat = projMatOrtho * glm::mat4(glm::mat3(viewMat));
 	}
 	return camTransMat;
+}
+
+glm::vec3 Camera::getForwardDir()
+{
+	return forwardDir;
 }
 
 void Camera::computeVectors()

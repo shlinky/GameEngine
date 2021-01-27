@@ -62,6 +62,7 @@ void main() {
 	 else {
 	 	o = vec3(0, 0, 0);
 	 }
-	color = vec4(bc + o * vec3(1, 1, 1), 1);
+	//+ o * vec3(1, 1, 1)
+	color = vec4(bc, 1);
 	//color = vec4(UV, 0, 1);
 }    

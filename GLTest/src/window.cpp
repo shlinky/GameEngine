@@ -35,6 +35,9 @@ using namespace std;
 //ray cast is in the scene class so it has access to all scene objects
 //ray cast gives back pointer to object it hit
 
+//all scene objects have properties that is an array of various strings so u can search scene for all objects with a certain property
+//u can get a scene object back by its name
+
 //map class
 //portals
 // use normals for orientation
@@ -45,9 +48,31 @@ using namespace std;
 //lihgts as scene objects
 //collisions
 //physics
+//physx implementation
+//steamworks
+//audio
+
 //ray casting (path tracing)
 //ui through imgui
 
+//all sceneobjects have a tick function
+//all sceneobjects have a component array that can be filled with other sceneobjects (COMPONENT MATH) (relative positions)
+//and have renderable property
+//and have pointer to scene
+//rendering pipeline like shadows and such is done in scene calss
+//make renderablesceneobject class which mesh derives from and particle and other such things
+//renderable scene object has hidden property and and render function and lit property and a shader
+//also in render they render all components this is implemented in original render function and all overloaded (derived) render function call the original
+//possibly every renderable scene object gets a setRenderFrameBuffer function
+//SCENE OBECTS CAN HAVE CAMERAS AND other objects in them (components)
+//but also add it to the scene during construction (for lights and others) (all components)
+//physics bodies are not renderable but scene objects
+
+//whenever something needs access to something give it a pointer to it
+
+//scene has a main fb for post processing and ppl can access the textures and the buffer
+//scene has a render function with cam param and not
+//a variable for whethered its deffered rendering or not
 float lightPosition[3] = {
     1.0f,
     2.0f,
@@ -79,7 +104,9 @@ string cubeMapNames[6] = {
 };
 
 
-void keyInput(WindowsWindowing* w, Camera* c) {
+void keyInput(WindowsWindowing* w, SceneMeshObject* g, Camera* c) {
+    glm::vec3 p = g->getPosition();
+    glm::vec3 oc = c->getPosition();
     if (w->isKeyPressed(GLFW_KEY_W))
         c->moveForward(0.5);
     if (w->isKeyPressed(GLFW_KEY_A))
@@ -90,15 +117,42 @@ void keyInput(WindowsWindowing* w, Camera* c) {
         c->moveRight(0.5);
     if (w->isKeyPressed(GLFW_KEY_SPACE))
         c->moveUp(0.5);
+    //glm::vec3 d = c->getPosition() - oc;
+    //glm::vec3 npos = (p + d);
+    //cout << npos.x << ' ' << npos.y << ' ' << npos.z << endl;
+   // g->setPosition(npos.x, npos.y, npos.z);
 }
 
-void updateCameraAngle(double* cPos, double* lPos, Camera* c) {
+void updateCameraAngle(double* cPos, double* lPos, SceneObject* g, Camera* c) {
     double dX = cPos[0] - lPos[0];
     double dY = -1 * (cPos[1] - lPos[1]);
 
+    float y = c->getYaw();
+    float p = c->getPitch();
     c->rotateYaw(dX);
     c->rotatePitch(dY);
     c->computeVectors();
+
+    //component rotation math with rel pos
+    float yaw = c->getYaw();
+    float ptch = c->getPitch();
+
+    //glm::vec3 newrot = SceneObject::Rotate(glm::vec3(180, 0, 0), glm::vec3(-90 - yaw, -ptch, 0));
+    //g->setRotation(0, 0, 0);
+    //cout << glm::to_string(newrot) << endl;
+   // glm::vec3 rightdir = glm::cross(glm::float32(-1) * c->getForwardDir(), glm::vec3(0, 1, 0));
+    //glm::mat3 rot = glm::mat3(-rightdir, glm::cross(rightdir, glm::float32(-1) * c->getForwardDir()), glm::float32(-1) * c->getForwardDir());
+    //glm::vec3 newpos;
+    //newpos = rot * glm::vec3(0.2, -0.25, -2);
+    //cout << glm::to_string(newpos) << endl;
+    //cout << glm::to_string(rot) << endl;
+    //newpos = newpos + c->getPosition();
+    //g->setPosition(newpos.x, newpos.y, newpos.z);
+    glm::vec3 cpos = c->getPosition();
+    g->setPosition(cpos.x, cpos.y, cpos.z);
+    cout << "bob " << 90 + yaw << endl;
+    g->setRotation(-90 - yaw, ptch, 0);
+
 }
 
 float screenvp[12] = {
@@ -132,11 +186,11 @@ int main(void)
 
     int sizex = window.getSizeX();
     int sizey = window.getSizeY();
-    Camera cam(0.0f, 0.0f, 10.0f, &sizex, &sizey);
+    Camera cam(0.0f, 0.0f, 8.0f, sizex, sizey);
     cam.setSensitivity(0.05);
     cam.setPitchLimits(-87, 87);
 
-    Camera pcam(0.0f, 0.0f, 10.0f, &sizex, &sizey);
+    Camera pcam(0.0f, 0.0f, 10.0f, sizex, sizey);
     cam.setSensitivity(0.05);
     cam.setPitchLimits(-87, 87);
 
@@ -162,18 +216,35 @@ int main(void)
     portal.addAttribute(0, 3, screenvp);
     portal.addIndexing(screenindex, 6);
 
-    SceneMeshObject portalo = SceneMeshObject(5, 5, -10);
-    portalo.setMesh(&portal);
-    portalo.createShader("res/shaders/p.vert", "res/shaders/p.frag");
-    portalo.getShader()->addTexture(&col1);
+    SceneMeshObject portala = SceneMeshObject(5, 5, -10);
+    portala.setMesh(&portal);
+    portala.createShader("res/shaders/p.vert", "res/shaders/p.frag");
+    portala.getShader()->addTexture(&col1);
+    portala.getShader()->addTexture("res/shaders/frame.png");
 
+    SceneMeshObject portalb = SceneMeshObject(0, 0, 10);
+    portalb.setMesh(&portal);
+    portalb.setShader(portala.getShader());
+    portalb.setRotation(0, 0, 0);
     OGLVertexObject model1("res/models/gucci.txt", true);
+
+    SceneObject player = SceneObject();
+
+    SceneMeshObject random = SceneMeshObject(0.45, -0.2, -2.3);
+    random.setRotation(180, 0, 0);
+    random.setScale(0.2, 0.2, 0.2);
+    random.setIsComponent(true);
+    random.setParent(&player);
+    random.setMesh("res/models/test.txt");
+    random.createShader("res/shaders/b.vert", "res/shaders/pgun.frag");
+    random.getShader()->addTexture("res/models/v_portalgun.png");
+    random.getShader()->addTexture("res/models/v_portalgun_s.jpg");
 
     SceneMeshObject* sp[4] = { 0 };
     for (int i = 0; i < 4; i++) {
         sp[i] = new SceneMeshObject(&model1);
         sp[i]->setPosition(1 + (2 * i), 1, 1);
-        sp[i]->createShader("res/shaders/b.vert", "res/shaders/toon_shader.frag");
+        sp[i]->createShader("res/shaders/b.vert", "res/shaders/pbr.frag");
         sp[i]->getShader()->addTexture("res/models/PreviewSphere" + to_string(i) + "_Sphere_BaseColor.png");
         sp[i]->getShader()->addTexture("res/models/PreviewSphere" + to_string(i) + "_Sphere_Normal.png");
         sp[i]->getShader()->addTexture("res/models/PreviewSphere" + to_string(i) + "_Sphere_OcclusionRoughnessMetallic.png");
@@ -189,45 +260,58 @@ int main(void)
     while (!window.isWindowClosing())
     {
         window.getMousePos(cmpos);
-        updateCameraAngle(cmpos, lmpos, &cam);
-        keyInput(&window, &cam);
-        if (cam.getPosition().z <= -10) {
-            cam.setPosition(cam.getPosition().x - 5, cam.getPosition().y - 5, -1 * cam.getPosition().z);
+        keyInput(&window, &random, &cam);
+        updateCameraAngle(cmpos, lmpos, &player, &cam);
+        /*if (cam.getPosition().z <= -10) {
+            cam.setPosition(cam.getPosition().x - 5, cam.getPosition().y - 5, 10 + cam.getPosition().z + 10);
         }
+
+        if (cam.getPosition().z >= 10) {
+            cam.setPosition(5 + cam.getPosition().x, 5 + cam.getPosition().y, -10 + (cam.getPosition().z - 10));
+        }*/
+        //cout << cam.getPosition().x << ' ' << cam.getPosition().y << ' ' << cam.getPosition().z << endl;
         
         lmpos[0] = cmpos[0];
         lmpos[1] = cmpos[1];
 
-        float campos[3]; 
-        cam.getPosition(campos);
-
-        glm::vec3 diff = (cam.getPosition() - glm::vec3(5, 5, -10));
-        pcam.setPosition(diff.x, diff.y, diff.z + 10);
-        pcam.setRotation(cam.getYaw(), cam.getPitch());
-        float campos1[3];
-        pcam.getPosition(campos1);
-
         //make camera go back behind the portal
         //uvs with the world transforms
-        glm::mat4 v = cam.getTransMat();
-        glm::mat4 vp = pcam.getTransMat();
 
- 
+        /*glm::vec3 diff = (cam.getPosition() - glm::vec3(5, 5, -10));
+        pcam.setPosition(diff.x, diff.y, diff.z + 10);
+        pcam.setRotation(cam.getYaw(), cam.getPitch());
+
         fb1.bind();
         fb1.clear();
         for (int i = 0; i < 4; i++) {
             sp[i]->render(&pcam);
         }
+        random.render(&pcam);
         fb.bind();
         fb.clear();
+        portala.render(&cam);
+
+        diff = (cam.getPosition() - glm::vec3(0, 0, 10));
+        pcam.setPosition(diff.x + 5, diff.y + 5, diff.z - 10);
+        pcam.setRotation(cam.getYaw(), cam.getPitch());
+
+        fb1.bind();
+        fb1.clear();
+        for (int i = 0; i < 4; i++) {
+            sp[i]->render(&pcam);
+        }
+        random.render(&pcam);
+        fb.bind();
+        portalb.render(&cam);*/
         for (int i = 0; i < 4; i++) {
             sp[i]->render(&cam);
         }
-        portalo.render(&cam);
-        fb.unbind();
-        screenquad.bind();
-        postprocess.bindShaderProgram();
-        glDrawElements(GL_TRIANGLES, screenquad.getIndexCount(), GL_UNSIGNED_INT, (void*)0);
+        //cout << random.getPosition().x << ' ' << random.getPosition().y << ' ' << random.getPosition().z << endl;
+        random.render(&cam);
+        //fb.unbind();
+        //screenquad.bind();
+        //postprocess.bindShaderProgram();
+        //glDrawElements(GL_TRIANGLES, screenquad.getIndexCount(), GL_UNSIGNED_INT, (void*)0);
 
         window.prepareForNextFrame();
     }
