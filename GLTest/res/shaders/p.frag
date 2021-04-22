@@ -1,7 +1,7 @@
 #version 330 core
 
 layout(location = 0) out vec4 color;
-in vec4 gl_FragCoord;\
+in vec4 gl_FragCoord;
 in vec2 UV;
 layout(binding=0)uniform sampler2D t1;
 layout(binding=1)uniform sampler2D t2;

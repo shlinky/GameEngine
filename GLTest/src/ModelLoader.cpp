@@ -120,7 +120,7 @@ float** loadModelFromOBJ(string fname, int* vCount, int groups, bool tangents) {
 			if (bottom == 0) {
 				bottom = 1e-8;
 			}
-			glm::vec3 tangent = top / bottom;
+			glm::vec3 tangent = normalize(top / bottom);
 
 			for (int i = 0; i < 3; i++) {
 				for (int f = 0; f < 3; f++) {

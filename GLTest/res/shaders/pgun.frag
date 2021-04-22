@@ -76,7 +76,8 @@ void main() {
 	vec3 radiance = vec3(1, 1, 1) * 1;
 	vec3 c = normalize(camera_position - pos_raw.xyz);
 	vec3 h = normalize(c + l);
-	float rough = 1 - vec3(texture(r, UV)).y;
+	//1 - vec3(texture(r, UV)).y
+	float rough = 0.3;
 	vec3 base_color = vec3(texture(colorTex, UV));
 
 	vec3 F0 = vec3(0.03); 

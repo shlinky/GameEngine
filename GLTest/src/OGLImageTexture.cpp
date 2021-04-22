@@ -1,5 +1,7 @@
 #define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
 #include <STB/stb_image.h>
+#include <STB/stb_image_write.h>
 #include "OGLImageTexture.h"
 
 //create a read and save function
@@ -23,11 +25,11 @@ OGLImageTexture::OGLImageTexture(string textPath)
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-OGLImageTexture::OGLImageTexture(unsigned int id)
+OGLImageTexture::OGLImageTexture(unsigned int id, int width, int height)
 {
 	textureId = id;
-	width = NULL;
-	height = NULL;
+	this->width = width;
+	this->height = height;
 }
 
 OGLImageTexture::OGLImageTexture(int width, int height, int textureFormat)
@@ -42,6 +44,7 @@ OGLImageTexture::OGLImageTexture(int width, int height, int textureFormat)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glTexImage2D(GL_TEXTURE_2D, 0, textureFormat, width, height, 0, textureFormat, GL_UNSIGNED_BYTE, NULL);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 OGLImageTexture::OGLImageTexture()
@@ -82,12 +85,32 @@ void OGLImageTexture::loadTexture(string textPath, int* width, int* height, unsi
 	int _random;
 	*img = stbi_load(textPath.c_str(), width, height, &_random, 0);
 
-	if (img == NULL) {
+	if ((img == NULL) || (width == 0)) {
 		applicationErrorCallback("Texture path not existant");
 	}
 }
 
-void OGLImageTexture::freeTexture(unsigned char* img)
+void OGLImageTexture::loadTextureHDR(string textPath, int* width, int* height, float** img)
+{
+	int _random;
+	//stbi_set_flip_vertically_on_load(true);
+	*img = stbi_loadf(textPath.c_str(), width, height, &_random, 0);
+	stbi_set_flip_vertically_on_load(false);
+
+	if ((img == NULL) || (width == 0)) {
+		applicationErrorCallback("Texture path not existant");
+	}
+}
+
+void OGLImageTexture::saveTexture(string path, int w, int h, unsigned char* data)
+{
+	int result = stbi_write_jpg(path.c_str(), w, h, 3, data, 60);
+	if (!result) {
+		applicationErrorCallback("Texture save path not existant");
+	}
+}
+
+void OGLImageTexture::freeTexture(void* img)
 {
 	stbi_image_free(img);
 }

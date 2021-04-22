@@ -27,6 +27,7 @@ inline void GLAPIENTRY errorCallback(GLenum source,
 inline void applicationErrorCallback(const string message) {
     //cout << "message" << endl;
 #ifdef DEBUG
+    cout << endl;
     cout << "Application Error: " << endl;
     cout << message << endl;
 #ifdef USING_MICROSOFT_BRKPTS 

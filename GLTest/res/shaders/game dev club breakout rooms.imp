@@ -1,0 +1,66 @@
+game dev club breakout rooms
+separate objects
+sharp autosmooth creases (uvs)
+circles and connecting on flat faces (looptools)
+
+conform edge to shape
+
+cast modifier
+
+select by different things
+
+knife e and c
+
+proportional editing
+
+baking
+-high resolution
+-average normals for sharp edge low poly
+-make sure curvature matches as much as possible
+
+bevel
+
+shrinkwrap modifier
+
+array modifier
+
+solidify
+
+bevel modifier
+
+shrink wrap is key to curved hard surface details
+
+alt s for shrink fatten
+
+alt e for extrude along normals	
+
+SET FLOW 
+
+set flow is falster than shrinkwrap but doesnt always work
+
+only ngons on flat surfaces
+
+use support loops when possible
+
+sekect flat faces
+
+scale (x/y/z) to flatten faces or verts or edges
+
+select sharp edges 
+-also good for uvs
+
+creases only when u want completely sharp edges because doesnt add curvature
+bevel for curvature (relatively large)
+
+select sharp edges + bevel for getting smooth edges (sometimes supporting loops to sttop wierd shading]
+bridge edge loops
+
+recalculate normals for good bevelling (remember bevel always works even on ngons)
+
+break based on concave
+
+TRIS rather than large ngons on surface (connect as manyu things as possible)
+miter outer arc
+
+cover rope physics and ui
+and then give assignments

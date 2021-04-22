@@ -8,7 +8,7 @@ class OGLImageTexture
 {
 public:
 	OGLImageTexture(string textPath);
-	OGLImageTexture(unsigned int id);
+	OGLImageTexture(unsigned int id, int width = NULL, int height = NULL);
 	OGLImageTexture(int width, int height, int textureFormat = GL_RGB);
 	OGLImageTexture();
 	~OGLImageTexture();
@@ -19,7 +19,9 @@ public:
 protected:
 	unsigned int textureId;
 	void loadTexture(string textPath, int* width, int* height, unsigned char** img);
-	void freeTexture(unsigned char* img);
+	void freeTexture(void* img);
+	void loadTextureHDR(string textPath, int* width, int* height, float** img);
+	void saveTexture(string path, int w, int h, unsigned char* data);
 	int width;
 	int height;
 };

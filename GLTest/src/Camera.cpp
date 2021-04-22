@@ -5,7 +5,7 @@
 //get bacl glm types
 //changed winsize from pointers to non
 
-//change this constructor into glm::vec3
+//change this constructor into glm::vec3 (maybe get rid of)
 Camera::Camera(int winsizex, int winsizey, float* pos)
 {
 	if (pos != NULL)
@@ -84,6 +84,20 @@ void Camera::lookAtDir(float x, float y, float z)
 {
 	forwardDir = glm::vec3(x, y, z);
 	rightDir = glm::cross(forwardDir, upDir);
+
+	//calculating angles
+	double leg = sqrt(pow(forwardDir.x, 2) + pow(forwardDir.z, 2));
+	camPitch = atan(forwardDir.y / leg);
+
+	camYaw = atan(forwardDir.x / forwardDir.z);
+
+	cout << abs((camPitch - glm::radians(90.0f))) << endl;
+	if (abs((abs(camPitch) - glm::radians(90.0f))) < 0.1) {
+		upDir = glm::vec3(0, 0, 1);
+	}
+	else {
+		upDir = glm::vec3(0, 1, 0);
+	}
 }
 
 float Camera::getYaw()
@@ -207,4 +221,9 @@ void Camera::setPitchLimits(float min, float max)
 {
 	pitchLim[0] = glm::radians(min);
 	pitchLim[1] = glm::radians(max);
+}
+
+void Camera::setFOV(float fov)
+{
+	projMat = glm::perspective<float>(glm::radians(fov), (float)winsizex / winsizey, 0.1f, 1000.f);
 }

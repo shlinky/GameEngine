@@ -71,6 +71,7 @@ OGLVertexObject* SceneMeshObject::getMesh()
 	return mesh;
 }
 
+//with framebuffer
 void SceneMeshObject::render(Camera* cam)
 {
 	//creating mvp matrix

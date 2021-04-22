@@ -23,6 +23,7 @@
 #include <glm/gtx/transform.hpp>
 
 #include "SceneMeshObject.h"
+#include "HDRCubeMap.h"
 using namespace std;
 
 //add scenemesh class
@@ -56,13 +57,13 @@ using namespace std;
 //ui through imgui
 
 //all sceneobjects have a tick function
-//all sceneobjects have a component array that can be filled with other sceneobjects (COMPONENT MATH) (relative positions)
+//all sceneobjects have a component array (childComponents) that can be filled with other sceneobjects (COMPONENT MATH) (relative positions)
+//sceneobject has a function create component where it is added to the scene and to the component array
 //and have renderable property
 //and have pointer to scene
 //rendering pipeline like shadows and such is done in scene calss
 //make renderablesceneobject class which mesh derives from and particle and other such things
 //renderable scene object has hidden property and and render function and lit property and a shader
-//also in render they render all components this is implemented in original render function and all overloaded (derived) render function call the original
 //possibly every renderable scene object gets a setRenderFrameBuffer function
 //SCENE OBECTS CAN HAVE CAMERAS AND other objects in them (components)
 //but also add it to the scene during construction (for lights and others) (all components)
@@ -73,6 +74,8 @@ using namespace std;
 //scene has a main fb for post processing and ppl can access the textures and the buffer
 //scene has a render function with cam param and not
 //a variable for whethered its deffered rendering or not
+
+//displacement mapping
 float lightPosition[3] = {
     1.0f,
     2.0f,
@@ -117,6 +120,12 @@ void keyInput(WindowsWindowing* w, SceneMeshObject* g, Camera* c) {
         c->moveRight(0.5);
     if (w->isKeyPressed(GLFW_KEY_SPACE))
         c->moveUp(0.5);
+    if (w->isMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
+        cout << "pressed" << endl;
+    }
+    if (w->isMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT)) {
+        cout << "dpressed" << endl;
+    }
     //glm::vec3 d = c->getPosition() - oc;
     //glm::vec3 npos = (p + d);
     //cout << npos.x << ' ' << npos.y << ' ' << npos.z << endl;
@@ -132,27 +141,14 @@ void updateCameraAngle(double* cPos, double* lPos, SceneObject* g, Camera* c) {
     c->rotateYaw(dX);
     c->rotatePitch(dY);
     c->computeVectors();
+    
 
-    //component rotation math with rel pos
     float yaw = c->getYaw();
     float ptch = c->getPitch();
 
-    //glm::vec3 newrot = SceneObject::Rotate(glm::vec3(180, 0, 0), glm::vec3(-90 - yaw, -ptch, 0));
-    //g->setRotation(0, 0, 0);
-    //cout << glm::to_string(newrot) << endl;
-   // glm::vec3 rightdir = glm::cross(glm::float32(-1) * c->getForwardDir(), glm::vec3(0, 1, 0));
-    //glm::mat3 rot = glm::mat3(-rightdir, glm::cross(rightdir, glm::float32(-1) * c->getForwardDir()), glm::float32(-1) * c->getForwardDir());
-    //glm::vec3 newpos;
-    //newpos = rot * glm::vec3(0.2, -0.25, -2);
-    //cout << glm::to_string(newpos) << endl;
-    //cout << glm::to_string(rot) << endl;
-    //newpos = newpos + c->getPosition();
-    //g->setPosition(newpos.x, newpos.y, newpos.z);
     glm::vec3 cpos = c->getPosition();
     g->setPosition(cpos.x, cpos.y, cpos.z);
-    cout << "bob " << 90 + yaw << endl;
     g->setRotation(-90 - yaw, ptch, 0);
-
 }
 
 float screenvp[12] = {
@@ -240,8 +236,18 @@ int main(void)
     random.getShader()->addTexture("res/models/v_portalgun.png");
     random.getShader()->addTexture("res/models/v_portalgun_s.jpg");
 
-    SceneMeshObject* sp[4] = { 0 };
-    for (int i = 0; i < 4; i++) {
+    SceneMeshObject speak = SceneMeshObject(0.45, -0.2, -2.3);
+    speak.setRotation(180, 0, 0);
+    speak.setScale(0.1, 0.1, 0.1);
+    speak.setMesh("res/models/speak.txt");
+    speak.createShader("res/shaders/b.vert", "res/shaders/pbr_simp.frag");
+
+    //speak.getShader()->addTexture("res/models/PreviewSphere" + to_string(i) + "_Sphere_BaseColor.png");
+    //speak.getShader()->addTexture("res/models/PreviewSphere" + to_string(i) + "_Sphere_Normal.png");
+    //speak.getShader()->addTexture("res/models/PreviewSphere" + to_string(i) + "_Sphere_OcclusionRoughnessMetallic.png");
+
+    SceneMeshObject* sp[5] = { 0 };
+    for (int i = 0; i < 5; i++) {
         sp[i] = new SceneMeshObject(&model1);
         sp[i]->setPosition(1 + (2 * i), 1, 1);
         sp[i]->createShader("res/shaders/b.vert", "res/shaders/pbr.frag");
@@ -249,6 +255,9 @@ int main(void)
         sp[i]->getShader()->addTexture("res/models/PreviewSphere" + to_string(i) + "_Sphere_Normal.png");
         sp[i]->getShader()->addTexture("res/models/PreviewSphere" + to_string(i) + "_Sphere_OcclusionRoughnessMetallic.png");
     }
+
+    HDRCubeMap hdr = HDRCubeMap("res/shaders/bob.hdr", 512);
+    hdr.save("wierdgear");
 
     double lmpos[2] = {};
     double cmpos[2] = {};
@@ -303,11 +312,12 @@ int main(void)
         random.render(&pcam);
         fb.bind();
         portalb.render(&cam);*/
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 5; i++) {
             sp[i]->render(&cam);
         }
         //cout << random.getPosition().x << ' ' << random.getPosition().y << ' ' << random.getPosition().z << endl;
         random.render(&cam);
+        //speak.render(&cam);
         //fb.unbind();
         //screenquad.bind();
         //postprocess.bindShaderProgram();
@@ -325,6 +335,7 @@ int main(void)
         //shaderpc.updateUniformData("coolbeans", &mvpc);
 
         //make a render function in env cube class
+        //env cube is a renderable scene object
         //bind and render function in scene objects; render calls bind
         /**glDepthMask(GL_FALSE);
         envcube.bind();

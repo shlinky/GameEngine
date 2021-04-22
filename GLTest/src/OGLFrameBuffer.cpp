@@ -12,6 +12,11 @@ OGLFrameBuffer::OGLFrameBuffer()
 
 	width = 0;
 	height = 0;
+
+	int vdims[4];
+	glGetIntegerv(GL_VIEWPORT, vdims);
+	defWidth = vdims[2];
+	defHeight = vdims[3];
 }
 
 OGLFrameBuffer::~OGLFrameBuffer()
@@ -23,6 +28,20 @@ void OGLFrameBuffer::attachColorTexture(OGLImageTexture* text)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, fbid);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + numColorTextures, GL_TEXTURE_2D, text->getId(), 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	numColorTextures++;
+
+	if (width == 0) {
+		width = text->getWidth();
+		height = text->getHeight();
+	}
+}
+
+void OGLFrameBuffer::attachColorTextureCM(OGLCubeMapTexture* text, int face)
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, fbid);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + numColorTextures, GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, text->getId(), 0);
+	//cout << "damn some" << text->getId() << ' ' << text->getWidth() <<  endl;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	numColorTextures++;
 
@@ -59,15 +78,24 @@ void OGLFrameBuffer::bind()
 	if (!depth_assigned) {
 		createDepthStencilRenderBuffer();
 	}
+	glViewport(0, 0, width, height);
 	glBindFramebuffer(GL_FRAMEBUFFER, fbid);
 }
 
 void OGLFrameBuffer::unbind()
 {
+	if (defWidth > 0) {
+		glViewport(0, 0, defWidth, defHeight);
+	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void OGLFrameBuffer::clear()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void OGLFrameBuffer::resetColorTextures()
+{
+	numColorTextures = 0;
 }

@@ -18,8 +18,10 @@ public:
 	//build input class on top of all hardware specific classes
 	void getMousePos(double* mPos);
 	//make static
+	//callback input
 	void setKeyPress(GLFWkeyfun K);
 	bool isKeyPressed(int key);
+	bool isMouseButtonPressed(int mouseButton);
 private:
 	GLFWwindow* window;
 	int sizex;

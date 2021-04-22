@@ -28,6 +28,7 @@ public:
 	void setSensitivity(float s);
 	void setYawLimits(float min, float max);
 	void setPitchLimits(float min, float max);
+	void setFOV(float fov);
 
 	void getPosition(float* pos);
 	glm::vec3 getPosition();

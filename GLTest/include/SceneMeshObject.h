@@ -2,6 +2,7 @@
 #include "SceneObject.h"
 
 //hidden objects
+//inherits from renderable scene object
 class SceneMeshObject :
 	public SceneObject
 {

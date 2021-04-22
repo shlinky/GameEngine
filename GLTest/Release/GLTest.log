@@ -1,17 +1,19 @@
 ﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(459,5): warning MSB8028: The intermediate directory (Release\) contains files shared from another project (GLTest.vcxproj).  This can lead to incorrect clean and rebuild behavior.
   window.cpp
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(132,18): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(133,20): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(141,18): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(142,20): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(186,28): warning C4305: 'argument': truncation from 'double' to 'float'
 C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(190,28): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(194,28): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(233,62): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(235,34): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(246,30): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(229,62): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(231,34): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(239,61): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(241,33): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(252,30): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
 LINK : warning LNK4098: defaultlib 'LIBCMT' conflicts with use of other libs; use /NODEFAULTLIB:library
   Generating code
-  1 of 828 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
+  0 of 871 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    9 functions had inline decision re-evaluated but remain unchanged
+    0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
 LINK : warning LNK4286: symbol '___glewActiveTexture' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLCubeMapTexture.obj'
 LINK : warning LNK4286: symbol '___glewGenRenderbuffers' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLFrameBuffer.obj'
@@ -23,8 +25,6 @@ LINK : warning LNK4286: symbol '___glewDeleteFramebuffers' defined in 'glew32s.l
 LINK : warning LNK4286: symbol '___glewRenderbufferStorage' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLFrameBuffer.obj'
 LINK : warning LNK4286: symbol '___glewFramebufferTexture2D' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLFrameBuffer.obj'
 LINK : warning LNK4286: symbol '___glewGenerateMipmap' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLImageTexture.obj'
-LINK : warning LNK4286: symbol '___glewLinkProgram' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLShaderProgram.obj'
-LINK : warning LNK4286: symbol '___glewDeleteShader' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLShaderProgram.obj'
 LINK : warning LNK4286: symbol '___glewShaderSource' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLShaderProgram.obj'
 LINK : warning LNK4286: symbol '___glewDeleteProgram' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLShaderProgram.obj'
 LINK : warning LNK4286: symbol '___glewAttachShader' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLShaderProgram.obj'
@@ -35,6 +35,8 @@ LINK : warning LNK4286: symbol '___glewCreateShader' defined in 'glew32s.lib(gle
 LINK : warning LNK4286: symbol '___glewCompileShader' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLShaderProgram.obj'
 LINK : warning LNK4286: symbol '___glewGetShaderiv' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLShaderProgram.obj'
 LINK : warning LNK4286: symbol '___glewUseProgram' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLShaderProgram.obj'
+LINK : warning LNK4286: symbol '___glewLinkProgram' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLShaderProgram.obj'
+LINK : warning LNK4286: symbol '___glewDeleteShader' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLShaderProgram.obj'
 LINK : warning LNK4286: symbol '___glewUniform3fv' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLUniforms.obj'
 LINK : warning LNK4286: symbol '___glewUniformMatrix4fv' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLUniforms.obj'
 LINK : warning LNK4286: symbol '___glewGetUniformLocation' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLUniforms.obj'

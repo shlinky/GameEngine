@@ -100,3 +100,13 @@ bool WindowsWindowing::isKeyPressed(int key)
 {
     return glfwGetKey(window, key);
 }
+
+bool WindowsWindowing::isMouseButtonPressed(int mouseButton)
+{
+    int state = glfwGetMouseButton(window, mouseButton);
+    if (state == GLFW_PRESS)
+    {
+        return (true);
+    }
+    return (false);
+}
