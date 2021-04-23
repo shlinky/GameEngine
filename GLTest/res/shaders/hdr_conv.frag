@@ -14,10 +14,15 @@ vec2 SampleSphericalMap(vec3 v)
     return uv;
 }
 
+vec3 display_world_vector(vec3 v) {
+	return vec3((v[0] + 1) / 2, (v[1] + 1) / 2, (v[2] + 1) / 2);
+}
+
 void main()
 {		
     vec2 uv = SampleSphericalMap(normalize(pos_raw.xyz)); // make sure to normalize localPos
     vec3 colorr = texture(equirectangularMap, uv).rgb;
     
-    color = vec4(colorr * 100,  1.0);
+    //display_world_vector(normalize(pos_raw.xyz))
+    color = vec4(colorr, 1.0);
 }

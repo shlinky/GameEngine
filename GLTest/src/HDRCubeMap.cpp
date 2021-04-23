@@ -123,7 +123,7 @@ HDRCubeMap* HDRCubeMap::createIrradianceMap()
 {
     SceneMeshObject cube = SceneMeshObject(0, 0, 0);
     cube.setMesh("res/models/cube.txt");
-    cube.createShader("res/shaders/irradiance.vert", "res/shaders/irradiance.frag");
+    cube.createShader("res/shaders/hdr_conv.vert", "res/shaders/irradiance.frag");
     cube.getShader()->addTexture(this);
 
     Camera cam = Camera(0, 0, 0, 1, 1);
@@ -149,4 +149,6 @@ HDRCubeMap* HDRCubeMap::createIrradianceMap()
         cube.render(&cam);
     }
     fb.unbind();
+
+    return (irMap);
 }

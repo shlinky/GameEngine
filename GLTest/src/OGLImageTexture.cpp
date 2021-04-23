@@ -93,7 +93,7 @@ void OGLImageTexture::loadTexture(string textPath, int* width, int* height, unsi
 void OGLImageTexture::loadTextureHDR(string textPath, int* width, int* height, float** img)
 {
 	int _random;
-	//stbi_set_flip_vertically_on_load(true);
+	stbi_set_flip_vertically_on_load(true);
 	*img = stbi_loadf(textPath.c_str(), width, height, &_random, 0);
 	stbi_set_flip_vertically_on_load(false);
 
@@ -104,6 +104,7 @@ void OGLImageTexture::loadTextureHDR(string textPath, int* width, int* height, f
 
 void OGLImageTexture::saveTexture(string path, int w, int h, unsigned char* data)
 {
+	stbi_flip_vertically_on_write(true);
 	int result = stbi_write_jpg(path.c_str(), w, h, 3, data, 60);
 	if (!result) {
 		applicationErrorCallback("Texture save path not existant");

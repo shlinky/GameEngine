@@ -257,7 +257,9 @@ int main(void)
     }
 
     HDRCubeMap hdr = HDRCubeMap("res/shaders/bob.hdr", 512);
-    hdr.save("wierdgear");
+    HDRCubeMap* irr = hdr.createIrradianceMap();
+    hdr.save("dumbgear");
+    irr->save("newgear");
 
     double lmpos[2] = {};
     double cmpos[2] = {};

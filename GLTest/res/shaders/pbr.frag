@@ -15,10 +15,10 @@ uniform vec3 light_position;
 uniform vec3 camera_position;
 float PI = 3.14159265;
 
-//uniform samplerCube skybox;
 layout(binding=0)uniform sampler2D colorTex;
 layout(binding=1)uniform sampler2D normalTex;
 layout(binding=2)uniform sampler2D ORM;
+layout(binding=3)uniform samplerCube skybox;
 
 vec3 display_world_vector(vec3 v) {
 	return vec3((v[0] + 1) / 2, (v[1] + 1) / 2, (v[2] + 1) / 2);
