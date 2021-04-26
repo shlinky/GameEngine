@@ -79,6 +79,10 @@ using namespace std;
 //displacement mapping
 
 //raindrop normal effect
+//obj groups
+//bunch of lights
+//rendering simplified scene
+//conserving vram with deleting and then re adding texts and other thingsw to gpu
 float lightPosition[3] = {
     1.0f,
     2.0f,
@@ -280,7 +284,7 @@ int main(void)
         sp[i]->getShader()->addTexture("res/models/PreviewSphere" + to_string(i) + "_Sphere_Normal.png");
         sp[i]->getShader()->addTexture("res/models/PreviewSphere" + to_string(i) + "_Sphere_OcclusionRoughnessMetallic.png");
         cout << "why done" << endl;
-        sp[i]->getShader()->addTexture(irr);
+        sp[i]->getShader()->addTexture(&hdr);
     }
 
     cout << "dumb start" << endl;

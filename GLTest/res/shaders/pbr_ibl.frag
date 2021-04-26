@@ -101,5 +101,5 @@ void main() {
 
 	//lightout = lightout + ambient;
 
-	color = vec4(texture(skybox, normals_final).rgb, 1);
+	color = vec4(texture(skybox, normals_final).rgb , 1);
 }    
