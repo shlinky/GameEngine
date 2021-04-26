@@ -12,6 +12,5 @@ public:
 	HDRCubeMap(int w);
 
 	void save(string fname);
-	HDRCubeMap* createIrradianceMap();
+	HDRCubeMap* createIrradianceMap(int w = 0);
 };
-

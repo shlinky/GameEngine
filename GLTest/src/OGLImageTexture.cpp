@@ -80,6 +80,27 @@ int OGLImageTexture::getHeight()
 	return height;
 }
 
+void OGLImageTexture::save(string path)
+{
+	bindTexture();
+	unsigned char* saveImg = new unsigned char[width * height * 3];
+	glPixelStorei(GL_PACK_ALIGNMENT, 1);
+	glGetTexImage(GL_TEXTURE_2D,
+		0,
+		GL_RGB,
+		GL_UNSIGNED_BYTE,
+		saveImg);
+
+	// for (int i = 0; i < 30; i++) {
+	//     cout << (int)saveImg[i] << endl;
+	// }
+
+	saveTexture(path, width, height, saveImg);
+	delete[] saveImg;
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 void OGLImageTexture::loadTexture(string textPath, int* width, int* height, unsigned char** img)
 {
 	int _random;

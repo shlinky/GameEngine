@@ -1,70 +1,12 @@
 ﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(459,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (GLTest.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-  Camera.cpp
-C:\Users\shloks\source\repos\GLTest\GLTest\src\Camera.cpp(73,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\shloks\source\repos\GLTest\GLTest\src\Camera.cpp(81,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\shloks\source\repos\GLTest\GLTest\src\Camera.cpp(89,9): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
-C:\Users\shloks\source\repos\GLTest\GLTest\src\Camera.cpp(94,9): warning C4244: 'return': conversion from 'double' to 'float', possible loss of data
-C:\Users\shloks\source\repos\GLTest\GLTest\src\Camera.cpp(160,29): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
-          with
-          [
-              T=float
-          ]
-C:\Users\shloks\source\repos\GLTest\GLTest\src\Camera.cpp(161,20): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
-          with
-          [
-              T=float
-          ]
-C:\Users\shloks\source\repos\GLTest\GLTest\src\Camera.cpp(162,29): warning C4244: '=': conversion from 'double' to 'T', possible loss of data
-          with
-          [
-              T=float
-          ]
-  ModelLoader.cpp
-C:\Users\shloks\source\repos\GLTest\GLTest\src\ModelLoader.cpp(31,20): warning C4018: '<': signed/unsigned mismatch
-  OGLImageTexture.cpp
-  OGLShaderProgram.cpp
-C:\Users\shloks\source\repos\GLTest\GLTest\src\OGLShaderProgram.cpp(84,16): warning C4244: 'initializing': conversion from 'std::streamoff' to 'int', possible loss of data
-  OGLTexturedShader.cpp
-  OGLUniforms.cpp
-  OGLVertexObject.cpp
   window.cpp
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(41,27): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(43,26): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(45,28): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(47,25): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(49,22): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(56,18): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(57,20): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(70,28): warning C4305: 'argument': truncation from 'double' to 'float'
-  WindowsWindowing.cpp
-  Generating Code...
-LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
-LINK : warning LNK4098: defaultlib 'LIBCMT' conflicts with use of other libs; use /NODEFAULTLIB:library
-LINK : warning LNK4286: symbol '___glewActiveTexture' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLImageTexture.obj'
-LINK : warning LNK4286: symbol '___glewAttachShader' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLShaderProgram.obj'
-LINK : warning LNK4286: symbol '___glewCompileShader' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLShaderProgram.obj'
-LINK : warning LNK4286: symbol '___glewCreateProgram' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLShaderProgram.obj'
-LINK : warning LNK4286: symbol '___glewCreateShader' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLShaderProgram.obj'
-LINK : warning LNK4286: symbol '___glewDeleteProgram' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLShaderProgram.obj'
-LINK : warning LNK4286: symbol '___glewDeleteShader' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLShaderProgram.obj'
-LINK : warning LNK4286: symbol '___glewGetShaderInfoLog' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLShaderProgram.obj'
-LINK : warning LNK4286: symbol '___glewGetShaderiv' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLShaderProgram.obj'
-LINK : warning LNK4286: symbol '___glewLinkProgram' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLShaderProgram.obj'
-LINK : warning LNK4286: symbol '___glewShaderSource' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLShaderProgram.obj'
-LINK : warning LNK4286: symbol '___glewUseProgram' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLShaderProgram.obj'
-LINK : warning LNK4286: symbol '___glewValidateProgram' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLShaderProgram.obj'
-LINK : warning LNK4286: symbol '___glewGetUniformLocation' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLUniforms.obj'
-LINK : warning LNK4286: symbol '___glewUniform3fv' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLUniforms.obj'
-LINK : warning LNK4286: symbol '___glewUniformMatrix4fv' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLUniforms.obj'
-LINK : warning LNK4286: symbol '___glewBindBuffer' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLVertexObject.obj'
-LINK : warning LNK4286: symbol '___glewBufferData' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLVertexObject.obj'
-LINK : warning LNK4286: symbol '___glewGenBuffers' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLVertexObject.obj'
-LINK : warning LNK4286: symbol '___glewEnableVertexAttribArray' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLVertexObject.obj'
-LINK : warning LNK4286: symbol '___glewVertexAttribPointer' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLVertexObject.obj'
-LINK : warning LNK4286: symbol '___glewBindVertexArray' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLVertexObject.obj'
-LINK : warning LNK4286: symbol '___glewDeleteVertexArrays' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLVertexObject.obj'
-LINK : warning LNK4286: symbol '___glewGenVertexArrays' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLVertexObject.obj'
-LINK : warning LNK4217: symbol '_glewInit@0' defined in 'glew32s.lib(glew.obj)' is imported by 'WindowsWindowing.obj' in function '"public: __thiscall WindowsWindowing::WindowsWindowing(int,int,class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >)" (??0WindowsWindowing@@QAE@HHV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z)'
-LINK : warning LNK4217: symbol '_glewGetErrorString@4' defined in 'glew32s.lib(glew.obj)' is imported by 'WindowsWindowing.obj' in function '"public: __thiscall WindowsWindowing::WindowsWindowing(int,int,class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >)" (??0WindowsWindowing@@QAE@HHV?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@@Z)'
-glew32s.lib(glew.obj) : warning LNK4099: PDB 'vc120.pdb' was not found with 'glew32s.lib(glew.obj)' or at 'C:\Users\shloks\source\repos\GLTest\Debug\vc120.pdb'; linking object as if no debug info
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(153,18): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(154,20): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(198,28): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(203,28): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(242,62): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(244,34): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(252,61): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(254,33): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(276,30): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
   GLTest.vcxproj -> C:\Users\shloks\source\repos\GLTest\Debug\Engine.exe

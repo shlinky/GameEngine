@@ -91,7 +91,7 @@ void Camera::lookAtDir(float x, float y, float z)
 
 	camYaw = atan(forwardDir.x / forwardDir.z);
 
-	cout << abs((camPitch - glm::radians(90.0f))) << endl;
+	//cout << abs((camPitch - glm::radians(90.0f))) << endl;
 	if (abs((abs(camPitch) - glm::radians(90.0f))) < 0.1) {
 		upDir = glm::vec3(0, 0, 1);
 	}
@@ -147,6 +147,11 @@ void Camera::setRotation(float yaw, float pitch)
 	this->camYaw = glm::radians(yaw);
 	this->camPitch = glm::radians(pitch);
 	computeVectors();
+}
+
+void Camera::setUpDir(float x, float y, float z)
+{
+	upDir = glm::vec3(x, y, z);
 }
 
 void Camera::getPosition(float* pos)

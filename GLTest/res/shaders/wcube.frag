@@ -7,11 +7,6 @@ in vec2 UV;
 vec3 l;
 vec3 c;
 float la = 1.6;
-uniform mat4 coolbeans;
-uniform vec3 light_color;
-uniform vec3 light_position;
-uniform vec3 camera_position;
-
 uniform samplerCube skybox;
 
 vec3 display_world_vector(vec3 v) {
@@ -19,5 +14,6 @@ vec3 display_world_vector(vec3 v) {
 }
 
 void main() {
+	// /texture(skybox, vec3(normalize(pos_raw)))
 	color = texture(skybox, vec3(pos_raw));
 }

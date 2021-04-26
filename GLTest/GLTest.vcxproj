@@ -148,6 +148,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\EnvCube.cpp" />
     <ClCompile Include="src\graphcalc.cpp" />
     <ClCompile Include="src\HDRCubeMap.cpp" />
     <ClCompile Include="src\OGLCubeMapTexture.cpp" />
@@ -171,6 +172,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Camera.h" />
+    <ClInclude Include="include\EnvCube.h" />
     <ClInclude Include="include\HDRCubeMap.h" />
     <ClInclude Include="include\ModelLoader.h" />
     <ClInclude Include="include\OGLCubeMapTexture.h" />

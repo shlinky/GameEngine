@@ -24,6 +24,7 @@
 
 #include "SceneMeshObject.h"
 #include "HDRCubeMap.h"
+#include "EnvCube.h"
 using namespace std;
 
 //add scenemesh class
@@ -76,6 +77,8 @@ using namespace std;
 //a variable for whethered its deffered rendering or not
 
 //displacement mapping
+
+//raindrop normal effect
 float lightPosition[3] = {
     1.0f,
     2.0f,
@@ -97,13 +100,22 @@ string cubeMapbadNames[6] = {
     "res/Storforsen3/negz.jpg"
 };
 
-string cubeMapNames[6] = {
+/*string cubeMapNames[6] = {
     "res/skybox1/skybox/right.jpg",
     "res/skybox1/skybox/left.jpg",
     "res/skybox1/skybox/top.jpg",
     "res/skybox1/skybox/bottom.jpg",
     "res/skybox1/skybox/front.jpg",
     "res/skybox1/skybox/back.jpg"
+};*/
+
+string cubeMapNames[6] = {
+    "newgear0.jpg",
+    "newgear1.jpg",
+    "newgear2.jpg",
+    "newgear3.jpg",
+    "newgear4.jpg",
+    "newgear5.jpg"
 };
 
 
@@ -185,6 +197,7 @@ int main(void)
     Camera cam(0.0f, 0.0f, 8.0f, sizex, sizey);
     cam.setSensitivity(0.05);
     cam.setPitchLimits(-87, 87);
+    cam.setRotation(0, 0);
 
     Camera pcam(0.0f, 0.0f, 10.0f, sizex, sizey);
     cam.setSensitivity(0.05);
@@ -246,21 +259,31 @@ int main(void)
     //speak.getShader()->addTexture("res/models/PreviewSphere" + to_string(i) + "_Sphere_Normal.png");
     //speak.getShader()->addTexture("res/models/PreviewSphere" + to_string(i) + "_Sphere_OcclusionRoughnessMetallic.png");
 
+    cout << "started1" << endl;
+
+    HDRCubeMap hdr = HDRCubeMap("res/shaders/bob.hdr", 2048);
+    HDRCubeMap* irr = hdr.createIrradianceMap(100);
+    //hdr.save("newgear");
+    //irr->save("newgear");
+    //OGLCubeMapTexture cmm(cubeMapbadNames);
+    EnvCube env = EnvCube(&hdr);
+
+    cout << "started0" << endl;
+
     SceneMeshObject* sp[5] = { 0 };
     for (int i = 0; i < 5; i++) {
         sp[i] = new SceneMeshObject(&model1);
         sp[i]->setPosition(1 + (2 * i), 1, 1);
-        sp[i]->createShader("res/shaders/b.vert", "res/shaders/pbr.frag");
+        sp[i]->createShader("res/shaders/b.vert", "res/shaders/pbr_ibl.frag");
+        cout << "cycle done" << endl;
         sp[i]->getShader()->addTexture("res/models/PreviewSphere" + to_string(i) + "_Sphere_BaseColor.png");
         sp[i]->getShader()->addTexture("res/models/PreviewSphere" + to_string(i) + "_Sphere_Normal.png");
         sp[i]->getShader()->addTexture("res/models/PreviewSphere" + to_string(i) + "_Sphere_OcclusionRoughnessMetallic.png");
+        cout << "why done" << endl;
+        sp[i]->getShader()->addTexture(irr);
     }
 
-    HDRCubeMap hdr = HDRCubeMap("res/shaders/bob.hdr", 512);
-    HDRCubeMap* irr = hdr.createIrradianceMap();
-    hdr.save("dumbgear");
-    irr->save("newgear");
-
+    cout << "dumb start" << endl;
     double lmpos[2] = {};
     double cmpos[2] = {};
 
@@ -270,6 +293,7 @@ int main(void)
     /* Loop until the user closes the window */
     while (!window.isWindowClosing())
     {
+        cout << "started" << endl;
         window.getMousePos(cmpos);
         keyInput(&window, &random, &cam);
         updateCameraAngle(cmpos, lmpos, &player, &cam);
@@ -314,11 +338,13 @@ int main(void)
         random.render(&pcam);
         fb.bind();
         portalb.render(&cam);*/
+        env.render(&cam);
         for (int i = 0; i < 5; i++) {
             sp[i]->render(&cam);
         }
         //cout << random.getPosition().x << ' ' << random.getPosition().y << ' ' << random.getPosition().z << endl;
         random.render(&cam);
+  
         //speak.render(&cam);
         //fb.unbind();
         //screenquad.bind();

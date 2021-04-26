@@ -16,6 +16,7 @@ public:
 	unsigned int getId();
 	int getWidth();
 	int getHeight();
+	void save(string path);
 protected:
 	unsigned int textureId;
 	void loadTexture(string textPath, int* width, int* height, unsigned char** img);

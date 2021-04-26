@@ -25,6 +25,7 @@ public:
 	void setPosition(float* pos);
 	void setPosition(float x, float y, float z);
 	void setRotation(float yaw, float pitch);
+	void setUpDir(float x, float y, float z);
 	void setSensitivity(float s);
 	void setYawLimits(float min, float max);
 	void setPitchLimits(float min, float max);

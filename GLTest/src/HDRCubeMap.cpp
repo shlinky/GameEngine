@@ -35,7 +35,7 @@ HDRCubeMap::HDRCubeMap(string path, int w)
 
     this->width = w;
     height = w;
-    cout << width << ' ' << height << endl;
+    cout << "her: " << width << ' ' << height << endl;
     for (unsigned int i = 0; i < 6; i++)
     {
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
@@ -49,16 +49,18 @@ HDRCubeMap::HDRCubeMap(string path, int w)
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
-    float renderViews[18] = { 1, 0, 0,
-                            -1, 0, 0,
-                             0, 1, 0,
-                             0,-1, 0,
-                             0, 0, 1,
-                             0, 0,-1 };
+    float renderViews[30] = {0,  0, 0, -1, 0,
+                            180,  0, 0, -1, 0,
+                              0, 90, 0, 0, 1,
+                              0,-90, 0, 0, -1,
+                              90,0, 0, -1, 0,
+                              -90, 0, 0, -1, 0};
+
 
     for (unsigned int i = 0; i < 6; i++)
     {
-        cam.lookAtDir(renderViews[3 * i], renderViews[(3 * i) + 1], renderViews[(3 * i) + 2]);
+        cam.setUpDir(renderViews[(5 * i) + 2], renderViews[(5 * i) + 3], renderViews[(5 * i) + 4]);
+        cam.setRotation(renderViews[5 * i], renderViews[(5 * i) + 1]);
         fb.resetColorTextures();
         fb.attachColorTextureCM(this, i);
         fb.bind();
@@ -119,8 +121,13 @@ void HDRCubeMap::save(string fname)
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 }
 
-HDRCubeMap* HDRCubeMap::createIrradianceMap()
+HDRCubeMap* HDRCubeMap::createIrradianceMap(int w)
 {
+    int irWidth = w;
+    if (w == 0) {
+        irWidth = width;
+    }
+
     SceneMeshObject cube = SceneMeshObject(0, 0, 0);
     cube.setMesh("res/models/cube.txt");
     cube.createShader("res/shaders/hdr_conv.vert", "res/shaders/irradiance.frag");
@@ -130,25 +137,48 @@ HDRCubeMap* HDRCubeMap::createIrradianceMap()
     cam.setFOV(90.0f);
     OGLFrameBuffer fb;
 
-    HDRCubeMap* irMap = new HDRCubeMap(width);
+    HDRCubeMap* irMap = new HDRCubeMap(irWidth);
 
-    float renderViews[18] = { 1, 0, 0,
-                            -1, 0, 0,
-                             0, 1, 0,
-                             0,-1, 0,
-                             0, 0, 1,
-                             0, 0,-1 };
+   float renderViews[30] = { 0,  0, 0, -1, 0,
+                            180,  0, 0, -1, 0,
+                              0, 90, 0, 0, 1,
+                              0,-90, 0, 0, -1,
+                              90,0, 0, -1, 0,
+                              -90, 0, 0, -1, 0 };
 
-    for (unsigned int i = 0; i < 6; i++)
+   for (unsigned int i = 0; i < 6; i++)
     {
-        cam.lookAtDir(renderViews[3 * i], renderViews[(3 * i) + 1], renderViews[(3 * i) + 2]);
+        //renderViews[3 * i], renderViews[(3 * i) + 1], renderViews[(3 * i) + 2]
+        cam.setUpDir(renderViews[(5 * i) + 2], renderViews[(5 * i) + 3], renderViews[(5 * i) + 4]);
+        cam.setRotation(renderViews[5 * i], renderViews[(5 * i) + 1]);
         fb.resetColorTextures();
         fb.attachColorTextureCM(irMap, i);
         fb.bind();
         fb.clear();
         cube.render(&cam);
+
     }
     fb.unbind();
 
     return (irMap);
 }
+
+
+/*HDRCubeMap temp(512);
+    OGLTexturedShader flips("res/shaders/fliperror.vert", "res/shaders/fliperror.frag", 0, 1);
+    flips.addTexture(&temp);
+    flips.addUniform<OGLUniform3FV>("face");
+    OGLVertexObject screenq = OGLVertexObject(4);
+    screenq.addAttribute(0, 3, screenvp);
+    screenq.addIndexing(screenindex, 6);*/
+
+
+/*fb.resetColorTextures();
+        fb.attachColorTextureCM(this, i);
+        fb.bind();
+        fb.clear();
+        screenq.bind();
+        int face[3] = { i, i, i };
+        flips.updateUniformData("face", &face);
+        flips.bindShaderProgram();
+        glDrawElements(GL_TRIANGLES, screenq.getIndexCount(), GL_UNSIGNED_INT, (void*)0);*/

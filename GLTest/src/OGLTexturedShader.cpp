@@ -19,6 +19,7 @@ void OGLTexturedShader::addTexture(string tName)
 	if (texturesAdded == numTextures) {
 		applicationErrorCallback("No more textures available, already added max amount");
 	}
+	//cout << "cool" << endl;
 	textures[texturesAdded] = new OGLImageTexture(tName);
 	texturesAdded++;
 }

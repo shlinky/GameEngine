@@ -66,7 +66,7 @@ void OGLVertexObject::addAttribute(int attribNum, int numItems, float* vbuffer)
 	glBindBuffer(GL_ARRAY_BUFFER, bufferids[numBuffers]);
 	glBufferData(GL_ARRAY_BUFFER, vertexCount * numItems * sizeof(float),  vbuffer, GL_STATIC_DRAW);
 
-	cout << attribNum << endl;
+	//cout << attribNum << endl;
 	glEnableVertexAttribArray(attribNum);
 	glVertexAttribPointer(attribNum, numItems, GL_FLOAT, GL_FALSE, 0, 0);
 	glBindVertexArray(0);

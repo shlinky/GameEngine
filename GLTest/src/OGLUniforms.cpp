@@ -24,3 +24,9 @@ void OGLUniform3FV::setUniformData(void* buffer)
 	glUniform3fv(uniformLocation, 1, (float*)(buffer));
 	data = buffer;
 }
+
+void OGLUniform1I::setUniformData(void* buffer)
+{
+	glUniform1i(uniformLocation, ((int*)buffer)[0]);
+	data = buffer;
+}

@@ -27,3 +27,9 @@ public:
 	using OGLUniform::OGLUniform;
 	void setUniformData(void* buffer);
 };
+
+class OGLUniform1I: public OGLUniform {
+public:
+	using OGLUniform::OGLUniform;
+	void setUniformData(void* buffer);
+};

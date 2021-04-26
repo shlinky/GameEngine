@@ -7,6 +7,7 @@ class OGLCubeMapTexture:
 public:
 	OGLCubeMapTexture();
 	OGLCubeMapTexture(string* texturePaths);
+	//OGLCubeMapTexture(int w);
 	void bindTexture(unsigned int textureSlot = 0);
 };
 
