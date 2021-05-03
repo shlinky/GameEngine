@@ -23,7 +23,6 @@
 #include <glm/gtx/transform.hpp>
 
 #include "SceneMeshObject.h"
-#include "HDRCubeMap.h"
 #include "EnvCube.h"
 using namespace std;
 
@@ -207,7 +206,7 @@ int main(void)
     cam.setSensitivity(0.05);
     cam.setPitchLimits(-87, 87);
 
-    OGLFrameBuffer fb;
+    /*OGLFrameBuffer fb;
     OGLImageTexture col(sizex, sizey);
     OGLImageTexture depth(sizex, sizey, GL_DEPTH_COMPONENT);
     fb.attachColorTexture(&col);
@@ -238,7 +237,7 @@ int main(void)
     SceneMeshObject portalb = SceneMeshObject(0, 0, 10);
     portalb.setMesh(&portal);
     portalb.setShader(portala.getShader());
-    portalb.setRotation(0, 0, 0);
+    portalb.setRotation(0, 0, 0);*/
     OGLVertexObject model1("res/models/gucci.txt", true);
 
     SceneObject player = SceneObject();
@@ -253,11 +252,32 @@ int main(void)
     random.getShader()->addTexture("res/models/v_portalgun.png");
     random.getShader()->addTexture("res/models/v_portalgun_s.jpg");
 
-    SceneMeshObject speak = SceneMeshObject(0.45, -0.2, -2.3);
+    OGLImageTexture brdff = OGLImageTexture(1024, 1024);
+    OGLFrameBuffer fb;
+    fb.attachColorTexture(&brdff);
+    fb.bind();
+    fb.clear();
+
+    OGLVertexObject screenquad = OGLVertexObject(4);
+    screenquad.addAttribute(0, 3, screenvp);
+    screenquad.addIndexing(screenindex, 6);
+    
+    OGLTexturedShader postprocess = OGLTexturedShader("res/shaders/pp.vert", "res/shaders/brdfm.frag", 0, 0);
+    
+    screenquad.bind();
+    postprocess.bindShaderProgram();
+    glDrawElements(GL_TRIANGLES, screenquad.getIndexCount(), GL_UNSIGNED_INT, (void*)0);
+    
+
+    brdff.save("brdfmmgood.jpg");
+
+    fb.unbind();
+    
+    /*SceneMeshObject speak = SceneMeshObject(0.45, -0.2, -2.3);
     speak.setRotation(180, 0, 0);
     speak.setScale(0.1, 0.1, 0.1);
     speak.setMesh("res/models/speak.txt");
-    speak.createShader("res/shaders/b.vert", "res/shaders/pbr_simp.frag");
+    speak.createShader("res/shaders/b.vert", "res/shaders/pbr_simp.frag");*/
 
     //speak.getShader()->addTexture("res/models/PreviewSphere" + to_string(i) + "_Sphere_BaseColor.png");
     //speak.getShader()->addTexture("res/models/PreviewSphere" + to_string(i) + "_Sphere_Normal.png");
@@ -265,12 +285,12 @@ int main(void)
 
     cout << "started1" << endl;
 
-    HDRCubeMap hdr = HDRCubeMap("res/shaders/bob.hdr", 2048);
-    HDRCubeMap* irr = hdr.createIrradianceMap(100);
+    OGLCubeMapTexture rr = OGLCubeMapTexture("res/shaders/bob3.hdr", 2048);
+    OGLCubeMapTexture* irr = rr.createIrradianceMap(100);
     //hdr.save("newgear");
     //irr->save("newgear");
     //OGLCubeMapTexture cmm(cubeMapbadNames);
-    EnvCube env = EnvCube(&hdr);
+    EnvCube env = EnvCube(&rr);
 
     cout << "started0" << endl;
 
@@ -278,15 +298,15 @@ int main(void)
     for (int i = 0; i < 5; i++) {
         sp[i] = new SceneMeshObject(&model1);
         sp[i]->setPosition(1 + (2 * i), 1, 1);
-        sp[i]->createShader("res/shaders/b.vert", "res/shaders/pbr_ibl.frag");
+        sp[i]->createShader("res/shaders/b.vert", "res/shaders/pbr_ibl.frag", 5, 5);
         cout << "cycle done" << endl;
         sp[i]->getShader()->addTexture("res/models/PreviewSphere" + to_string(i) + "_Sphere_BaseColor.png");
         sp[i]->getShader()->addTexture("res/models/PreviewSphere" + to_string(i) + "_Sphere_Normal.png");
         sp[i]->getShader()->addTexture("res/models/PreviewSphere" + to_string(i) + "_Sphere_OcclusionRoughnessMetallic.png");
         cout << "why done" << endl;
-        sp[i]->getShader()->addTexture(&hdr);
+        sp[i]->getShader()->addTexture(irr);
+        sp[i]->getShader()->addTexture(&brdff);
     }
-
     cout << "dumb start" << endl;
     double lmpos[2] = {};
     double cmpos[2] = {};
@@ -297,7 +317,7 @@ int main(void)
     /* Loop until the user closes the window */
     while (!window.isWindowClosing())
     {
-        cout << "started" << endl;
+        //cout << "started" << endl;
         window.getMousePos(cmpos);
         keyInput(&window, &random, &cam);
         updateCameraAngle(cmpos, lmpos, &player, &cam);

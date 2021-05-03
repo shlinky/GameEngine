@@ -1,4 +1,5 @@
 #pragma once
+
 #include "SceneObject.h"
 
 //hidden objects

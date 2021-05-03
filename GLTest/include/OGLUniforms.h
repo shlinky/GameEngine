@@ -33,3 +33,9 @@ public:
 	using OGLUniform::OGLUniform;
 	void setUniformData(void* buffer);
 };
+
+class OGLUniformFloat : public OGLUniform {
+public:
+	using OGLUniform::OGLUniform;
+	void setUniformData(void* buffer);
+};

@@ -1,4 +1,5 @@
 #pragma once
+
 #include <GL/glew.h>
 #include <iostream>
 #include "OGLImageTexture.h"
@@ -13,7 +14,7 @@ public:
 	void attachColorTexture(OGLImageTexture* text);
 	void createDepthStencilRenderBuffer();
 	void attachDepthTexture(OGLImageTexture* text);
-	void attachColorTextureCM(OGLCubeMapTexture* text, int face);
+	void attachColorTextureCM(OGLCubeMapTexture* text, int face, int mip = 0);
 	void bind();
 	void unbind();
 	void clear();

@@ -37,17 +37,17 @@ void OGLFrameBuffer::attachColorTexture(OGLImageTexture* text)
 	}
 }
 
-void OGLFrameBuffer::attachColorTextureCM(OGLCubeMapTexture* text, int face)
+void OGLFrameBuffer::attachColorTextureCM(OGLCubeMapTexture* text, int face, int mip)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, fbid);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + numColorTextures, GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, text->getId(), 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + numColorTextures, GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, text->getId(), mip);
 	//cout << "damn some" << text->getId() << ' ' << text->getWidth() <<  endl;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	numColorTextures++;
 
 	if (width == 0) {
-		width = text->getWidth();
-		height = text->getHeight();
+		width = text->getWidth() * std::pow(0.5, mip);
+		height = text->getHeight() * std::pow(0.5, mip);
 	}
 }
 
@@ -98,4 +98,6 @@ void OGLFrameBuffer::clear()
 void OGLFrameBuffer::resetColorTextures()
 {
 	numColorTextures = 0;
+	width = 0;
+	height = 0;
 }

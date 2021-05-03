@@ -19,6 +19,7 @@ layout(binding=0)uniform sampler2D colorTex;
 layout(binding=1)uniform sampler2D normalTex;
 layout(binding=2)uniform sampler2D ORM;
 layout(binding=3)uniform samplerCube skybox;
+layout(binding=4)uniform sampler2D bmap;
 
 vec3 display_world_vector(vec3 v) {
 	return vec3((v[0] + 1) / 2, (v[1] + 1) / 2, (v[2] + 1) / 2);
@@ -101,5 +102,5 @@ void main() {
 
 	//lightout = lightout + ambient;
 
-	color = vec4(texture(skybox, normals_final).rgb , 1);
+	color = vec4(lightout, 1);
 }    

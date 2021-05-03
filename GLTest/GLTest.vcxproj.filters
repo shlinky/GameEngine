@@ -60,9 +60,6 @@
     <ClCompile Include="src\PortalObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\HDRCubeMap.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\EnvCube.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -112,9 +109,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\PortalObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\HDRCubeMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\EnvCube.h">
