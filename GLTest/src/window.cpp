@@ -5,7 +5,6 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
-#define sDEBUG
 #include "OGLError.h"
 #include "OGLShaderProgram.h"
 #include "OGLVertexObject.h"
@@ -197,7 +196,7 @@ int main(void)
 
     int sizex = window.getSizeX();
     int sizey = window.getSizeY();
-    Camera cam(0.0f, 0.0f, 8.0f, sizex, sizey);
+    Camera cam(0.0f, 3.0f, 8.0f, sizex, sizey);
     cam.setSensitivity(0.05);
     cam.setPitchLimits(-87, 87);
     cam.setRotation(0, 0);
@@ -277,7 +276,7 @@ int main(void)
 
     OGLImageTexture brdff = OGLImageTexture("res/shaders/brdf.png");
 
-    OGLCubeMapTexture rr = OGLCubeMapTexture("res/shaders/bob2.hdr", 512);
+    OGLCubeMapTexture rr = OGLCubeMapTexture("res/shaders/bob.hdr", 512);
     OGLCubeMapTexture* irr = rr.createIrradianceMap(100);
     //irr->save("bob");
     //irr->save("gucc");
@@ -322,6 +321,29 @@ int main(void)
         sp[i]->getShader()->addTexture(spec);
         //sp[i]->getShader()->addTexture(&splash);
     }
+
+    SceneMeshObject floor = SceneMeshObject("res/models/floor.txt");
+    floor.createShader("res/shaders/b.vert", "res/shaders/pbr_mixed_tile.frag", 6, 8);
+    floor.setScale(200, 200, 200);
+    floor.getShader()->addTexture("res/models/plane_divided_DefaultMaterial_BaseColor.png");
+    floor.getShader()->addTexture("res/models/plane_divided_DefaultMaterial_Normal.png");
+    floor.getShader()->addTexture("res/models/plane_divided_DefaultMaterial_OcclusionRoughnessMetallic.png");
+    floor.getShader()->addTexture(irr);
+    floor.getShader()->addTexture(&brdff);
+    floor.getShader()->addTexture(spec);
+
+    SceneMeshObject knf = SceneMeshObject("res/models/knife.txt");
+    knf.createShader("res/shaders/b.vert", "res/shaders/pbr_mixed.frag", 6, 8);
+    knf.setPosition(-4, 0, 0);
+    knf.setScale(2, 2, 2);
+    knf.getShader()->addTexture("res/models/kcolor.png");
+    knf.getShader()->addTexture("res/models/knorm.png");
+    knf.getShader()->addTexture("res/models/korm.png");
+    knf.getShader()->addTexture(irr);
+    knf.getShader()->addTexture(&brdff);
+    knf.getShader()->addTexture(spec);
+
+
     double lmpos[2] = {};
     double cmpos[2] = {};
 
@@ -382,7 +404,8 @@ int main(void)
         }
         //cout << random.getPosition().x << ' ' << random.getPosition().y << ' ' << random.getPosition().z << endl;
         random.render(&cam);
-  
+        floor.render(&cam);
+        knf.render(&cam);
         //speak.render(&cam);
         //fb.unbind();
         //screenquad.bind();

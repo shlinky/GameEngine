@@ -1,8 +1,8 @@
 #pragma once
 #include <GL/glew.h>
 #include <iostream>
-//#define DEBUG
-//#define USING_MICROSOFT_BRKPTS
+#define DEBUG
+#define USING_MICROSOFT_BRKPTS
 
 using namespace std;
 
@@ -26,7 +26,7 @@ inline void GLAPIENTRY errorCallback(GLenum source,
 //replace with a macro
 inline void applicationErrorCallback(const string message) {
     //cout << "message" << endl;
-#ifdef sDEBUG
+#ifdef DEBUG
     cout << endl;
     cout << "Application Error: " << endl;
     cout << message << endl;
@@ -41,7 +41,7 @@ inline void applicationErrorCallback(const string message) {
 
 
 inline void startGLDebug() { 
-#ifdef sDEBUG
+#ifdef DEBUG
     glDebugMessageCallback(&errorCallback, nullptr);
 #endif 
 }

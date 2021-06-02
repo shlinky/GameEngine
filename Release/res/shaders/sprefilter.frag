@@ -96,7 +96,7 @@ void main()
     vec3 R = N;
     vec3 V = R;
 
-    const uint SAMPLE_COUNT = 4096;
+    const uint SAMPLE_COUNT = 20;
     float totalWeight = 0.0;   
     vec3 prefilteredColor = vec3(0.0);     
     for(uint i = 0u; i < SAMPLE_COUNT; ++i)
@@ -121,7 +121,6 @@ void main()
             totalWeight      += NdotL;
         }
     }
-    prefilteredColor = prefilteredColor / totalWeight;
-
+    prefilteredColor /= SAMPLE_COUNT;
     color = vec4(prefilteredColor, 1.0);
 }

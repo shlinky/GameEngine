@@ -22,6 +22,9 @@ public:
 	void setKeyPress(GLFWkeyfun K);
 	bool isKeyPressed(int key);
 	bool isMouseButtonPressed(int mouseButton);
+
+	float getTime();
+	void resetTime();
 private:
 	GLFWwindow* window;
 	int sizex;
