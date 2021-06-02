@@ -73,26 +73,22 @@ void main() {
 
 	vec3 nnorm = vec3(texture(normalTex, UV)) * 2 - 1;
 	vec3 normals_final = normalize(nnorm.x * tangents_raww + nnorm.y * bitangents_raw + nnorm.z * ngoodr);
-	//normals_final = ngoodr;
-	vec3 l = normalize(vec3(0, 0.2, 1));
-	float distance = 1;
-	vec3 radiance = vec3(1, 1, 1) * 1;
+	normals_final = ngoodr;
+
 	vec3 c = normalize(camera_position - pos_raw.xyz);
-	vec3 h = normalize(c + l);
 	float rough = vec3(texture(ORM, UV)).y;
-	float metal = vec3(texture(ORM, UV)).z;
+	float metal = 0;
 	vec3 base_color = vec3(texture(colorTex, UV));
 
 	vec3 F0 = vec3(0.03); 
 	F0 = mix(F0, base_color, metal);
-	vec3 f = fresnelSchlick(max(dot(normals_final, c), 0.0), F0);
-
+	vec3 f = fresnelSchlick(dot(normals_final, c), F0);
 	vec3 diffuse = (vec3(1.0) - f) * (1.0 - metal) * base_color / PI;
 
-	diffuse *= texture(skybox, normals_final).rgb * vec3(texture(ORM, UV)).x;
+	diffuse *= texture(skybox, normals_final).rgb;
 	//spec *= radiance * clamp(dot(l, normals_final), 0, 1);
 	vec3 R = reflect(-c, normals_final); 
-	//vec2 brdfm = texture(bmap, vec2(max(dot(normals_final, c), 0), rough)).xy; 
+	vec2 brdfm = texture(bmap, vec2(max(dot(normals_final, c), 0), rough)).xy; 
 	vec3 spec = textureLod(prespec, R,  rough * 4.0).rgb * f;
 
 	vec3 lightout = diffuse + spec;
@@ -100,5 +96,5 @@ void main() {
 	vec3 mapped = lightout / (lightout + vec3(1.0));
     mapped = pow(mapped, vec3(1.0 / 2.2));
 
-	color = vec4(mapped, 1);
+	color = vec4(lightout, 1);
 }    

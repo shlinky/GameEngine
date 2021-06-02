@@ -23,6 +23,7 @@ public:
 	OGLVertexObject* getMesh();
 
 	void render(Camera* cam);
+	void trender(Camera* cam);
 	void bind();
 private:
 	OGLVertexObject* mesh;

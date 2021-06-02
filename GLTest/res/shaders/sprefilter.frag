@@ -1,10 +1,12 @@
 #version 330 core
-
 layout(location = 0) out vec4 color;
-in vec2 UV;
-
-float PI = 3.141593;
-
+in vec4 pos_raw;
+in vec3 normals_raw;
+uniform samplerCube cm;
+uniform vec3 camera_position;
+uniform float r;
+float PI = 3.14159265;
+int STEPS = 100;
 vec3 display_world_vector(vec3 v) {
 	return vec3((v[0] + 1) / 2, (v[1] + 1) / 2, (v[2] + 1) / 2);
 }
@@ -15,11 +17,11 @@ float DistributionGGX(vec3 N, vec3 H, float roughness)
     float a2     = a*a;
     float NdotH  = max(dot(N, H), 0.0);
     float NdotH2 = NdotH*NdotH;
-	
+    
     float num   = a2;
     float denom = (NdotH2 * (a2 - 1.0) + 1.0);
     denom = PI * denom * denom;
-	
+    
     return num / denom;
 }
 
@@ -30,7 +32,7 @@ float GeometrySchlickGGX(float NdotV, float roughness)
 
     float num   = NdotV;
     float denom = NdotV * (1.0 - k) + k;
-	
+    
     return num / denom;
 }
 float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
@@ -39,7 +41,7 @@ float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
     float NdotL = max(dot(N, L), 0.0);
     float ggx2  = GeometrySchlickGGX(NdotV, roughness);
     float ggx1  = GeometrySchlickGGX(NdotL, roughness);
-	
+    
     return ggx1 * ggx2;
 }
 vec3 fresnelSchlick(float cosTheta, vec3 F0)
@@ -84,74 +86,41 @@ vec3 ImportanceSampleGGX(vec2 Xi, vec3 N, float roughness)
     return normalize(sampleVec);
 }  
 
-vec2 IntegrateBRDF(float NdotV, float roughness)
-{
-    vec3 V;
-    V.x = sqrt(1.0 - NdotV*NdotV);
-    V.y = 0.0;
-    V.z = NdotV;
 
-    float A = 0.0;
-    float B = 0.0;
+void main()
+{		
+    vec3 uv = normalize(pos_raw.xyz);
+    vec3 colorr = texture(cm, uv).rgb;
 
-    vec3 N = vec3(0.0, 0.0, 1.0);
+    vec3 N = uv;    
+    vec3 R = N;
+    vec3 V = R;
 
-    const uint SAMPLE_COUNT = 1024u;
+    const uint SAMPLE_COUNT = 20;
+    float totalWeight = 0.0;   
+    vec3 prefilteredColor = vec3(0.0);     
     for(uint i = 0u; i < SAMPLE_COUNT; ++i)
     {
         vec2 Xi = Hammersley(i, SAMPLE_COUNT);
-        vec3 H  = ImportanceSampleGGX(Xi, N, roughness);
+        vec3 H  = ImportanceSampleGGX(Xi, N, r);
         vec3 L  = normalize(2.0 * dot(V, H) * H - V);
 
-        float NdotL = max(L.z, 0.0);
-        float NdotH = max(H.z, 0.0);
-        float VdotH = max(dot(V, H), 0.0);
-
+        float NdotL = max(dot(N, L), 0.0);
         if(NdotL > 0.0)
         {
-            float G = GeometrySmith(N, V, L, roughness);
-            float G_Vis = (G * VdotH) / (NdotH * NdotV);
-            float Fc = pow(1.0 - VdotH, 5.0);
+            float D   = DistributionGGX(N, H, r);
+            float pdf = (D * dot(N, H) / (4.0 * dot(V, H))) + 0.0001; 
 
-            A += (1.0 - Fc) * G_Vis;
-            B += Fc * G_Vis;
+            float resolution = 100.0; // resolution of source cubemap (per face)
+            float saTexel  = 4.0 * PI / (6.0 * resolution * resolution);
+            float saSample = 1.0 / (float(SAMPLE_COUNT) * pdf + 0.0001);
+
+            float mipLevel = r == 0.0 ? 0.0 : 0.5 * log2(saSample / saTexel); 
+
+            prefilteredColor += texture(cm, L, mipLevel).rgb * NdotL;
+            totalWeight      += NdotL;
         }
     }
-    A /= float(SAMPLE_COUNT);
-    B /= float(SAMPLE_COUNT);
-    return vec2(A, B);
-}
-
-void main() {
-	float r = UV.x;
-	float ndotv = UV.y;
-
-	vec3 v = vec3(sqrt(1 - pow(ndotv, 2)), ndotv, 0);
-	vec2 integral = vec2(0, 0);
-
-    vec3 test = vec3(0, 0, 0);
-	float sampleDelta = 0.025;
-    float nrSamples = 0.0; 
-    for(float b = 0.0; b < 2.0 * PI; b += sampleDelta)
-    {
-        for(float a = 0.0; a < 0.5 * PI; a += sampleDelta)
-        {
-        	vec3 l = normalize(vec3(cos(a) * sin(b), sin(a), cos(a) * cos(b)));
-        	vec3 h = normalize(v + l);
-        	vec3 n = vec3(0, 1, 0);
-        	float e = DistributionGGX(n, h, r) * GeometrySmith(n, v, l, r);
-            e /= max((4 * clamp(dot(v, n), 0, 1) * clamp(dot(l, n), 0, 1)), 0.005);
-        	float e1 = e * (1 - pow(1 - dot(v, h), 5)) * sin(a);
-        	float e2 = e * pow(1 - dot(v, h), 5) * sin(a);
-        	test += h * sin(a);
-            integral += vec2(e1, e2);
-   			nrSamples += pow(e2, 0.3);
-        }
-    }
-    integral /= nrSamples;
-    test /= nrSamples;
-    color = vec4(integral, 0, 1);
-
-    // vec2 d = IntegrateBRDF(UV.y, UV.x);
-    // color = vec4(d.x, d.y, 0, 1);
+    prefilteredColor /= SAMPLE_COUNT;
+    color = vec4(prefilteredColor, 1.0);
 }

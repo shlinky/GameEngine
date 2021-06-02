@@ -85,17 +85,18 @@ void main() {
 
 	vec3 F0 = vec3(0.03); 
 	F0 = mix(F0, base_color, metal);
-	vec3 f = fresnelSchlick(max(dot(normals_final, c), 0.0), F0);
+	vec3 f = fresnelSchlick(max(dot(h, c), 0.0), F0);
 
+	vec3 DFG = DistributionGGX(normals_final, h, rough) * clamp(GeometrySmith(normals_final, c, l, rough), 0, 1) * f * vec3(1);
 	vec3 diffuse = (vec3(1.0) - f) * (1.0 - metal) * base_color / PI;
 
 	diffuse *= texture(skybox, normals_final).rgb * vec3(texture(ORM, UV)).x;
 	//spec *= radiance * clamp(dot(l, normals_final), 0, 1);
-	vec3 R = reflect(-c, normals_final); 
-	//vec2 brdfm = texture(bmap, vec2(max(dot(normals_final, c), 0), rough)).xy; 
-	vec3 spec = textureLod(prespec, R,  rough * 4.0).rgb * f;
+	vec3 R = reflect(-c, ngoodr); 
+	vec2 brdfm = texture(bmap, vec2(max(dot(ngoodr, c), 0), rough)).xy; 
+	vec3 spec = textureLod(prespec, R,  2).rgb;
 
-	vec3 lightout = diffuse + spec;
+	vec3 lightout = texture(skybox, ngoodr).rgb;
 
 	vec3 mapped = lightout / (lightout + vec3(1.0));
     mapped = pow(mapped, vec3(1.0 / 2.2));

@@ -73,27 +73,38 @@ void main() {
 
 	vec3 nnorm = vec3(texture(normalTex, UV)) * 2 - 1;
 	vec3 normals_final = normalize(nnorm.x * tangents_raww + nnorm.y * bitangents_raw + nnorm.z * ngoodr);
-	//normals_final = ngoodr;
-	vec3 l = normalize(vec3(0, 0.2, 1));
-	float distance = 1;
-	vec3 radiance = vec3(1, 1, 1) * 1;
+	normals_final = ngoodr;
+
 	vec3 c = normalize(camera_position - pos_raw.xyz);
-	vec3 h = normalize(c + l);
 	float rough = vec3(texture(ORM, UV)).y;
-	float metal = vec3(texture(ORM, UV)).z;
+	float metal = 0;
 	vec3 base_color = vec3(texture(colorTex, UV));
 
 	vec3 F0 = vec3(0.03); 
 	F0 = mix(F0, base_color, metal);
-	vec3 f = fresnelSchlick(max(dot(normals_final, c), 0.0), F0);
-
+	vec3 f = fresnelSchlick(dot(normals_final, c), F0);
 	vec3 diffuse = (vec3(1.0) - f) * (1.0 - metal) * base_color / PI;
 
-	diffuse *= texture(skybox, normals_final).rgb * vec3(texture(ORM, UV)).x;
+	diffuse *= texture(skybox, normals_final).rgb;
 	//spec *= radiance * clamp(dot(l, normals_final), 0, 1);
 	vec3 R = reflect(-c, normals_final); 
-	//vec2 brdfm = texture(bmap, vec2(max(dot(normals_final, c), 0), rough)).xy; 
+	vec2 brdfm = texture(bmap, vec2(max(dot(normals_final, c), 0), rough)).xy; 
 	vec3 spec = textureLod(prespec, R,  rough * 4.0).rgb * f;
+
+	
+
+	l = normalize(vec3(4, 0.5, 3) - pos_raw.xyz);
+	float distance = pow(pow((0 - pos_raw.x), 2) + pow((0.2 - pos_raw.y), 2) + pow((1 - pos_raw.z), 2), 0.2);
+	vec3 radiance = vec3(0, 10, 5) / pow(distance, 2);
+
+	vec3 h = normalize(c + l);
+	float cost = clamp(dot(l, normals_final), 0.01, 0.98);
+	vec3 DFG = DistributionGGX(normals_final, h, rough) * clamp(GeometrySmith(normals_final, c, l, rough), 0, 1) * f;
+	vec3 sp = DFG / max((4 * clamp(dot(c, normals_final), 0, 1) * clamp(dot(l, normals_final), 0, 1)), 0.005) * radiance * cost;
+	vec3 dp = (vec3(1.0) - f) * (1.0 - metal) * (base_color / PI) * radiance * cost;
+
+	diffuse = diffuse * (1 - (0.4 * cost)) + dp * 0.4 * cost;
+	spec = spec * 0.6 + sp * 0.4;
 
 	vec3 lightout = diffuse + spec;
 

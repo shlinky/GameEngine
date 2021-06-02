@@ -49,6 +49,7 @@ WindowsWindowing::WindowsWindowing(int sizex, int sizey, string title, bool full
     // Accept fragment if it closer to the camera than the former one
     glDepthFunc(GL_LESS);
     glEnable(GL_MULTISAMPLE);
+    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
     glfwSwapInterval(1);
 

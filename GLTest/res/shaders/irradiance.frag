@@ -37,13 +37,13 @@ void main()
  //    }
  //    integral = integral / (STEPS * STEPS);
 
- vec3 irradiance = vec3(0.0);  
+    vec3 irradiance = vec3(0.0);  
 
     vec3 up    = vec3(0.0, 1.0, 0.0);
     vec3 right = normalize(cross(up, uv));
     up         = normalize(cross(uv, right));
 
-    float sampleDelta = 0.025;
+    float sampleDelta = 0.008;
     float nrSamples = 0.0; 
     for(float b = 0.0; b < 2.0 * PI; b += sampleDelta)
     {
@@ -59,5 +59,5 @@ void main()
         }
     }
     irradiance = PI * irradiance * (1.0 / float(nrSamples));
-    color = vec4(irradiance * 1.5, 1.0);
+    color = vec4(irradiance, 1.0);
 }

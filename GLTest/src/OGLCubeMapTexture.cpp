@@ -1,6 +1,7 @@
 #include "OGLCubeMapTexture.h"
 #include "SceneMeshObject.h"
 #include "OGLFrameBuffer.h"
+#include <Windows.h>
 
 OGLCubeMapTexture::OGLCubeMapTexture()
 {
@@ -71,10 +72,10 @@ OGLCubeMapTexture::OGLCubeMapTexture(string path, int w)
     for (unsigned int i = 0; i < 6; i++)
     {
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-            0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr
+            0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, nullptr
         );
     }
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -101,6 +102,10 @@ OGLCubeMapTexture::OGLCubeMapTexture(string path, int w)
     }
     fb.unbind();
 
+    glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
+    glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
     //int p[2] = { 0 };
     //glGetTexLevelParameteriv(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_TEXTURE_WIDTH, p);
     //glGetTexLevelParameteriv(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_TEXTURE_HEIGHT, p + 1);
@@ -118,7 +123,7 @@ OGLCubeMapTexture::OGLCubeMapTexture(int w, bool mipmap)
     for (unsigned int i = 0; i < 6; i++)
     {
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-            0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr
+            0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, nullptr
         );
     }
     if (mipmap) {
@@ -196,7 +201,6 @@ OGLCubeMapTexture* OGLCubeMapTexture::createIrradianceMap(int w)
 
     }
     fb.unbind();
-
     return (irMap);
 }
 
@@ -226,20 +230,21 @@ OGLCubeMapTexture* OGLCubeMapTexture::createPrefilteredSpec(int w)
                              90,0, 0, -1, 0,
                              -90, 0, 0, -1, 0 };
 
-    for (unsigned int i = 0; i < 6; i++)
+    for (int m = 0; m < 5; m++)
     {
-        for (int f = 0; f < 5; f++) {
+        for (unsigned int f = 0; f < 6; f++) {
             //renderViews[3 * i], renderViews[(3 * i) + 1], renderViews[(3 * i) + 2]
-            cam.setUpDir(renderViews[(5 * i) + 2], renderViews[(5 * i) + 3], renderViews[(5 * i) + 4]);
-            cam.setRotation(renderViews[5 * i], renderViews[(5 * i) + 1]);
+            cam.setUpDir(renderViews[(5 * f) + 2], renderViews[(5 * f) + 3], renderViews[(5 * f) + 4]);
+            cam.setRotation(renderViews[5 * f], renderViews[(5 * f) + 1]);
             fb.resetColorTextures();
-            fb.attachColorTextureCM(sMap, f, i);
+            fb.attachColorTextureCM(sMap, f, m);
             fb.bind();
             fb.clear();
 
-            float roughness = ((float)i) / (float)(4);
+            float roughness = ((float)m) / (float)(4);
             cube.getShader()->updateUniformData("r", &roughness);
             cube.render(&cam);
+            cout << "pone" << endl;
         }
 
     }

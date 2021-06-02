@@ -20,6 +20,7 @@ layout(binding=1)uniform sampler2D normalTex;
 layout(binding=2)uniform sampler2D ORM;
 layout(binding=3)uniform samplerCube skybox;
 layout(binding=4)uniform sampler2D bmap;
+layout(binding=5)uniform samplerCube prespec;
 
 vec3 display_world_vector(vec3 v) {
 	return vec3((v[0] + 1) / 2, (v[1] + 1) / 2, (v[2] + 1) / 2);
@@ -84,23 +85,20 @@ void main() {
 
 	vec3 F0 = vec3(0.03); 
 	F0 = mix(F0, base_color, metal);
-	vec3 f = fresnelSchlick(max(dot(h, c), 0.0), F0);
+	vec3 f = fresnelSchlick(max(dot(normals_final, c), 0.0), F0);
 
-	vec3 DFG = DistributionGGX(normals_final, h, rough) * clamp(GeometrySmith(normals_final, c, l, rough), 0, 1) * f * vec3(1);
-	vec3 spec = DFG / max((4 * clamp(dot(c, normals_final), 0, 1) * clamp(dot(l, normals_final), 0, 1)), 0.005);
 	vec3 diffuse = (vec3(1.0) - f) * (1.0 - metal) * base_color / PI;
-	// vec3 BRDF = spec + diffuse;
-
-	// vec3 lightout = BRDF * radiance * clamp(dot(l, normals_final), 0, 1);
-	// vec3 ambient = vec3(0.1) * base_color * vec3(texture(ORM, UV)).x;
 
 	diffuse *= texture(skybox, normals_final).rgb * vec3(texture(ORM, UV)).x;
-	spec *= radiance * clamp(dot(l, normals_final), 0, 1);
-
+	//spec *= radiance * clamp(dot(l, normals_final), 0, 1);
+	vec3 R = reflect(-c, normals_final); 
+	//vec2 brdfm = texture(bmap, vec2(max(dot(normals_final, c), 0), rough)).xy; 
+	vec3 spec = textureLod(prespec, R,  rough * 4.0).rgb * f;
 
 	vec3 lightout = diffuse + spec;
 
-	//lightout = lightout + ambient;
+	vec3 mapped = lightout / (lightout + vec3(1.0));
+    mapped = pow(mapped, vec3(1.0 / 2.2));
 
-	color = vec4(rough * vec3(1), 1);
+	color = vec4(mapped, 1);
 }    

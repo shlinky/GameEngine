@@ -15,5 +15,12 @@ vec3 display_world_vector(vec3 v) {
 
 void main() {
 	// /texture(skybox, vec3(normalize(pos_raw)))
-	color = texture(skybox, vec3(pos_raw));
+	vec3 hdrColor = texture(skybox, vec3(pos_raw)).rgb;
+
+	vec3 mapped = hdrColor / (hdrColor + vec3(1.0));
+    // gamma correction 
+    mapped = pow(mapped, vec3(1.0 / 2.2));
+
+    color = vec4(mapped, 1);
+
 }

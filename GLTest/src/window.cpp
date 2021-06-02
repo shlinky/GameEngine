@@ -5,7 +5,7 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
-#define DEBUG
+#define sDEBUG
 #include "OGLError.h"
 #include "OGLShaderProgram.h"
 #include "OGLVertexObject.h"
@@ -210,21 +210,21 @@ int main(void)
     OGLImageTexture col(sizex, sizey);
     OGLImageTexture depth(sizex, sizey, GL_DEPTH_COMPONENT);
     fb.attachColorTexture(&col);
-    fb.attachDepthTexture(&depth);
+    fb.attachDepthTexture(&depth);*/
 
     OGLFrameBuffer fb1;
     OGLImageTexture col1(sizex, sizey);
     fb1.attachColorTexture(&col1);
 
-    OGLTexturedShader postprocess = OGLTexturedShader("res/shaders/pp.vert", "res/shaders/pp.frag", 0, 2);
+    /*OGLTexturedShader postprocess = OGLTexturedShader("res/shaders/pp.vert", "res/shaders/pp.frag", 0, 2);
     postprocess.addTexture(&col);
     postprocess.addTexture(&depth);
 
     OGLVertexObject screenquad = OGLVertexObject(4);
     screenquad.addAttribute(0, 3, screenvp);
-    screenquad.addIndexing(screenindex, 6);
+    screenquad.addIndexing(screenindex, 6);*/
 
-    OGLVertexObject portal = OGLVertexObject(4);
+    /*OGLVertexObject portal = OGLVertexObject(4);
     portal.addAttribute(0, 3, screenvp);
     portal.addIndexing(screenindex, 6);
 
@@ -242,17 +242,7 @@ int main(void)
 
     SceneObject player = SceneObject();
 
-    SceneMeshObject random = SceneMeshObject(0.45, -0.2, -2.3);
-    random.setRotation(180, 0, 0);
-    random.setScale(0.2, 0.2, 0.2);
-    random.setIsComponent(true);
-    random.setParent(&player);
-    random.setMesh("res/models/test.txt");
-    random.createShader("res/shaders/b.vert", "res/shaders/pgun.frag");
-    random.getShader()->addTexture("res/models/v_portalgun.png");
-    random.getShader()->addTexture("res/models/v_portalgun_s.jpg");
-
-    OGLImageTexture brdff = OGLImageTexture(1024, 1024);
+    /*OGLImageTexture brdff = OGLImageTexture(1024, 1024);
     OGLFrameBuffer fb;
     fb.attachColorTexture(&brdff);
     fb.bind();
@@ -271,7 +261,7 @@ int main(void)
 
     brdff.save("brdfmmgood.jpg");
 
-    fb.unbind();
+    fb.unbind();*/
     
     /*SceneMeshObject speak = SceneMeshObject(0.45, -0.2, -2.3);
     speak.setRotation(180, 0, 0);
@@ -285,8 +275,16 @@ int main(void)
 
     cout << "started1" << endl;
 
-    OGLCubeMapTexture rr = OGLCubeMapTexture("res/shaders/bob3.hdr", 2048);
+    OGLImageTexture brdff = OGLImageTexture("res/shaders/brdf.png");
+
+    OGLCubeMapTexture rr = OGLCubeMapTexture("res/shaders/bob2.hdr", 512);
     OGLCubeMapTexture* irr = rr.createIrradianceMap(100);
+    //irr->save("bob");
+    //irr->save("gucc");
+    OGLCubeMapTexture* spec = rr.createPrefilteredSpec(100);
+    //rr.save("rr");
+    //irr->save("irr");
+    //spec->save("spec");
     //hdr.save("newgear");
     //irr->save("newgear");
     //OGLCubeMapTexture cmm(cubeMapbadNames);
@@ -294,25 +292,41 @@ int main(void)
 
     cout << "started0" << endl;
 
+    //OGLImageTexture splash("res/shaders/splash.png");
+
+    SceneMeshObject random = SceneMeshObject(0.45, -0.3, -2.3);
+    random.setRotation(180, 0, 0);
+    random.setScale(0.2, 0.2, 0.2);
+    random.setIsComponent(true);
+    random.setParent(&player);
+    random.setMesh("res/models/test.txt");
+    random.createShader("res/shaders/b.vert", "res/shaders/pgun_mixed.frag", 6, 6);
+    random.getShader()->addTexture("res/models/v_portalgun.png");
+    random.getShader()->addTexture("res/models/pgun_n.png");
+    random.getShader()->addTexture("res/models/v_portalgun_s.jpg");
+    random.getShader()->addTexture(irr);
+    random.getShader()->addTexture(&brdff);
+    random.getShader()->addTexture(spec);
+
+    //thickness point lights, rotate cubemap, selector
     SceneMeshObject* sp[5] = { 0 };
     for (int i = 0; i < 5; i++) {
         sp[i] = new SceneMeshObject(&model1);
         sp[i]->setPosition(1 + (2 * i), 1, 1);
-        sp[i]->createShader("res/shaders/b.vert", "res/shaders/pbr_ibl.frag", 5, 5);
-        cout << "cycle done" << endl;
-        sp[i]->getShader()->addTexture("res/models/PreviewSphere" + to_string(i) + "_Sphere_BaseColor.png");
-        sp[i]->getShader()->addTexture("res/models/PreviewSphere" + to_string(i) + "_Sphere_Normal.png");
-        sp[i]->getShader()->addTexture("res/models/PreviewSphere" + to_string(i) + "_Sphere_OcclusionRoughnessMetallic.png");
-        cout << "why done" << endl;
+        sp[i]->createShader("res/shaders/b.vert", "res/shaders/pbr_mixed.frag", 6, 8);
+        sp[i]->getShader()->addTexture("res/models/PreviewSphere" + to_string(i % 5) + "_Sphere_BaseColor.png");
+        sp[i]->getShader()->addTexture("res/models/PreviewSphere" + to_string(i % 5) + "_Sphere_Normal.png");
+        sp[i]->getShader()->addTexture("res/models/PreviewSphere" + to_string(i % 5) + "_Sphere_OcclusionRoughnessMetallic.png");
         sp[i]->getShader()->addTexture(irr);
         sp[i]->getShader()->addTexture(&brdff);
+        sp[i]->getShader()->addTexture(spec);
+        //sp[i]->getShader()->addTexture(&splash);
     }
-    cout << "dumb start" << endl;
     double lmpos[2] = {};
     double cmpos[2] = {};
 
     window.getMousePos(lmpos);
-    
+
     window.prepareForNextFrame();
     /* Loop until the user closes the window */
     while (!window.isWindowClosing())
