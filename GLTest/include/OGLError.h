@@ -2,7 +2,7 @@
 #include <GL/glew.h>
 #include <iostream>
 #define DEBUG
-#define USING_MICROSOFT_BRKPTS
+//#define USING_MICROSOFT_BRKPTS
 
 using namespace std;
 

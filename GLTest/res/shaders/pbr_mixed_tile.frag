@@ -105,7 +105,7 @@ void main() {
 	vec3 dp = (vec3(1.0) - f) * (1.0 - metal) * (base_color / PI) * radiance * cost;
 
 	diffuse = diffuse * (1 - (0.4 * cost)) + dp * 0.4 * cost;
-	spec = spec * 0.6 + sp * 0.4;
+	spec = spec * (1 - (0.4 * cost)) + sp * 0.4 * cost;
 
 	vec3 lightout = diffuse + spec;
 

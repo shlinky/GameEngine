@@ -15,13 +15,12 @@ uniform vec3 light_position;
 uniform vec3 camera_position;
 float PI = 3.14159265;
 
-layout(binding=0)uniform sampler2D colorTex;
-layout(binding=1)uniform sampler2D normalTex;
-layout(binding=2)uniform sampler2D ORM;
-layout(binding=3)uniform samplerCube skybox;
-layout(binding=4)uniform sampler2D bmap;
-layout(binding=5)uniform samplerCube prespec;
-layout(binding=5)uniform sampler2D splsh;
+uniform sampler2D colorTex;
+uniform sampler2D normalTex;
+uniform sampler2D ORM;
+uniform samplerCube skybox;
+uniform sampler2D bmap;
+uniform samplerCube prespec;
 
 vec3 display_world_vector(vec3 v) {
 	return vec3((v[0] + 1) / 2, (v[1] + 1) / 2, (v[2] + 1) / 2);
@@ -103,8 +102,8 @@ void main() {
 	vec3 sp = DFG / max((4 * clamp(dot(c, normals_final), 0, 1) * clamp(dot(l, normals_final), 0, 1)), 0.005) * radiance * cost;
 	vec3 dp = (vec3(1.0) - f) * (1.0 - metal) * (base_color / PI) * radiance * cost;
 
-	diffuse = diffuse * (1 - (0.4 * cost)) + dp * 0.4 * cost;
-	spec = spec * 0.6 + sp * 0.4;
+	diffuse = diffuse;
+	spec = spec;
 
 	vec3 lightout = diffuse + spec;
 

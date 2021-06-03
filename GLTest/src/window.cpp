@@ -1,5 +1,5 @@
 #define GLEW_STATIC
-#define USING_MICROSOFT_BRKPTS
+//#define USING_MICROSOFT_BRKPTS
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -124,6 +124,7 @@ string cubeMapNames[6] = {
 void keyInput(WindowsWindowing* w, SceneMeshObject* g, Camera* c) {
     glm::vec3 p = g->getPosition();
     glm::vec3 oc = c->getPosition();
+    glm::vec3 dir = c->getForwardDir();
     if (w->isKeyPressed(GLFW_KEY_W))
         c->moveForward(0.5);
     if (w->isKeyPressed(GLFW_KEY_A))
@@ -190,7 +191,7 @@ unsigned int screenindex[6] = {
 
 int main(void)
 {
-    WindowsWindowing window(1920, 1080, "Application", false);
+    WindowsWindowing window(1920, 1080, "Application", true);
 
     startGLDebug();
 
@@ -205,23 +206,26 @@ int main(void)
     cam.setSensitivity(0.05);
     cam.setPitchLimits(-87, 87);
 
-    /*OGLFrameBuffer fb;
+    OGLFrameBuffer fb;
     OGLImageTexture col(sizex, sizey);
-    OGLImageTexture depth(sizex, sizey, GL_DEPTH_COMPONENT);
+    OGLImageTexture objs(sizex, sizey);
+    //OGLImageTexture depth(sizex, sizey, GL_DEPTH_COMPONENT);
     fb.attachColorTexture(&col);
-    fb.attachDepthTexture(&depth);*/
+    fb.attachColorTexture(&objs);
+    //fb.attachDepthTexture(&depth);
 
-    OGLFrameBuffer fb1;
+    /*OGLFrameBuffer fb1;
     OGLImageTexture col1(sizex, sizey);
-    fb1.attachColorTexture(&col1);
+    fb1.attachColorTexture(&col1);*/
 
-    /*OGLTexturedShader postprocess = OGLTexturedShader("res/shaders/pp.vert", "res/shaders/pp.frag", 0, 2);
+    OGLTexturedShader postprocess = OGLTexturedShader("res/shaders/pp.vert", "res/shaders/pp.frag", 0, 2);
     postprocess.addTexture(&col);
-    postprocess.addTexture(&depth);
+    postprocess.addTexture(&objs);
+    //postprocess.addTexture(&depth);
 
     OGLVertexObject screenquad = OGLVertexObject(4);
     screenquad.addAttribute(0, 3, screenvp);
-    screenquad.addIndexing(screenindex, 6);*/
+    screenquad.addIndexing(screenindex, 6);
 
     /*OGLVertexObject portal = OGLVertexObject(4);
     portal.addAttribute(0, 3, screenvp);
@@ -241,6 +245,7 @@ int main(void)
 
     SceneObject player = SceneObject();
 
+    //add screenspace objects as a separate class
     /*OGLImageTexture brdff = OGLImageTexture(1024, 1024);
     OGLFrameBuffer fb;
     fb.attachColorTexture(&brdff);
@@ -276,7 +281,7 @@ int main(void)
 
     OGLImageTexture brdff = OGLImageTexture("res/shaders/brdf.png");
 
-    OGLCubeMapTexture rr = OGLCubeMapTexture("res/shaders/bob.hdr", 512);
+    OGLCubeMapTexture rr = OGLCubeMapTexture("res/shaders/bob4.hdr", 512);
     OGLCubeMapTexture* irr = rr.createIrradianceMap(100);
     //irr->save("bob");
     //irr->save("gucc");
@@ -398,7 +403,7 @@ int main(void)
         random.render(&pcam);
         fb.bind();
         portalb.render(&cam);*/
-        env.render(&cam);
+        //env.render(&cam);
         for (int i = 0; i < 5; i++) {
             sp[i]->render(&cam);
         }
