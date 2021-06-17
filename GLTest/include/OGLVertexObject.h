@@ -4,6 +4,8 @@
 #include <ModelLoader.h>
 using namespace std;
 
+//represents meshes (vertex data)
+
 class OGLVertexObject
 {
 public:

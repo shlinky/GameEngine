@@ -3,6 +3,8 @@
 #include "OGLImageTexture.h"
 #include "OGLCubeMapTexture.h"
 
+//Shader that also handles references to textures associated with that shader
+
 class OGLTexturedShader :
 	public OGLShaderProgram
 {

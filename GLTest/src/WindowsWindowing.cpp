@@ -1,8 +1,6 @@
 #include "WindowsWindowing.h"
 
 //add a delta mouse function with a sensitivity option
-//get time function
-//get mouse clicks
 //set antialiasing
 WindowsWindowing::WindowsWindowing(int sizex, int sizey, string title, bool fullscreen)
 {
@@ -18,7 +16,7 @@ WindowsWindowing::WindowsWindowing(int sizex, int sizey, string title, bool full
 
     /* Create a windowed mode window and its OpenGL context */
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-    glfwWindowHint(GLFW_SAMPLES, 16); // 4x antialiasing
+    glfwWindowHint(GLFW_SAMPLES, 4); // 4x antialiasing
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4); // We want OpenGL 3.3
     //glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -68,10 +66,8 @@ bool WindowsWindowing::isWindowClosing()
 
 void WindowsWindowing::prepareForNextFrame()
 {
-    /* Swap front and back buffers */
     glfwSwapBuffers(window);
 
-    /* Poll for and process events */
     glfwPollEvents();
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

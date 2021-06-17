@@ -28,7 +28,7 @@ void OGLFrameBuffer::attachColorTexture(OGLImageTexture* text)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, fbid);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + numColorTextures, GL_TEXTURE_2D, text->getId(), 0);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	numColorTextures++;
 
 	if (width == 0) {
@@ -92,6 +92,7 @@ void OGLFrameBuffer::unbind()
 
 void OGLFrameBuffer::clear()
 {
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 

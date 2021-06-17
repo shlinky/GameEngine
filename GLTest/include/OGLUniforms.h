@@ -3,6 +3,8 @@
 #include <iostream>
 using namespace std;
 
+//Shader Uniforms
+
 class OGLUniform
 {
 public:

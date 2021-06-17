@@ -1,6 +1,7 @@
 #pragma once
-
 #include "SceneObject.h"
+
+//Mesh Objects that are in the scene (have pos rot scale)
 
 //hidden objects
 //inherits from renderable scene object
@@ -23,7 +24,6 @@ public:
 	OGLVertexObject* getMesh();
 
 	void render(Camera* cam);
-	void trender(Camera* cam);
 	void bind();
 private:
 	OGLVertexObject* mesh;

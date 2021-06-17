@@ -151,9 +151,6 @@ void OGLCubeMapTexture::save(string fname)
             GL_UNSIGNED_BYTE,
             saveImg);
 
-        // for (int i = 0; i < 30; i++) {
-        //     cout << (int)saveImg[i] << endl;
-        // }
         string fnm = fname;
         fnm += (char)(48 + i);
         fnm += ".jpg";
@@ -181,16 +178,15 @@ OGLCubeMapTexture* OGLCubeMapTexture::createIrradianceMap(int w)
 
     OGLCubeMapTexture* irMap = new OGLCubeMapTexture(irWidth);
 
-    float renderViews[30] = { 0,  0, 0, -1, 0,
-                             180,  0, 0, -1, 0,
-                               0, 90, 0, 0, 1,
-                               0,-90, 0, 0, -1,
-                               90,0, 0, -1, 0,
-                               -90, 0, 0, -1, 0 };
+    float renderViews[30] = {  0,  0, 0, -1,  0,
+                             180,  0, 0, -1,  0,
+                               0, 90, 0,  0,  1,
+                               0,-90, 0,  0, -1,
+                              90,  0, 0, -1,  0,
+                             -90,  0, 0, -1,  0};
 
     for (unsigned int i = 0; i < 6; i++)
     {
-        //renderViews[3 * i], renderViews[(3 * i) + 1], renderViews[(3 * i) + 2]
         cam.setUpDir(renderViews[(5 * i) + 2], renderViews[(5 * i) + 3], renderViews[(5 * i) + 4]);
         cam.setRotation(renderViews[5 * i], renderViews[(5 * i) + 1]);
         fb.resetColorTextures();
@@ -223,17 +219,16 @@ OGLCubeMapTexture* OGLCubeMapTexture::createPrefilteredSpec(int w)
     OGLCubeMapTexture* sMap = new OGLCubeMapTexture(sWidth, true);
 
 
-    float renderViews[30] = { 0,  0, 0, -1, 0,
-                           180,  0, 0, -1, 0,
-                             0, 90, 0, 0, 1,
-                             0,-90, 0, 0, -1,
-                             90,0, 0, -1, 0,
-                             -90, 0, 0, -1, 0 };
+    float renderViews[30] = {  0,  0, 0, -1,  0,
+                             180,  0, 0, -1,  0,
+                               0, 90, 0,  0,  1,
+                               0,-90, 0,  0, -1,
+                              90,  0, 0, -1,  0,
+                             -90,  0, 0, -1,  0 };
 
     for (int m = 0; m < 5; m++)
     {
         for (unsigned int f = 0; f < 6; f++) {
-            //renderViews[3 * i], renderViews[(3 * i) + 1], renderViews[(3 * i) + 2]
             cam.setUpDir(renderViews[(5 * f) + 2], renderViews[(5 * f) + 3], renderViews[(5 * f) + 4]);
             cam.setRotation(renderViews[5 * f], renderViews[(5 * f) + 1]);
             fb.resetColorTextures();
@@ -253,26 +248,6 @@ OGLCubeMapTexture* OGLCubeMapTexture::createPrefilteredSpec(int w)
     return (sMap);
 
 }
-
-
-/*HDRCubeMap temp(512);
-    OGLTexturedShader flips("res/shaders/fliperror.vert", "res/shaders/fliperror.frag", 0, 1);
-    flips.addTexture(&temp);
-    flips.addUniform<OGLUniform3FV>("face");
-    OGLVertexObject screenq = OGLVertexObject(4);
-    screenq.addAttribute(0, 3, screenvp);
-    screenq.addIndexing(screenindex, 6);*/
-
-
-    /*fb.resetColorTextures();
-            fb.attachColorTextureCM(this, i);
-            fb.bind();
-            fb.clear();
-            screenq.bind();
-            int face[3] = { i, i, i };
-            flips.updateUniformData("face", &face);
-            flips.bindShaderProgram();
-            glDrawElements(GL_TRIANGLES, screenq.getIndexCount(), GL_UNSIGNED_INT, (void*)0);*/
 
 void OGLCubeMapTexture::bindTexture(unsigned int textureSlot)
 {

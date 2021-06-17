@@ -10,7 +10,7 @@ OGLTexturedShader::OGLTexturedShader(string vs, string fs, int numUniforms, int 
 //make parent virtual maybe
 OGLTexturedShader::~OGLTexturedShader()
 {
-	//OGLShaderProgram::~OGLShaderProgram();
+	OGLShaderProgram::~OGLShaderProgram();
 	delete[] textures;
 }
 
@@ -19,7 +19,6 @@ void OGLTexturedShader::addTexture(string tName)
 	if (texturesAdded == numTextures) {
 		applicationErrorCallback("No more textures available, already added max amount");
 	}
-	//cout << "cool" << endl;
 	textures[texturesAdded] = new OGLImageTexture(tName);
 	texturesAdded++;
 }

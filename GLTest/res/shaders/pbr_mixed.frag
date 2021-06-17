@@ -1,6 +1,8 @@
 #version 330 core
+#extension GL_ARB_shading_language_420pack: enable
 
 layout(location = 0) out vec4 color;
+//layout(location = 1) out vec4 icolor;
 in vec4 pos_raw;
 in vec3 normals_raw;
 vec3 ngoodr;
@@ -13,6 +15,7 @@ uniform mat4 mvp;
 uniform vec3 light_color;
 uniform vec3 light_position;
 uniform vec3 camera_position;
+uniform vec3 colorId;
 float PI = 3.14159265;
 
 layout(binding=0)uniform sampler2D colorTex;
@@ -21,7 +24,6 @@ layout(binding=2)uniform sampler2D ORM;
 layout(binding=3)uniform samplerCube skybox;
 layout(binding=4)uniform sampler2D bmap;
 layout(binding=5)uniform samplerCube prespec;
-layout(binding=5)uniform sampler2D splsh;
 
 vec3 display_world_vector(vec3 v) {
 	return vec3((v[0] + 1) / 2, (v[1] + 1) / 2, (v[2] + 1) / 2);
@@ -80,7 +82,6 @@ void main() {
 	float rough = vec3(texture(ORM, UV)).y;
 	float metal = vec3(texture(ORM, UV)).z;
 	vec3 base_color = vec3(texture(colorTex, UV));
-
 	vec3 F0 = vec3(0.03); 
 	F0 = mix(F0, base_color, metal);
 	vec3 f = fresnelSchlick(max(dot(normals_final, c), 0.0), F0);
@@ -112,4 +113,5 @@ void main() {
     mapped = pow(mapped, vec3(1.0 / 2.2));
 
 	color = vec4(mapped, 1);
+	//icolor = vec4(colorId, 1);
 }    

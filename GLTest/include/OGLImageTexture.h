@@ -4,6 +4,7 @@
 #include <string>
 #include "OGLError.h"
 
+//Base class for textures
 class OGLImageTexture
 {
 public:
@@ -17,6 +18,8 @@ public:
 	int getWidth();
 	int getHeight();
 	void save(string path);
+	void read(unsigned char** img);
+	void write(unsigned char* img);
 protected:
 	unsigned int textureId;
 	void loadTexture(string textPath, int* width, int* height, unsigned char** img);

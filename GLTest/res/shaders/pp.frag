@@ -1,9 +1,9 @@
 #version 330 core
+#extension GL_ARB_shading_language_420pack: enable
 
 layout(location = 0) out vec4 color;
 in vec2 UV;
-layout(binding=0)uniform sampler2D t1;
-layout(binding=1)uniform sampler2D depth;
+uniform sampler2D t1;
 const float offset = 1.0 / 500.0; 
 
 vec2 offsets[9] = vec2[](
@@ -42,27 +42,27 @@ void main() {
 
 	//color = vec4(vec3(texture(t1, UV)), 1);
 	vec3 bc = vec3(texture(t1, UV));
-	//((bc.x * 0.2126 + bc.y * 0.7152 + bc.z * 0.0722) + 0.01) * vec3(0, 1, 0)
-	vec3 final = vec3(0, 0, 0);
-	for (int i = 0; i < 9; i++) {
-		final += vec3(texture(t1, UV + offsets[i])) * kernel[i];
-	}
-	float outline = 0;
-	for (int i = 0; i < 9; i++) {
-		outline += (1 - vec3(texture(depth, UV + offsets[i])).x) * kernelo[i];
-	}
-	//final /= 9;
+	bc = ((bc.x * 0.2126 + bc.y * 0.7152 + bc.z * 0.0722) + 0.01) * vec3(1, 1, 1);
+	// vec3 final = vec3(0, 0, 0);
+	// for (int i = 0; i < 9; i++) {
+	// 	final += vec3(texture(t1, UV + offsets[i])) * kernel[i];
+	// }
+	// float outline = 0;
+	// for (int i = 0; i < 9; i++) {
+	// 	outline += (1 - vec3(texture(t2, UV + offsets[i])).x) * kernelo[i];
+	// }
+	// //final /= 9;
 
-	//(1 - vec3(texture(depth, UV)).x)
-	outline = pow((1 - outline), 1024);
-	vec3 o;
-	 if (outline < 0.5) {
-	 	o = vec3(1, 1, 1);
-	 }
-	 else {
-	 	o = vec3(0, 0, 0);
-	 }
-	//+ o * vec3(1, 1, 1)
+	// //(1 - vec3(texture(depth, UV)).x)
+	// outline = pow((1 - outline), 1024);
+	// vec3 o;
+	//  if (outline < 0.5) {
+	//  	o = vec3(1, 1, 1);
+	//  }
+	//  else {
+	//  	o = vec3(0, 0, 0);
+	//  }
+	//+ o * vec3(1, 1, 1
 	color = vec4(bc, 1);
 	//color = vec4(UV, 0, 1);
 }    

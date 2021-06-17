@@ -36,9 +36,7 @@ unsigned int OGLShaderProgram::CreateShaderProgram(string vs, string fs)
     readShaderFile(vs, &vsSource);
     readShaderFile(fs, &fsSource);
     cout << "Vertex Shader: " << vs << " loaded" << endl;
-    //cout << vsSource << endl;
     cout << "Fragment Shader: " << fs << " loaded" << endl;
-    //cout << fsSource << endl;
 
     unsigned int vsid = CreateShader(vsSource, GL_VERTEX_SHADER);
     unsigned int fsid = CreateShader(fsSource, GL_FRAGMENT_SHADER);

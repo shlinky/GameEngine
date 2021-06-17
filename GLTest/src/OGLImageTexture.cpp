@@ -4,7 +4,6 @@
 #include <STB/stb_image_write.h>
 #include "OGLImageTexture.h"
 
-//create a read and save function
 //add a pure virtual base class
 OGLImageTexture::OGLImageTexture(string textPath)
 {
@@ -14,10 +13,10 @@ OGLImageTexture::OGLImageTexture(string textPath)
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textureId);
 
-	//glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, img);
-	glTexStorage2D(GL_TEXTURE_2D, 5, GL_RGB8, width, height);
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, img);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, img);
+	//glTexStorage2D(GL_TEXTURE_2D, 5, GL_RGB8, width, height);
+	//glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, img);
 
 	glGenerateMipmap(GL_TEXTURE_2D);
 
@@ -97,13 +96,28 @@ void OGLImageTexture::save(string path)
 		GL_UNSIGNED_BYTE,
 		saveImg);
 
-	// for (int i = 0; i < 30; i++) {
-	//     cout << (int)saveImg[i] << endl;
-	// }
-
 	saveTexture(path, width, height, saveImg);
 	delete[] saveImg;
 
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void OGLImageTexture::read(unsigned char** img) {
+	bindTexture();
+	*img = new unsigned char[width * height * 3];
+	glPixelStorei(GL_PACK_ALIGNMENT, 1);
+	glGetTexImage(GL_TEXTURE_2D,
+		0,
+		GL_RGB,
+		GL_UNSIGNED_BYTE,
+		*img);
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void OGLImageTexture::write(unsigned char* img)
+{
+	bindTexture();
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, img);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
@@ -131,8 +145,8 @@ void OGLImageTexture::loadTextureHDR(string textPath, int* width, int* height, f
 
 void OGLImageTexture::saveTexture(string path, int w, int h, unsigned char* data)
 {
-	stbi_flip_vertically_on_write(true);
-	int result = stbi_write_jpg(path.c_str(), w, h, 3, data, 60);
+	//stbi_flip_vertically_on_write(true);
+	int result = stbi_write_jpg(path.c_str(), w, h, 3, data, 100);
 	if (!result) {
 		applicationErrorCallback("Texture save path not existant");
 	}

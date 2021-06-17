@@ -23,64 +23,12 @@
 
 #include "SceneMeshObject.h"
 #include "EnvCube.h"
+#include "Windows.h"
 using namespace std;
 
-//add scenemesh class
-//add scene class
-//HASH connecting names to objects
-//multiple cameras if only one select that one
-//lights are also scene objects with enum for which type it is
-//tick for scene and scene objects
-//each scene mesh has a pointer to the scene
-//ray cast is in the scene class so it has access to all scene objects
-//ray cast gives back pointer to object it hit
-
-//all scene objects have properties that is an array of various strings so u can search scene for all objects with a certain property
-//u can get a scene object back by its name
-
-//map class
-//portals
-// use normals for orientation
-
-//collisions
-//animations and skeletal meshes bones
-//blurred map
-//lihgts as scene objects
-//collisions
-//physics
-//physx implementation
-//steamworks
-//audio
-
-//ray casting (path tracing)
-//ui through imgui
-
-//all sceneobjects have a tick function
-//all sceneobjects have a component array (childComponents) that can be filled with other sceneobjects (COMPONENT MATH) (relative positions)
-//sceneobject has a function create component where it is added to the scene and to the component array
-//and have renderable property
-//and have pointer to scene
-//rendering pipeline like shadows and such is done in scene calss
-//make renderablesceneobject class which mesh derives from and particle and other such things
-//renderable scene object has hidden property and and render function and lit property and a shader
-//possibly every renderable scene object gets a setRenderFrameBuffer function
-//SCENE OBECTS CAN HAVE CAMERAS AND other objects in them (components)
-//but also add it to the scene during construction (for lights and others) (all components)
-//physics bodies are not renderable but scene objects
-
-//whenever something needs access to something give it a pointer to it
-
-//scene has a main fb for post processing and ppl can access the textures and the buffer
-//scene has a render function with cam param and not
-//a variable for whethered its deffered rendering or not
-
-//displacement mapping
-
-//raindrop normal effect
-//obj groups
-//bunch of lights
-//rendering simplified scene
-//conserving vram with deleting and then re adding texts and other thingsw to gpu
+//main file
+//entry point in to application
+//not part of engine (would be placed in the game project not engine project)
 float lightPosition[3] = {
     1.0f,
     2.0f,
@@ -92,24 +40,6 @@ float lightColor[3] = {
     1.0f,
     1.0f
 };
-
-string cubeMapbadNames[6] = {
-    "res/Storforsen3/posx.jpg",
-    "res/Storforsen3/negx.jpg",
-    "res/Storforsen3/posy.jpg",
-    "res/Storforsen3/negy.jpg",
-    "res/Storforsen3/posz.jpg",
-    "res/Storforsen3/negz.jpg"
-};
-
-/*string cubeMapNames[6] = {
-    "res/skybox1/skybox/right.jpg",
-    "res/skybox1/skybox/left.jpg",
-    "res/skybox1/skybox/top.jpg",
-    "res/skybox1/skybox/bottom.jpg",
-    "res/skybox1/skybox/front.jpg",
-    "res/skybox1/skybox/back.jpg"
-};*/
 
 string cubeMapNames[6] = {
     "newgear0.jpg",
@@ -136,15 +66,11 @@ void keyInput(WindowsWindowing* w, SceneMeshObject* g, Camera* c) {
     if (w->isKeyPressed(GLFW_KEY_SPACE))
         c->moveUp(0.5);
     if (w->isMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
-        cout << "pressed" << endl;
+        cout << "left mouse pressed" << endl;
     }
     if (w->isMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT)) {
-        cout << "dpressed" << endl;
+        cout << "right mouse pressed" << endl;
     }
-    //glm::vec3 d = c->getPosition() - oc;
-    //glm::vec3 npos = (p + d);
-    //cout << npos.x << ' ' << npos.y << ' ' << npos.z << endl;
-   // g->setPosition(npos.x, npos.y, npos.z);
 }
 
 void updateCameraAngle(double* cPos, double* lPos, SceneObject* g, Camera* c) {
@@ -178,20 +104,9 @@ unsigned int screenindex[6] = {
     0, 3, 2
 };
 
-/*float screen[16] = {
-    1.0, 0.0,
-    1.0, 1.0,
-    0.0, 1.0,
-    0.0, 0.0,
-    0.0, 1.0,
-    0.0, 0.0,
-    1.0, 0.0,
-    1.0, 1.0
-};*/
-
 int main(void)
 {
-    WindowsWindowing window(1920, 1080, "Application", true);
+    WindowsWindowing window(1920, 1080, "Application", false);
 
     startGLDebug();
 
@@ -200,103 +115,57 @@ int main(void)
     Camera cam(0.0f, 3.0f, 8.0f, sizex, sizey);
     cam.setSensitivity(0.05);
     cam.setPitchLimits(-87, 87);
-    cam.setRotation(0, 0);
+    cam.setRotation(180, 0);
 
-    Camera pcam(0.0f, 0.0f, 10.0f, sizex, sizey);
-    cam.setSensitivity(0.05);
-    cam.setPitchLimits(-87, 87);
-
-    OGLFrameBuffer fb;
-    OGLImageTexture col(sizex, sizey);
-    OGLImageTexture objs(sizex, sizey);
-    //OGLImageTexture depth(sizex, sizey, GL_DEPTH_COMPONENT);
-    fb.attachColorTexture(&col);
-    fb.attachColorTexture(&objs);
-    //fb.attachDepthTexture(&depth);
-
-    /*OGLFrameBuffer fb1;
-    OGLImageTexture col1(sizex, sizey);
-    fb1.attachColorTexture(&col1);*/
-
-    OGLTexturedShader postprocess = OGLTexturedShader("res/shaders/pp.vert", "res/shaders/pp.frag", 0, 2);
-    postprocess.addTexture(&col);
-    postprocess.addTexture(&objs);
-    //postprocess.addTexture(&depth);
-
-    OGLVertexObject screenquad = OGLVertexObject(4);
-    screenquad.addAttribute(0, 3, screenvp);
-    screenquad.addIndexing(screenindex, 6);
-
-    /*OGLVertexObject portal = OGLVertexObject(4);
-    portal.addAttribute(0, 3, screenvp);
-    portal.addIndexing(screenindex, 6);
-
-    SceneMeshObject portala = SceneMeshObject(5, 5, -10);
-    portala.setMesh(&portal);
-    portala.createShader("res/shaders/p.vert", "res/shaders/p.frag");
-    portala.getShader()->addTexture(&col1);
-    portala.getShader()->addTexture("res/shaders/frame.png");
-
-    SceneMeshObject portalb = SceneMeshObject(0, 0, 10);
-    portalb.setMesh(&portal);
-    portalb.setShader(portala.getShader());
-    portalb.setRotation(0, 0, 0);*/
     OGLVertexObject model1("res/models/gucci.txt", true);
 
     SceneObject player = SceneObject();
 
-    //add screenspace objects as a separate class
-    /*OGLImageTexture brdff = OGLImageTexture(1024, 1024);
-    OGLFrameBuffer fb;
-    fb.attachColorTexture(&brdff);
-    fb.bind();
-    fb.clear();
-
-    OGLVertexObject screenquad = OGLVertexObject(4);
-    screenquad.addAttribute(0, 3, screenvp);
-    screenquad.addIndexing(screenindex, 6);
-    
-    OGLTexturedShader postprocess = OGLTexturedShader("res/shaders/pp.vert", "res/shaders/brdfm.frag", 0, 0);
-    
-    screenquad.bind();
-    postprocess.bindShaderProgram();
-    glDrawElements(GL_TRIANGLES, screenquad.getIndexCount(), GL_UNSIGNED_INT, (void*)0);
-    
-
-    brdff.save("brdfmmgood.jpg");
-
-    fb.unbind();*/
-    
-    /*SceneMeshObject speak = SceneMeshObject(0.45, -0.2, -2.3);
-    speak.setRotation(180, 0, 0);
-    speak.setScale(0.1, 0.1, 0.1);
-    speak.setMesh("res/models/speak.txt");
-    speak.createShader("res/shaders/b.vert", "res/shaders/pbr_simp.frag");*/
-
-    //speak.getShader()->addTexture("res/models/PreviewSphere" + to_string(i) + "_Sphere_BaseColor.png");
-    //speak.getShader()->addTexture("res/models/PreviewSphere" + to_string(i) + "_Sphere_Normal.png");
-    //speak.getShader()->addTexture("res/models/PreviewSphere" + to_string(i) + "_Sphere_OcclusionRoughnessMetallic.png");
-
     cout << "started1" << endl;
 
     OGLImageTexture brdff = OGLImageTexture("res/shaders/brdf.png");
+    OGLCubeMapTexture cm = OGLCubeMapTexture("res/shaders/bob4.hdr", 512);
+    OGLCubeMapTexture* irr = cm.createIrradianceMap(100);
+    OGLCubeMapTexture* spec = cm.createPrefilteredSpec(100);
+    EnvCube env = EnvCube(&cm);
 
-    OGLCubeMapTexture rr = OGLCubeMapTexture("res/shaders/bob4.hdr", 512);
-    OGLCubeMapTexture* irr = rr.createIrradianceMap(100);
-    //irr->save("bob");
-    //irr->save("gucc");
-    OGLCubeMapTexture* spec = rr.createPrefilteredSpec(100);
-    //rr.save("rr");
-    //irr->save("irr");
-    //spec->save("spec");
-    //hdr.save("newgear");
-    //irr->save("newgear");
-    //OGLCubeMapTexture cmm(cubeMapbadNames);
-    EnvCube env = EnvCube(&rr);
+    SceneMeshObject* sp[8] = { 0 };
+    for (int i = 0; i < 5; i++) {
+        sp[i] = new SceneMeshObject(&model1);
+        sp[i]->setPosition(1 + (2 * i), 1, 1);
+        sp[i]->createShader("res/shaders/b.vert", "res/shaders/pbr_mixed.frag", 6, 8);
+        sp[i]->getShader()->addTexture("res/models/PreviewSphere" + to_string(i % 5) + "_Sphere_BaseColor.png");
+        sp[i]->getShader()->addTexture("res/models/PreviewSphere" + to_string(i % 5) + "_Sphere_Normal.png");
+        sp[i]->getShader()->addTexture("res/models/PreviewSphere" + to_string(i % 5) + "_Sphere_OcclusionRoughnessMetallic.png");
+        sp[i]->getShader()->addTexture(irr);
+        sp[i]->getShader()->addTexture(&brdff);
+        sp[i]->getShader()->addTexture(spec);
+        sp[i]->getShader()->addUniform<OGLUniform3FV>("colorId");
 
-    cout << "started0" << endl;
+    }
 
-    //OGLImageTexture splash("res/shaders/splash.png");
+    SceneMeshObject floor = SceneMeshObject("res/models/floor.txt");
+    floor.createShader("res/shaders/b.vert", "res/shaders/pbr_mixed_tile.frag", 6, 8);
+    floor.setScale(200, 200, 200);
+    floor.getShader()->addTexture("res/models/plane_divided_DefaultMaterial_BaseColor.png");
+    floor.getShader()->addTexture("res/models/plane_divided_DefaultMaterial_Normal.png");
+    floor.getShader()->addTexture("res/models/plane_divided_DefaultMaterial_OcclusionRoughnessMetallic.png");
+    floor.getShader()->addTexture(irr);
+    floor.getShader()->addTexture(&brdff);
+    floor.getShader()->addTexture(spec);
+    floor.getShader()->addUniform<OGLUniform3FV>("colorId");
+
+    SceneMeshObject knf = SceneMeshObject("res/models/knife.txt");
+    knf.createShader("res/shaders/b.vert", "res/shaders/pbr_mixed.frag", 6, 8);
+    knf.setPosition(-4, 0, 0);
+    knf.setScale(2, 2, 2);
+    knf.getShader()->addTexture("res/models/kcolor.png");
+    knf.getShader()->addTexture("res/models/knorm.png");
+    knf.getShader()->addTexture("res/models/korm.png");
+    knf.getShader()->addTexture(irr);
+    knf.getShader()->addTexture(&brdff);
+    knf.getShader()->addTexture(spec);
+    knf.getShader()->addUniform<OGLUniform3FV>("colorId");
 
     SceneMeshObject random = SceneMeshObject(0.45, -0.3, -2.3);
     random.setRotation(180, 0, 0);
@@ -311,44 +180,27 @@ int main(void)
     random.getShader()->addTexture(irr);
     random.getShader()->addTexture(&brdff);
     random.getShader()->addTexture(spec);
+    random.getShader()->addUniform<OGLUniform3FV>("colorId");
 
-    //thickness point lights, rotate cubemap, selector
-    SceneMeshObject* sp[5] = { 0 };
-    for (int i = 0; i < 5; i++) {
-        sp[i] = new SceneMeshObject(&model1);
-        sp[i]->setPosition(1 + (2 * i), 1, 1);
-        sp[i]->createShader("res/shaders/b.vert", "res/shaders/pbr_mixed.frag", 6, 8);
-        sp[i]->getShader()->addTexture("res/models/PreviewSphere" + to_string(i % 5) + "_Sphere_BaseColor.png");
-        sp[i]->getShader()->addTexture("res/models/PreviewSphere" + to_string(i % 5) + "_Sphere_Normal.png");
-        sp[i]->getShader()->addTexture("res/models/PreviewSphere" + to_string(i % 5) + "_Sphere_OcclusionRoughnessMetallic.png");
-        sp[i]->getShader()->addTexture(irr);
-        sp[i]->getShader()->addTexture(&brdff);
-        sp[i]->getShader()->addTexture(spec);
-        //sp[i]->getShader()->addTexture(&splash);
-    }
+    sp[5] = &knf;
+    sp[6] = &random;
+    sp[7] = &floor;
 
-    SceneMeshObject floor = SceneMeshObject("res/models/floor.txt");
-    floor.createShader("res/shaders/b.vert", "res/shaders/pbr_mixed_tile.frag", 6, 8);
-    floor.setScale(200, 200, 200);
-    floor.getShader()->addTexture("res/models/plane_divided_DefaultMaterial_BaseColor.png");
-    floor.getShader()->addTexture("res/models/plane_divided_DefaultMaterial_Normal.png");
-    floor.getShader()->addTexture("res/models/plane_divided_DefaultMaterial_OcclusionRoughnessMetallic.png");
-    floor.getShader()->addTexture(irr);
-    floor.getShader()->addTexture(&brdff);
-    floor.getShader()->addTexture(spec);
-
-    SceneMeshObject knf = SceneMeshObject("res/models/knife.txt");
-    knf.createShader("res/shaders/b.vert", "res/shaders/pbr_mixed.frag", 6, 8);
-    knf.setPosition(-4, 0, 0);
-    knf.setScale(2, 2, 2);
-    knf.getShader()->addTexture("res/models/kcolor.png");
-    knf.getShader()->addTexture("res/models/knorm.png");
-    knf.getShader()->addTexture("res/models/korm.png");
-    knf.getShader()->addTexture(irr);
-    knf.getShader()->addTexture(&brdff);
-    knf.getShader()->addTexture(spec);
+    OGLFrameBuffer fb;
+    OGLImageTexture colbb(sizex, sizey);
+    fb.attachColorTexture(&colbb);
+    fb.unbind();
 
 
+    OGLTexturedShader postprocess = OGLTexturedShader("res/shaders/pp.vert", "res/shaders/pp.frag", 0, 3);
+    postprocess.addTexture(&colbb);
+
+    OGLVertexObject screenquad = OGLVertexObject(4);
+    screenquad.addAttribute(0, 3, screenvp);
+    screenquad.addIndexing(screenindex, 6);
+
+    cam.setRotation(-70, -10);
+    
     double lmpos[2] = {};
     double cmpos[2] = {};
 
@@ -362,96 +214,29 @@ int main(void)
         window.getMousePos(cmpos);
         keyInput(&window, &random, &cam);
         updateCameraAngle(cmpos, lmpos, &player, &cam);
-        /*if (cam.getPosition().z <= -10) {
-            cam.setPosition(cam.getPosition().x - 5, cam.getPosition().y - 5, 10 + cam.getPosition().z + 10);
-        }
-
-        if (cam.getPosition().z >= 10) {
-            cam.setPosition(5 + cam.getPosition().x, 5 + cam.getPosition().y, -10 + (cam.getPosition().z - 10));
-        }*/
-        //cout << cam.getPosition().x << ' ' << cam.getPosition().y << ' ' << cam.getPosition().z << endl;
         
         lmpos[0] = cmpos[0];
         lmpos[1] = cmpos[1];
 
-        //make camera go back behind the portal
-        //uvs with the world transforms
-
-        /*glm::vec3 diff = (cam.getPosition() - glm::vec3(5, 5, -10));
-        pcam.setPosition(diff.x, diff.y, diff.z + 10);
-        pcam.setRotation(cam.getYaw(), cam.getPitch());
-
-        fb1.bind();
-        fb1.clear();
-        for (int i = 0; i < 4; i++) {
-            sp[i]->render(&pcam);
-        }
-        random.render(&pcam);
-        fb.bind();
-        fb.clear();
-        portala.render(&cam);
-
-        diff = (cam.getPosition() - glm::vec3(0, 0, 10));
-        pcam.setPosition(diff.x + 5, diff.y + 5, diff.z - 10);
-        pcam.setRotation(cam.getYaw(), cam.getPitch());
-
-        fb1.bind();
-        fb1.clear();
-        for (int i = 0; i < 4; i++) {
-            sp[i]->render(&pcam);
-        }
-        random.render(&pcam);
-        fb.bind();
-        portalb.render(&cam);*/
-        //env.render(&cam);
-        for (int i = 0; i < 5; i++) {
-            sp[i]->render(&cam);
-        }
-        //cout << random.getPosition().x << ' ' << random.getPosition().y << ' ' << random.getPosition().z << endl;
-        random.render(&cam);
-        floor.render(&cam);
-        knf.render(&cam);
-        //speak.render(&cam);
+        //cout << glm::to_string(cam.getForwardDir()) << endl;
+  
         //fb.unbind();
         //screenquad.bind();
         //postprocess.bindShaderProgram();
+        //necol.bindTexture();
+        //glBindTexture(GL_TEXTURE_2D, colbb.getId());
         //glDrawElements(GL_TRIANGLES, screenquad.getIndexCount(), GL_UNSIGNED_INT, (void*)0);
 
+
+        for (int i = 0; i < 8; i++) {
+            glm::vec3 c = glm::vec3((1.0f / 8.0f) * ((float)i + 1), 0, 0);
+            sp[i]->getShader()->updateUniformData("colorId", &(c[0]));
+            sp[i]->render(&cam);
+        }
+        
         window.prepareForNextFrame();
+
     }
 
     return 0;
 }
-
-
-//v = glm::make_mat4(cam.getTransMat(false));
-        //glm::mat4 mvpc = v * glm::scale(glm::identity<glm::mat4>(), glm::vec3(100, 100, 100));
-        //shaderpc.updateUniformData("coolbeans", &mvpc);
-
-        //make a render function in env cube class
-        //env cube is a renderable scene object
-        //bind and render function in scene objects; render calls bind
-        /**glDepthMask(GL_FALSE);
-        envcube.bind();
-        shaderpc.bindShaderProgram();
-        glDrawElements(GL_TRIANGLES, envcube.getVertexCount(), GL_UNSIGNED_INT, (void*)0);
-        glDepthMask(GL_TRUE);**/
-
-
-        //OGLTexturedShader shaderp("res/shaders/b.vert", "res/shaders/dir1.frag", 5, 4);
-            //shaderp.addUniform<OGLUniformMat4FV>("coolbeans");
-            //shaderp.addUniform<OGLUniformMat4FV>("world");
-            //shaderp.addUniform<OGLUniform3FV>("light_position", &lightPosition);
-            //shaderp.addUniform<OGLUniform3FV>("light_color", &lightColor);
-            //shaderp.addUniform<OGLUniform3FV>("camera_position");
-            //shaderp.addCubemapTexture(cubeMapNames);
-            //shaderp.addTexture("res/models/kcolor.png");
-            //shaderp.addTexture("res/models/knorm.png");
-            //shaderp.addTexture("res/models/korm.png");
-
-//OGLTexturedShader shaderpc("res/shaders/bc.vert", "res/shaders/wcube.frag", 4, 1);
-    //shaderpc.addUniform<OGLUniformMat4FV>("coolbeans");
-    //shaderpc.addUniform<OGLUniform3FV>("light_position", &lightPosition);
-    //shaderpc.addUniform<OGLUniform3FV>("light_color", &lightColor);
-    //shaderpc.addUniform<OGLUniform3FV>("camera_position");
-    //shaderpc.addCubemapTexture(cubeMapNames);

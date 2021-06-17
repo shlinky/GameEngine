@@ -2,6 +2,7 @@
 #include "SceneObject.h"
 #include "OGLCubeMapTexture.h"
 
+//Environment Cube SceneObject
 class EnvCube :
 	public SceneObject
 {

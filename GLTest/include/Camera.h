@@ -7,8 +7,11 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "OGLError.h"
 
+
+//Camera class which creates transformation matrices for Scene space to view space
+
 //add roll
-//maybe make scene object
+//maybe make Camera a scene object
 class Camera
 {
 public:

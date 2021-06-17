@@ -82,12 +82,9 @@ void SceneMeshObject::render(Camera* cam)
 	modelmat = glm::toMat4(rotation) * modelmat;
 	modelmat = glm::translate(getPosition()) * modelmat;
 	if (isComponent) {
-		//cout << glm::to_string(glm::eulerAngles(parentObject->getQuatRotation())) << endl;
-		//cout << glm::to_string(parentObject->getPosition()) << endl;
 		modelmat = glm::scale(parentObject->getScale()) * modelmat;
 		modelmat = glm::toMat4(parentObject->getQuatRotation()) * modelmat;
 		modelmat = glm::translate(parentObject->getPosition()) * modelmat;
-		//cout << glm::to_string(modelmat) << endl;
 	}
 	mvp = vp * modelmat;
 
@@ -99,39 +96,7 @@ void SceneMeshObject::render(Camera* cam)
 
 	bind();
 
-	//Sleep(500);
 	glDrawElements(GL_TRIANGLES, mesh->getIndexCount(), GL_UNSIGNED_INT, (void*)0);
-	//Sleep(500);
-}
-
-void SceneMeshObject::trender(Camera* cam)
-{
-	//creating mvp matrix
-	glm::mat4 vp = cam->getTransMat();
-	glm::mat4 modelmat = glm::scale(getScale());
-	modelmat = glm::toMat4(rotation) * modelmat;
-	modelmat = glm::translate(getPosition()) * modelmat;
-	if (isComponent) {
-		//cout << glm::to_string(glm::eulerAngles(parentObject->getQuatRotation())) << endl;
-		//cout << glm::to_string(parentObject->getPosition()) << endl;
-		modelmat = glm::scale(parentObject->getScale()) * modelmat;
-		modelmat = glm::toMat4(parentObject->getQuatRotation()) * modelmat;
-		modelmat = glm::translate(parentObject->getPosition()) * modelmat;
-		//cout << glm::to_string(modelmat) << endl;
-	}
-	mvp = vp * modelmat;
-
-	glm::vec3 campos = cam->getPosition();
-
-	shader->updateUniformData("mvp", &mvp[0][0]);
-	shader->updateUniformData("camera_position", &campos);
-	shader->updateUniformData("world", &modelmat);
-
-	bind();
-
-	//Sleep(500);
-	glDrawElements(GL_TRIANGLES, mesh->getIndexCount(), GL_UNSIGNED_INT, (void*)0);
-	//Sleep(500);
 }
 
 void SceneMeshObject::bind()

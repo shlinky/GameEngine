@@ -5,6 +5,7 @@
 #include "OGLImageTexture.h"
 #include "OGLCubeMapTexture.h"
 
+//framebuffer class
 //store pointers to textures
 class OGLFrameBuffer
 {
@@ -19,7 +20,6 @@ public:
 	void unbind();
 	void clear();
 	void resetColorTextures();
-	//for resizing viewport after unbinding
 private:
 	unsigned int fbid;
 	unsigned int depth_stencil_rbid;

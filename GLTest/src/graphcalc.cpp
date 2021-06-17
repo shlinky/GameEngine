@@ -22,15 +22,10 @@
 #include <glm/gtx/transform.hpp>
 using namespace std;
 
-//add scenemesh class
-//add scene class
-//map class
-//portals
-//collisions
-//animations and skeletal meshes bones
-//blurred map
 
-/*#define MIN -10
+//3D Graphing Calculator created form scratch using this engine
+
+#define MIN -10
 #define MAX 10
 #define INTERVAL 0.05
 
@@ -74,7 +69,7 @@ unsigned int axisindex[12] = {
     4, 7, 6
 };
 
-void keyInput(WindowsWindowing* w, Camera* c) {
+void keyInputG(WindowsWindowing* w, Camera* c) {
     if (w->isKeyPressed(GLFW_KEY_W))
         c->moveForward(0.5);
     if (w->isKeyPressed(GLFW_KEY_A))
@@ -87,7 +82,7 @@ void keyInput(WindowsWindowing* w, Camera* c) {
         c->moveUp(0.5);
 }
 
-void updateCameraAngle(double* cPos, double* lPos, Camera* c) {
+void updateCameraAngleG(double* cPos, double* lPos, Camera* c) {
     double dX = cPos[0] - lPos[0];
     double dY = -1 * (cPos[1] - lPos[1]);
 
@@ -182,9 +177,9 @@ float evaluate_equation(string e, float x, float y) {
         }
     }
     return (parstack[0]);
-}*/
+}
 
-/*int main(void)
+int graphmain(void)
 {
     int numVert = pow((MAX - MIN) / INTERVAL, 2) * 6;
     float* vp = new float[numVert * 3];
@@ -196,7 +191,7 @@ float evaluate_equation(string e, float x, float y) {
 
     int sizex = window.getSizeX();
     int sizey = window.getSizeY();
-    Camera cam(0.0f, 0.0f, 0.0f, &sizex, &sizey);
+    Camera cam(0.0f, 0.0f, 0.0f, sizex, sizey);
     cam.setPitchLimits(-87, 87);
     cam.setSensitivity(0.05);
 
@@ -286,8 +281,8 @@ float evaluate_equation(string e, float x, float y) {
     while (!window.isWindowClosing())
     {
         window.getMousePos(cmpos);
-        updateCameraAngle(cmpos, lmpos, &cam);
-        keyInput(&window, &cam);
+        updateCameraAngleG(cmpos, lmpos, &cam);
+        keyInputG(&window, &cam);
 
         lmpos[0] = cmpos[0];
         lmpos[1] = cmpos[1];
@@ -295,7 +290,7 @@ float evaluate_equation(string e, float x, float y) {
         float campos[3];
         cam.getPosition(campos);
 
-        glm::mat4 v = glm::make_mat4(cam.getTransMat());
+        glm::mat4 v = cam.getTransMat();
         glm::mat4 mvp = v;
         glm::mat4 i = glm::identity<glm::mat4>();
         s.updateUniformData("coolbeans", &mvp);
@@ -318,4 +313,4 @@ float evaluate_equation(string e, float x, float y) {
 
 
     return 0;
-}*/
+}
