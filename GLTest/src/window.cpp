@@ -188,13 +188,15 @@ int main(void)
     sp[7] = &floor;
 
     OGLFrameBuffer fb;
-    OGLImageTexture colbb(sizex, sizey);
-    fb.attachColorTexture(&colbb);
+    OGLImageTexture rend(sizex, sizey);
+    OGLImageTexture colid(sizex, sizey);
+    fb.attachColorTexture(&rend);
+    fb.attachColorTexture(&colid);
     fb.unbind();
 
 
     OGLTexturedShader postprocess = OGLTexturedShader("res/shaders/pp.vert", "res/shaders/pp.frag", 0, 3);
-    postprocess.addTexture(&colbb);
+    postprocess.addTexture(&colid);
 
     OGLVertexObject screenquad = OGLVertexObject(4);
     screenquad.addAttribute(0, 3, screenvp);
@@ -226,21 +228,20 @@ int main(void)
 
         fb.bind();
         fb.clear();
-        for (int i = 5; i < 7; i++) {
+        for (int i = 0; i < 7; i++) {
             glm::vec3 c = glm::vec3((1.0f / 8.0f) * ((float)i + 1), 0, 0);
             sp[i]->getShader()->updateUniformData("colorId", &(c[0]));
             sp[i]->render(&cam);
         }
         fb.unbind();
-        unsigned char* pixels;
-        colbb.read(&pixels);
-        delete[] pixels;
+        //unsigned char* pixels;
+        //colid.read(&pixels);
+        //delete[] pixels;
         //OGLImageTexture necol(colbb.getWidth(), colbb.getHeight());
         //necol.write(pixels);
 
         screenquad.bind();
         postprocess.bindShaderProgram();
-        colbb.bindTexture();
         glDrawElements(GL_TRIANGLES, screenquad.getIndexCount(), GL_UNSIGNED_INT, (void*)0);
 
         window.prepareForNextFrame();

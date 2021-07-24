@@ -2,7 +2,7 @@
 #extension GL_ARB_shading_language_420pack: enable
 
 layout(location = 0) out vec4 color;
-//layout(location = 1) out vec4 icolor;
+layout(location = 1) out vec4 icolor;
 in vec4 pos_raw;
 in vec3 normals_raw;
 vec3 ngoodr;
@@ -112,6 +112,6 @@ void main() {
 	vec3 mapped = lightout / (lightout + vec3(1.0));
     mapped = pow(mapped, vec3(1.0 / 2.2));
 
-	color = vec4(mapped, 1);
-	//icolor = vec4(colorId, 1);
+	color = vec4(colorId, 1);
+	icolor = vec4(colorId, 1);
 }    
