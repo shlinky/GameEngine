@@ -50,7 +50,7 @@ OGLVertexObject::~OGLVertexObject()
 	delete[] bufferids;
 	cout << numBuffers << endl;
 	for (int i = 0; i < numBuffers; i++) {
-		delete bufferdata[i];
+		//delete bufferdata[i];
 	}
 	delete[] bufferdata;
 }

@@ -124,7 +124,7 @@ int main(void)
     cout << "started1" << endl;
 
     OGLImageTexture brdff = OGLImageTexture("res/shaders/brdf.png");
-    OGLCubeMapTexture cm = OGLCubeMapTexture("res/shaders/bob4.hdr", 512);
+    OGLCubeMapTexture cm = OGLCubeMapTexture("res/shaders/bob1.hdr", 512);
     OGLCubeMapTexture* irr = cm.createIrradianceMap(100);
     OGLCubeMapTexture* spec = cm.createPrefilteredSpec(100);
     EnvCube env = EnvCube(&cm);
@@ -159,9 +159,10 @@ int main(void)
     knf.createShader("res/shaders/b.vert", "res/shaders/pbr_mixed.frag", 6, 8);
     knf.setPosition(-4, 0, 0);
     knf.setScale(2, 2, 2);
-    knf.getShader()->addTexture("res/models/kcolor.png");
-    knf.getShader()->addTexture("res/models/knorm.png");
-    knf.getShader()->addTexture("res/models/korm.png");
+    knf.setRotation(0, 0, 0);
+    knf.getShader()->addTexture("res/models/revolv1_low_Material_BaseColor.png");
+    knf.getShader()->addTexture("res/models/revolv1_low_Material_Normal.png");
+    knf.getShader()->addTexture("res/models/revolv1_low_Material_OcclusionRoughnessMetallic.png");
     knf.getShader()->addTexture(irr);
     knf.getShader()->addTexture(&brdff);
     knf.getShader()->addTexture(spec);
@@ -183,7 +184,7 @@ int main(void)
     random.getShader()->addUniform<OGLUniform3FV>("colorId");
 
     sp[5] = &knf;
-    sp[6] = &random;
+    sp[6] = &floor;
     sp[7] = &floor;
 
     OGLFrameBuffer fb;
@@ -201,6 +202,8 @@ int main(void)
 
     cam.setRotation(-70, -10);
     
+    
+    //OGLImageTexture necol(colbb.getWidth(), colbb.getHeight(), pixels);
     double lmpos[2] = {};
     double cmpos[2] = {};
 
@@ -220,20 +223,26 @@ int main(void)
 
         //cout << glm::to_string(cam.getForwardDir()) << endl;
   
-        //fb.unbind();
-        //screenquad.bind();
-        //postprocess.bindShaderProgram();
-        //necol.bindTexture();
-        //glBindTexture(GL_TEXTURE_2D, colbb.getId());
-        //glDrawElements(GL_TRIANGLES, screenquad.getIndexCount(), GL_UNSIGNED_INT, (void*)0);
 
-
-        for (int i = 0; i < 8; i++) {
+        fb.bind();
+        fb.clear();
+        for (int i = 5; i < 7; i++) {
             glm::vec3 c = glm::vec3((1.0f / 8.0f) * ((float)i + 1), 0, 0);
             sp[i]->getShader()->updateUniformData("colorId", &(c[0]));
             sp[i]->render(&cam);
         }
-        
+        fb.unbind();
+        unsigned char* pixels;
+        colbb.read(&pixels);
+        delete[] pixels;
+        //OGLImageTexture necol(colbb.getWidth(), colbb.getHeight());
+        //necol.write(pixels);
+
+        screenquad.bind();
+        postprocess.bindShaderProgram();
+        colbb.bindTexture();
+        glDrawElements(GL_TRIANGLES, screenquad.getIndexCount(), GL_UNSIGNED_INT, (void*)0);
+
         window.prepareForNextFrame();
 
     }
