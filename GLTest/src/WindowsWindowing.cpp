@@ -108,6 +108,11 @@ bool WindowsWindowing::isMouseButtonPressed(int mouseButton)
     return (false);
 }
 
+void WindowsWindowing::setMouseHidden(bool hidden)
+{
+    glfwSetInputMode(window, GLFW_CURSOR, hidden ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+}
+
 float WindowsWindowing::getTime()
 {
     return glfwGetTime();

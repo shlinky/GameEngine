@@ -23,6 +23,7 @@ public:
 	bool isKeyPressed(int key);
 	bool isMouseButtonPressed(int mouseButton);
 
+	void setMouseHidden(bool hidden);
 	float getTime();
 	void resetTime();
 private:

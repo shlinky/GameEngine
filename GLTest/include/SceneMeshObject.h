@@ -5,6 +5,7 @@
 
 //hidden objects
 //inherits from renderable scene object
+//has outline option
 class SceneMeshObject :
 	public SceneObject
 {

@@ -112,6 +112,6 @@ void main() {
 	vec3 mapped = lightout / (lightout + vec3(1.0));
     mapped = pow(mapped, vec3(1.0 / 2.2));
 
-	color = vec4(colorId, 1);
+	color = vec4(mapped, 1);
 	icolor = vec4(colorId, 1);
 }    

@@ -30,6 +30,7 @@ void OGLFrameBuffer::attachColorTexture(OGLImageTexture* text)
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + numColorTextures, GL_TEXTURE_2D, text->getId(), 0);
 	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	numColorTextures++;
+
 	unsigned int* attachments = new unsigned int[numColorTextures];
 	for (int i = 0; i < numColorTextures; i++) {
 		attachments[i] = GL_COLOR_ATTACHMENT0 + i;
@@ -46,9 +47,13 @@ void OGLFrameBuffer::attachColorTextureCM(OGLCubeMapTexture* text, int face, int
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, fbid);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + numColorTextures, GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, text->getId(), mip);
-	//cout << "damn some" << text->getId() << ' ' << text->getWidth() <<  endl;
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	numColorTextures++;
+
+	unsigned int* attachments = new unsigned int[numColorTextures];
+	for (int i = 0; i < numColorTextures; i++) {
+		attachments[i] = GL_COLOR_ATTACHMENT0 + i;
+	}
+	glDrawBuffers(numColorTextures, attachments);
 
 	if (width == 0) {
 		width = text->getWidth() * std::pow(0.5, mip);

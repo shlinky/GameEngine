@@ -1,6 +1,7 @@
 #version 330 core
 
 layout(location = 0) out vec4 color;
+layout(location = 1) out vec4 icolor;
 in vec4 pos_raw;
 in vec3 normals_raw;
 vec3 ngoodr;
@@ -13,6 +14,7 @@ uniform mat4 mvp;
 uniform vec3 light_color;
 uniform vec3 light_position;
 uniform vec3 camera_position;
+uniform vec3 colorId;
 float PI = 3.14159265;
 
 layout(binding=0)uniform sampler2D colorTex;
@@ -112,4 +114,6 @@ void main() {
     mapped = pow(mapped, vec3(1.0 / 2.2));
 
 	color = vec4(mapped, 1);
+	icolor = vec4(colorId, 1);
+
 }    
