@@ -250,7 +250,7 @@ int main(void)
             sp[i]->render(&cam);
         }
         fb.unbind();
-        int curr_object;
+        int curr_object = 0;
         if (!is_pressed) {
             unsigned char* pixels;
             colid.read(&pixels);
