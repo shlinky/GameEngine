@@ -51,7 +51,7 @@ string cubeMapNames[6] = {
 };
 
 
-void keyInput(WindowsWindowing* w, SceneMeshObject* g, Camera* c) {
+bool keyInput(WindowsWindowing* w, SceneMeshObject* g, Camera* c) {
     glm::vec3 p = g->getPosition();
     glm::vec3 oc = c->getPosition();
     glm::vec3 dir = c->getForwardDir();
@@ -68,30 +68,35 @@ void keyInput(WindowsWindowing* w, SceneMeshObject* g, Camera* c) {
     if ((w->isKeyPressed(GLFW_KEY_SPACE)) && (w->isKeyPressed(GLFW_KEY_RIGHT_SHIFT)))
         c->moveDown(0.5);
     if (w->isMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
-        cout << "left mouse pressed" << endl;
+        return true;
     }
-    if (w->isMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT)) {
-        cout << "right mouse pressed" << endl;
+    else {
+        return false;
     }
 }
 
-void updateCameraAngle(double* cPos, double* lPos, SceneObject* g, Camera* c) {
-    double dX = cPos[0] - lPos[0];
-    double dY = -1 * (cPos[1] - lPos[1]);
+void updateCameraAngle(WindowsWindowing* w, double* cPos, double* lPos, SceneObject* g, Camera* c) {
+    if (w->isMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
+        w->setMouseHidden(true);
+        double dX = cPos[0] - lPos[0];
+        double dY = -1 * (cPos[1] - lPos[1]);
 
-    float y = c->getYaw();
-    float p = c->getPitch();
-    c->rotateYaw(dX);
-    c->rotatePitch(dY);
-    c->computeVectors();
-    
+        float y = c->getYaw();
+        float p = c->getPitch();
+        c->rotateYaw(dX);
+        c->rotatePitch(dY);
+        c->computeVectors();
 
-    float yaw = c->getYaw();
-    float ptch = c->getPitch();
 
+        float yaw = c->getYaw();
+        float ptch = c->getPitch();
+        g->setRotation(-90 - yaw, ptch, 0);
+    }
+    else {
+        w->setMouseHidden(false);
+    }
     glm::vec3 cpos = c->getPosition();
     g->setPosition(cpos.x, cpos.y, cpos.z);
-    g->setRotation(-90 - yaw, ptch, 0);
 }
 
 float screenvp[12] = {
@@ -126,7 +131,7 @@ int main(void)
     cout << "started1" << endl;
 
     OGLImageTexture brdff = OGLImageTexture("res/shaders/brdf.png");
-    OGLCubeMapTexture cm = OGLCubeMapTexture("res/shaders/bob4.hdr", 512);
+    OGLCubeMapTexture cm = OGLCubeMapTexture("res/shaders/Panorama.hdr", 512);
     OGLCubeMapTexture* irr = cm.createIrradianceMap(100);
     OGLCubeMapTexture* spec = cm.createPrefilteredSpec(100);
     EnvCube env = EnvCube(&cm);
@@ -161,9 +166,10 @@ int main(void)
     knf.createShader("res/shaders/b.vert", "res/shaders/pbr_mixed.frag", 6, 8);
     knf.setPosition(-4, 0, 0);
     knf.setScale(2, 2, 2);
-    knf.getShader()->addTexture("res/models/kcolor.png");
-    knf.getShader()->addTexture("res/models/knorm.png");
-    knf.getShader()->addTexture("res/models/korm.png");
+    knf.setRotation(0, 0, 0);
+    knf.getShader()->addTexture("res/models/revolv1_low_Material_BaseColor.png");
+    knf.getShader()->addTexture("res/models/revolv1_low_Material_Normal.png");
+    knf.getShader()->addTexture("res/models/revolv1_low_Material_OcclusionRoughnessMetallic.png");
     knf.getShader()->addTexture(irr);
     knf.getShader()->addTexture(&brdff);
     knf.getShader()->addTexture(spec);
@@ -185,18 +191,26 @@ int main(void)
     random.getShader()->addUniform<OGLUniform3FV>("colorId");
 
     sp[5] = &knf;
-    sp[6] = &random;
-    sp[7] = &floor;
+    sp[6] = &floor;
+    sp[7] = &random;
 
     OGLFrameBuffer fb;
-    OGLImageTexture colbb(sizex, sizey);
-    fb.attachColorTexture(&colbb);
+    OGLImageTexture rend(sizex, sizey);
+    OGLImageTexture colid(sizex, sizey);
+    fb.attachColorTexture(&rend);
+    fb.attachColorTexture(&colid);
     fb.unbind();
 
+    OGLFrameBuffer fbout;
+    OGLImageTexture outline(sizex, sizey);
+    fbout.attachColorTexture(&colid);
+    fbout.attachColorTexture(&outline);
+    fbout.unbind();
 
-
-    OGLTexturedShader postprocess = OGLTexturedShader("res/shaders/pp.vert", "res/shaders/pp.frag", 0, 3);
-    postprocess.addTexture(&colbb);
+    OGLTexturedShader postprocess = OGLTexturedShader("res/shaders/pp.vert", "res/shaders/pp.frag", 1, 3);
+    postprocess.addUniform<OGLUniform3FV>("selected");
+    postprocess.addTexture(&rend);
+    postprocess.addTexture(&outline);
 
     OGLVertexObject screenquad = OGLVertexObject(4);
     screenquad.addAttribute(0, 3, screenvp);
@@ -204,19 +218,8 @@ int main(void)
 
     cam.setRotation(-70, -10);
     
-
     
-    fb.bind();
-    fb.clear();
-    for (int i = 0; i < 8; i++) {
-        glm::vec3 c = glm::vec3((1.0f / 8.0f) * ((float)i + 1), 0, 0);
-        sp[i]->getShader()->updateUniformData("colorId", &(c[0]));
-        sp[i]->render(&cam);
-    }
-    fb.unbind();
-    colbb.save("pool.jpg");
-    brdff.save("shlinky.jpg");
-
+    //OGLImageTexture necol(colbb.getWidth(), colbb.getHeight(), pixels);
     double lmpos[2] = {};
     double cmpos[2] = {};
 
@@ -228,36 +231,46 @@ int main(void)
     {
         //cout << "started" << endl;
         window.getMousePos(cmpos);
-        keyInput(&window, &random, &cam);
-        updateCameraAngle(cmpos, lmpos, &player, &cam);
+        bool is_pressed = keyInput(&window, &random, &cam);
+        updateCameraAngle(&window, cmpos, lmpos, &player, &cam);
         
         lmpos[0] = cmpos[0];
         lmpos[1] = cmpos[1];
 
+        //cout << cmpos[0] << endl;
         //cout << glm::to_string(cam.getForwardDir()) << endl;
   
-        //fb.unbind();
-        //screenquad.bind();
-        //postprocess.bindShaderProgram();
-        //necol.bindTexture();
-        //glBindTexture(GL_TEXTURE_2D, colbb.getId());
-        //glDrawElements(GL_TRIANGLES, screenquad.getIndexCount(), GL_UNSIGNED_INT, (void*)0);
 
-        
         fb.bind();
         fb.clear();
-        for (int i = 5; i < 7; i++) {
-            glm::vec3 c = glm::vec3((1.0f / 8.0f) * ((float)i + 1), 0, 0);
+        for (int i = 0; i < 8; i++) {
+            float cid = ((float)i + 1) / 255.0f;
+            glm::vec3 c = glm::vec3(cid, cid, cid);
             sp[i]->getShader()->updateUniformData("colorId", &(c[0]));
             sp[i]->render(&cam);
         }
         fb.unbind();
+        int curr_object;
+        if (!is_pressed) {
+            unsigned char* pixels;
+            colid.read(&pixels);
+            curr_object = (int)pixels[(sizey - (int)cmpos[1]) * sizex * 3 + (int)cmpos[0] * 3];
+            curr_object = (int)curr_object;
+            delete[] pixels;
+        }
+        if (curr_object > 0) {
+            fbout.bind();
+            fbout.clear();
+            sp[curr_object - 1]->render(&cam);
+            fbout.unbind();
+        }
+        //OGLImageTexture necol(colbb.getWidth(), colbb.getHeight());
+        //necol.write(pixels);
+
         screenquad.bind();
         postprocess.bindShaderProgram();
-        colbb.bindTexture();
         glDrawElements(GL_TRIANGLES, screenquad.getIndexCount(), GL_UNSIGNED_INT, (void*)0);
-        
-        
+
         window.prepareForNextFrame();
 
     }

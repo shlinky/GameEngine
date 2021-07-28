@@ -2,17 +2,17 @@
   window.cpp
 C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\shared\minwindef.h(130,1): warning C4005: 'APIENTRY': macro redefinition
 C:\Users\shloks\source\repos\GLTest\Dependencies\glfw\include\GLFW\glfw3.h(123): message : see previous definition of 'APIENTRY'
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(82,18): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(83,20): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(116,28): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(135,30): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(170,62): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(172,34): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(84,22): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(85,24): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(121,28): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(140,30): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(176,62): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(178,34): warning C4305: 'argument': truncation from 'double' to 'float'
 LINK : warning LNK4098: defaultlib 'LIBCMT' conflicts with use of other libs; use /NODEFAULTLIB:library
   Generating code
-  8 of 859 functions ( 0.9%) were compiled, the rest were copied from previous compilation.
+  0 of 861 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    62 functions had inline decision re-evaluated but remain unchanged
+    0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
 LINK : warning LNK4286: symbol '___glewUseProgram' defined in 'glew32s.lib(glew.obj)' is imported by 'EnvCube.obj'
 LINK : warning LNK4286: symbol '___glewGenerateMipmap' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLCubeMapTexture.obj'
@@ -25,6 +25,7 @@ LINK : warning LNK4286: symbol '___glewFramebufferRenderbuffer' defined in 'glew
 LINK : warning LNK4286: symbol '___glewDeleteFramebuffers' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLFrameBuffer.obj'
 LINK : warning LNK4286: symbol '___glewRenderbufferStorage' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLFrameBuffer.obj'
 LINK : warning LNK4286: symbol '___glewFramebufferTexture2D' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLFrameBuffer.obj'
+LINK : warning LNK4286: symbol '___glewDrawBuffers' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLFrameBuffer.obj'
 LINK : warning LNK4286: symbol '___glewLinkProgram' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLShaderProgram.obj'
 LINK : warning LNK4286: symbol '___glewDeleteShader' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLShaderProgram.obj'
 LINK : warning LNK4286: symbol '___glewShaderSource' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLShaderProgram.obj'
