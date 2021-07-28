@@ -63,8 +63,10 @@ void keyInput(WindowsWindowing* w, SceneMeshObject* g, Camera* c) {
         c->moveForward(-0.5);
     if (w->isKeyPressed(GLFW_KEY_D))
         c->moveRight(0.5);
-    if (w->isKeyPressed(GLFW_KEY_SPACE))
+    if ((w->isKeyPressed(GLFW_KEY_SPACE)) && (!w->isKeyPressed(GLFW_KEY_RIGHT_SHIFT)))
         c->moveUp(0.5);
+    if ((w->isKeyPressed(GLFW_KEY_SPACE)) && (w->isKeyPressed(GLFW_KEY_RIGHT_SHIFT)))
+        c->moveDown(0.5);
     if (w->isMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
         cout << "left mouse pressed" << endl;
     }
@@ -192,6 +194,7 @@ int main(void)
     fb.unbind();
 
 
+
     OGLTexturedShader postprocess = OGLTexturedShader("res/shaders/pp.vert", "res/shaders/pp.frag", 0, 3);
     postprocess.addTexture(&colbb);
 
@@ -201,6 +204,19 @@ int main(void)
 
     cam.setRotation(-70, -10);
     
+
+    
+    fb.bind();
+    fb.clear();
+    for (int i = 0; i < 8; i++) {
+        glm::vec3 c = glm::vec3((1.0f / 8.0f) * ((float)i + 1), 0, 0);
+        sp[i]->getShader()->updateUniformData("colorId", &(c[0]));
+        sp[i]->render(&cam);
+    }
+    fb.unbind();
+    colbb.save("pool.jpg");
+    brdff.save("shlinky.jpg");
+
     double lmpos[2] = {};
     double cmpos[2] = {};
 
@@ -227,12 +243,20 @@ int main(void)
         //glBindTexture(GL_TEXTURE_2D, colbb.getId());
         //glDrawElements(GL_TRIANGLES, screenquad.getIndexCount(), GL_UNSIGNED_INT, (void*)0);
 
-
-        for (int i = 0; i < 8; i++) {
+        
+        fb.bind();
+        fb.clear();
+        for (int i = 5; i < 7; i++) {
             glm::vec3 c = glm::vec3((1.0f / 8.0f) * ((float)i + 1), 0, 0);
             sp[i]->getShader()->updateUniformData("colorId", &(c[0]));
             sp[i]->render(&cam);
         }
+        fb.unbind();
+        screenquad.bind();
+        postprocess.bindShaderProgram();
+        colbb.bindTexture();
+        glDrawElements(GL_TRIANGLES, screenquad.getIndexCount(), GL_UNSIGNED_INT, (void*)0);
+        
         
         window.prepareForNextFrame();
 
