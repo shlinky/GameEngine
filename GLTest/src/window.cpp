@@ -66,7 +66,7 @@ bool keyInput(WindowsWindowing* w, SceneMeshObject* g, Camera* c) {
     if ((w->isKeyPressed(GLFW_KEY_SPACE)) && (!w->isKeyPressed(GLFW_KEY_RIGHT_SHIFT)))
         c->moveUp(0.5);
     if ((w->isKeyPressed(GLFW_KEY_SPACE)) && (w->isKeyPressed(GLFW_KEY_RIGHT_SHIFT)))
-        c->moveDown(0.5);
+        c->moveUp(-0.5);
     if (w->isMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
         return true;
     }
@@ -226,12 +226,15 @@ int main(void)
     window.getMousePos(lmpos);
 
     window.prepareForNextFrame();
+    
+    int curr_object = 0;
     /* Loop until the user closes the window */
     while (!window.isWindowClosing())
     {
         //cout << "started" << endl;
         window.getMousePos(cmpos);
         bool is_pressed = keyInput(&window, &random, &cam);
+        bool is_clicked = window.isMouseClicked();
         updateCameraAngle(&window, cmpos, lmpos, &player, &cam);
         
         lmpos[0] = cmpos[0];
@@ -250,8 +253,8 @@ int main(void)
             sp[i]->render(&cam);
         }
         fb.unbind();
-        int curr_object = 0;
-        if (!is_pressed) {
+
+        if (is_clicked) {
             unsigned char* pixels;
             colid.read(&pixels);
             curr_object = (int)pixels[(sizey - (int)cmpos[1]) * sizex * 3 + (int)cmpos[0] * 3];
@@ -262,6 +265,11 @@ int main(void)
             fbout.bind();
             fbout.clear();
             sp[curr_object - 1]->render(&cam);
+            fbout.unbind();
+        }
+        else {
+            fbout.bind();
+            fbout.clear();
             fbout.unbind();
         }
         //OGLImageTexture necol(colbb.getWidth(), colbb.getHeight());

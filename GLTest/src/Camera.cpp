@@ -128,11 +128,6 @@ void Camera::moveUp(float amount)
 	position += multiplier * upDir;
 }
 
-void Camera::moveDown(float amount)
-{
-	glm::float32 multiplier(amount);
-	position -= multiplier * upDir;
-}
 
 void Camera::setPosition(float* pos)
 {

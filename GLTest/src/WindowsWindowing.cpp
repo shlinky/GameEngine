@@ -2,6 +2,10 @@
 
 //add a delta mouse function with a sensitivity option
 //set antialiasing
+
+float WindowsWindowing::presstime = 0;
+bool WindowsWindowing::clicked = false;
+
 WindowsWindowing::WindowsWindowing(int sizex, int sizey, string title, bool fullscreen)
 {
     this->sizex = sizex;
@@ -52,6 +56,8 @@ WindowsWindowing::WindowsWindowing(int sizex, int sizey, string title, bool full
     glfwSwapInterval(1);
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetMouseButtonCallback(window, WindowsWindowing::mouse_button_callback);
+    clicked = false;
 }
 
 WindowsWindowing::~WindowsWindowing()
@@ -106,6 +112,30 @@ bool WindowsWindowing::isMouseButtonPressed(int mouseButton)
         return (true);
     }
     return (false);
+}
+
+bool WindowsWindowing::isMouseClicked()
+{
+    bool cclicked = clicked;
+    clicked = false;
+    return cclicked;
+}
+
+void WindowsWindowing::mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        presstime = getTime();
+    }
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
+        float dtime = getTime() - presstime;
+        if (dtime < 0.2) {
+            clicked = true;
+        }
+        else {
+            clicked = false;
+        }
+    }
+
 }
 
 void WindowsWindowing::setMouseHidden(bool hidden)

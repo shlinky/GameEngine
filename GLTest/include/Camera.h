@@ -24,7 +24,6 @@ public:
 	void moveForward(float amount);
 	void moveRight(float amount);
 	void moveUp(float amount);
-	void moveDown(float amount);
 
 	void setPosition(float* pos);
 	void setPosition(float x, float y, float z);

@@ -22,13 +22,19 @@ public:
 	void setKeyPress(GLFWkeyfun K);
 	bool isKeyPressed(int key);
 	bool isMouseButtonPressed(int mouseButton);
+	bool isMouseClicked();
+
+	static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 
 	void setMouseHidden(bool hidden);
-	float getTime();
+	static float getTime();
 	void resetTime();
 private:
 	GLFWwindow* window;
 	int sizex;
 	int sizey;
+
+	static float presstime;
+	static bool clicked;
 };
 
