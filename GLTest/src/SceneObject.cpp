@@ -37,7 +37,10 @@ void SceneObject::setPosition(float x, float y, float z)
 
 void SceneObject::setRotation(float x, float y, float z)
 {
-	rotation = glm::quat(glm::radians(glm::vec3(y, x, z)));
+	glm::quat QuatAroundX = glm::angleAxis(glm::radians(x), glm::vec3(0.0, 1.0, 0.0));
+	glm::quat QuatAroundY = glm::angleAxis(glm::radians(y), glm::vec3(1.0, 0.0, 0.0));
+	glm::quat QuatAroundZ = glm::angleAxis(glm::radians(z), glm::vec3(0.0, 0.0, 1.0));
+	rotation = QuatAroundX * QuatAroundY * QuatAroundZ;
 	//cout << glm::to_string(glm::eulerAngles(rotation)) << endl;
 }
 

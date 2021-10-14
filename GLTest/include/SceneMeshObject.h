@@ -26,9 +26,12 @@ public:
 
 	void render(Camera* cam);
 	void bind();
+
+	void setDepthTest(bool depth);
 private:
 	OGLVertexObject* mesh;
 	OGLTexturedShader* shader;
 	glm::mat4 mvp;
+	bool depthtest = true;
 };
 

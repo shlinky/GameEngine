@@ -71,8 +71,8 @@ void main() {
 
 	ngoodr = normalize(normals_raw);
 	vec3 tangents_raww = normalize(tangents_raw);
-	vec3 bitangents_raw = (cross(ngoodr, tangents_raww));
-	tangents_raww = (cross(ngoodr, bitangents_raw));
+	vec3 bitangents_raw = normalize(cross(ngoodr, tangents_raww));
+	tangents_raww = normalize(cross(ngoodr, bitangents_raw));
 
 	vec3 nnorm = vec3(texture(normalTex, UV)) * 2 - 1;
 	vec3 normals_final = normalize(nnorm.x * tangents_raww + nnorm.y * bitangents_raw + nnorm.z * ngoodr);

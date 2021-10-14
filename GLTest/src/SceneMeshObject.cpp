@@ -57,7 +57,7 @@ void SceneMeshObject::setShader(OGLTexturedShader* shader)
 
 void SceneMeshObject::createShader(string vs, string fs, int numUniforms, int numTextures)
 {
-	shader = new OGLTexturedShader(vs, fs, numUniforms, numTextures);
+	shader = new OGLTexturedShader(vs, fs, numUniforms + 3, numTextures);
 	shader->addUniform<OGLUniformMat4FV>("mvp");
 	shader->addUniform<OGLUniform3FV>("camera_position");
 	shader->addUniform<OGLUniformMat4FV>("world");
@@ -95,7 +95,6 @@ void SceneMeshObject::render(Camera* cam)
 	shader->updateUniformData("world", &modelmat);
 
 	bind();
-
 	glDrawElements(GL_TRIANGLES, mesh->getIndexCount(), GL_UNSIGNED_INT, (void*)0);
 }
 
@@ -103,4 +102,9 @@ void SceneMeshObject::bind()
 {
 	mesh->bind();
 	shader->bindShaderProgram();
+}
+
+void SceneMeshObject::setDepthTest(bool depth)
+{
+	depthtest = depth;
 }

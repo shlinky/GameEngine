@@ -131,7 +131,7 @@ int main(void)
     cout << "started1" << endl;
 
     OGLImageTexture brdff = OGLImageTexture("res/shaders/brdf.png");
-    OGLCubeMapTexture cm = OGLCubeMapTexture("res/shaders/Panorama.hdr", 512);
+    OGLCubeMapTexture cm = OGLCubeMapTexture("res/shaders/bob1.hdr", 512);
     OGLCubeMapTexture* irr = cm.createIrradianceMap(100);
     OGLCubeMapTexture* spec = cm.createPrefilteredSpec(100);
     EnvCube env = EnvCube(&cm);
@@ -197,8 +197,10 @@ int main(void)
     OGLFrameBuffer fb;
     OGLImageTexture rend(sizex, sizey);
     OGLImageTexture colid(sizex, sizey);
+    OGLImageTexture arr(sizex, sizey);
     fb.attachColorTexture(&rend);
     fb.attachColorTexture(&colid);
+    fb.attachColorTexture(&arr);
     fb.unbind();
 
     OGLFrameBuffer fbout;
@@ -217,8 +219,8 @@ int main(void)
     screenquad.addIndexing(screenindex, 6);
 
     cam.setRotation(-70, -10);
-    
-    
+
+
     //OGLImageTexture necol(colbb.getWidth(), colbb.getHeight(), pixels);
     double lmpos[2] = {};
     double cmpos[2] = {};
@@ -226,8 +228,34 @@ int main(void)
     window.getMousePos(lmpos);
 
     window.prepareForNextFrame();
-    
+
+    //arrows
+    OGLVertexObject arw("res/models/arr.txt", true, 7);
+    SceneMeshObject arrs[3];
+    SceneObject select;
+    for (int i = 0; i < 3; i++) {
+        arrs[i].setIsComponent(true);
+        arrs[i].setMesh(&arw);
+        arrs[i].setScale(0.1, 0.1, 0.1);
+        arrs[i].setParent(&select);
+        arrs[i].createShader("res/shaders/b.vert", "res/shaders/color.frag", 1, 0);
+        arrs[i].getShader()->addUniform<OGLUniform3FV>("col");
+    }
+    arrs[0].setRotation(0, 0, -90);
+    arrs[1].setRotation(0, 0, 0);
+    arrs[2].setRotation(0, 90, 0);
+
+    float col[3] = { 1.0f, 0, 0 };
+    arrs[0].getShader()->updateUniformData("col", col);
+    col[0] = 0;
+    col[1] = 1;
+    arrs[1].getShader()->updateUniformData("col", col);
+    col[1] = 0;
+    col[2] = 1;
+    arrs[2].getShader()->updateUniformData("col", col);
+
     int curr_object = 0;
+    int arrow = 0;
     /* Loop until the user closes the window */
     while (!window.isWindowClosing())
     {
@@ -236,13 +264,14 @@ int main(void)
         bool is_pressed = keyInput(&window, &random, &cam);
         bool is_clicked = window.isMouseClicked();
         updateCameraAngle(&window, cmpos, lmpos, &player, &cam);
-        
+
         lmpos[0] = cmpos[0];
         lmpos[1] = cmpos[1];
 
         //cout << cmpos[0] << endl;
         //cout << glm::to_string(cam.getForwardDir()) << endl;
-  
+
+        //scene class handles
 
         fb.bind();
         fb.clear();
@@ -252,20 +281,46 @@ int main(void)
             sp[i]->getShader()->updateUniformData("colorId", &(c[0]));
             sp[i]->render(&cam);
         }
+        glClear(GL_DEPTH_BUFFER_BIT);
+        for (int i = 0; i < 3; i++) {
+            arrs[i].render(&cam);
+        }
         fb.unbind();
 
+ 
+
+        //scene will handle and return pointer to object given mouse position
+        //selection functionality in scene uses this function
+        unsigned char* pixels = nullptr;
+        if (is_pressed) {
+            arr.read(&pixels);
+            if (((cmpos[0] <= sizex) && (cmpos[0] >= 0)) && ((cmpos[1] >= 0) && (cmpos[1] <= sizey))) {
+                int sel = (int)pixels[(sizey - (int)cmpos[1]) * sizex * 3 + (int)cmpos[0] * 3];
+                if (sel >= 253) {
+                    arrow = 255 - sel;
+                }
+            }
+        }
+        else {
+            arrow = 0;
+        }
         if (is_clicked) {
-            unsigned char* pixels;
             colid.read(&pixels);
             curr_object = (int)pixels[(sizey - (int)cmpos[1]) * sizex * 3 + (int)cmpos[0] * 3];
-            curr_object = (int)curr_object;
-            delete[] pixels;
+            cout << curr_object << endl;
         }
-        if (curr_object > 0) {
+        delete[] pixels;
+
+        if (arrow) {
+            cout << "gucc" << endl;
+        }
+        if ((curr_object > 0) && (curr_object <= 8)) {
             fbout.bind();
             fbout.clear();
             sp[curr_object - 1]->render(&cam);
             fbout.unbind();
+            glm::vec3 spos = sp[curr_object - 1]->getPosition();
+            select.setPosition(spos.x, spos.y, spos.z);
         }
         else {
             fbout.bind();
