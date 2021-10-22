@@ -25,6 +25,29 @@ glm::quat SceneObject::getQuatRotation()
 	return rotation;
 }
 
+glm::vec3 SceneObject::getWorldRotation()
+{
+	if (isComponent) {
+		glm::quat wRot = (parentObject->getQuatRotation() * rotation);
+		glm::vec3 pyl = glm::degrees(glm::eulerAngles(rotation));
+		return (glm::vec3(pyl.y, pyl.x, pyl.z));
+	}
+	else {
+		return (getRotation());
+	}
+}
+
+glm::quat SceneObject::getQuatWorldRotation()
+{
+	if (isComponent) {
+		cout << glm::to_string(getRotation()) << endl;
+		return (rotation);
+	}
+	else {
+		return (rotation);
+	}
+}
+
 glm::vec3 SceneObject::getScale()
 {
 	return scale;
@@ -37,10 +60,10 @@ void SceneObject::setPosition(float x, float y, float z)
 
 void SceneObject::setRotation(float x, float y, float z)
 {
-	glm::quat QuatAroundX = glm::angleAxis(glm::radians(x), glm::vec3(0.0, 1.0, 0.0));
-	glm::quat QuatAroundY = glm::angleAxis(glm::radians(y), glm::vec3(1.0, 0.0, 0.0));
+	glm::quat QuatAroundX = glm::angleAxis(glm::radians(x), glm::vec3(1.0, 0.0, 0.0));
+	glm::quat QuatAroundY = glm::angleAxis(glm::radians(y), glm::vec3(0.0, 1.0, 0.0));
 	glm::quat QuatAroundZ = glm::angleAxis(glm::radians(z), glm::vec3(0.0, 0.0, 1.0));
-	rotation = QuatAroundX * QuatAroundY * QuatAroundZ;
+	rotation = QuatAroundZ * QuatAroundY * QuatAroundX;
 	//cout << glm::to_string(glm::eulerAngles(rotation)) << endl;
 }
 

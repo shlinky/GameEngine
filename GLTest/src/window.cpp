@@ -90,7 +90,8 @@ void updateCameraAngle(WindowsWindowing* w, double* cPos, double* lPos, SceneObj
 
         float yaw = c->getYaw();
         float ptch = c->getPitch();
-        g->setRotation(-90 - yaw, ptch, 0);
+        //cout << yaw << endl;
+        g->setRotation(ptch, -90 - yaw, 0);
     }
     else {
         w->setMouseHidden(false);
@@ -113,7 +114,7 @@ unsigned int screenindex[6] = {
 
 int main(void)
 {
-    WindowsWindowing window(1920, 1080, "Application", false);
+    WindowsWindowing window(1920, 1080, "Application", true);
 
     startGLDebug();
 
@@ -176,7 +177,7 @@ int main(void)
     knf.getShader()->addUniform<OGLUniform3FV>("colorId");
 
     SceneMeshObject random = SceneMeshObject(0.45, -0.3, -2.3);
-    random.setRotation(180, 0, 0);
+    random.setRotation(0, 180, 0);
     random.setScale(0.2, 0.2, 0.2);
     random.setIsComponent(true);
     random.setParent(&player);
@@ -233,6 +234,7 @@ int main(void)
     OGLVertexObject arw("res/models/arr.txt", true, 7);
     SceneMeshObject arrs[3];
     SceneObject select;
+    float selscale = 0.01;
     for (int i = 0; i < 3; i++) {
         arrs[i].setIsComponent(true);
         arrs[i].setMesh(&arw);
@@ -242,8 +244,8 @@ int main(void)
         arrs[i].getShader()->addUniform<OGLUniform3FV>("col");
     }
     arrs[0].setRotation(0, 0, -90);
-    arrs[1].setRotation(0, 0, 0);
-    arrs[2].setRotation(0, 90, 0);
+    arrs[1].setRotation(90, 0, 0);
+    arrs[2].setRotation(0, 0, 0);
 
     float col[3] = { 1.0f, 0, 0 };
     arrs[0].getShader()->updateUniformData("col", col);
@@ -256,6 +258,7 @@ int main(void)
 
     int curr_object = 0;
     int arrow = 0;
+    bool was_pressed = false;
     /* Loop until the user closes the window */
     while (!window.isWindowClosing())
     {
@@ -264,7 +267,8 @@ int main(void)
         bool is_pressed = keyInput(&window, &random, &cam);
         bool is_clicked = window.isMouseClicked();
         updateCameraAngle(&window, cmpos, lmpos, &player, &cam);
-
+        float dmousex = cmpos[0] - lmpos[0];
+        float dmousey = cmpos[1] - lmpos[1];
         lmpos[0] = cmpos[0];
         lmpos[1] = cmpos[1];
 
@@ -282,6 +286,9 @@ int main(void)
             sp[i]->render(&cam);
         }
         glClear(GL_DEPTH_BUFFER_BIT);
+        //will be done in separate arrow class maybe
+        float sscale = 0.07 * glm::distance(cam.getPosition(), select.getPosition());
+        select.setScale(sscale, sscale, sscale);
         for (int i = 0; i < 3; i++) {
             arrs[i].render(&cam);
         }
@@ -293,17 +300,20 @@ int main(void)
         //selection functionality in scene uses this function
         unsigned char* pixels = nullptr;
         if (is_pressed) {
-            arr.read(&pixels);
-            if (((cmpos[0] <= sizex) && (cmpos[0] >= 0)) && ((cmpos[1] >= 0) && (cmpos[1] <= sizey))) {
-                int sel = (int)pixels[(sizey - (int)cmpos[1]) * sizex * 3 + (int)cmpos[0] * 3];
-                if (sel >= 253) {
-                    arrow = 255 - sel;
+            if (!was_pressed) {
+                arr.read(&pixels);
+                if (((cmpos[0] < sizex) && (cmpos[0] > 0)) && ((cmpos[1] > 0) && (cmpos[1] < sizey))) {
+                    int sel = (int)pixels[(sizey - (int)cmpos[1]) * sizex * 3 + (int)cmpos[0] * 3];
+                    arrow = sel;
                 }
             }
+            was_pressed = true;
         }
         else {
             arrow = 0;
+            was_pressed = false;
         }
+
         if (is_clicked) {
             colid.read(&pixels);
             curr_object = (int)pixels[(sizey - (int)cmpos[1]) * sizex * 3 + (int)cmpos[0] * 3];
@@ -311,9 +321,21 @@ int main(void)
         }
         delete[] pixels;
 
-        if (arrow) {
-            cout << "gucc" << endl;
+        cout << "a " << arrow << endl;
+        if ((arrow) && (curr_object)) {
+            glm::vec4 aDir = glm::toMat4(arrs[arrow - 1].getQuatWorldRotation()) * glm::vec4(0, 1, 0, 1);
+            glm::vec3 adir = aDir;
+            glm::vec2 sDir = glm::vec2(glm::dot(cam.getRightDir(), adir), glm::dot(glm::normalize(glm::cross(cam.getRightDir(), cam.getForwardDir())), adir));
+            glm::vec2 mouseDir = glm::vec2(dmousex, -1 * dmousey);
+            float change = glm::dot(mouseDir, sDir);
+            adir = adir * change * 0.01f * glm::distance(cam.getPosition(), select.getPosition());
+            glm::vec3 spos = sp[curr_object - 1]->getPosition() + adir;
+            select.setPosition(spos.x, spos.y, spos.z);
+            sp[curr_object - 1]->setPosition(spos.x, spos.y, spos.z);
+            cout << glm::to_string(sDir) << endl;
+            cout << glm::to_string(mouseDir) << endl;
         }
+
         if ((curr_object > 0) && (curr_object <= 8)) {
             fbout.bind();
             fbout.clear();

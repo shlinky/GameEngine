@@ -204,6 +204,11 @@ glm::vec3 Camera::getForwardDir()
 	return forwardDir;
 }
 
+glm::vec3 Camera::getRightDir()
+{
+	return rightDir;
+}
+
 void Camera::computeVectors()
 {
 	forwardDir.x = cos(camYaw) * cos(camPitch);

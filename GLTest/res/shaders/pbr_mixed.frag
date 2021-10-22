@@ -94,9 +94,9 @@ void main() {
 
 	
 
-	l = normalize(vec3(4, 0.5, 3) - pos_raw.xyz);
-	float distance = pow(pow((0 - pos_raw.x), 2) + pow((0.2 - pos_raw.y), 2) + pow((1 - pos_raw.z), 2), 0.2);
-	vec3 radiance = vec3(20, 0, 10) / pow(distance, 2);
+	l = normalize(vec3(4, 2, 3) - pos_raw.xyz);
+	float distance = pow(pow((4 - pos_raw.x), 2) + pow((2 - pos_raw.y), 2) + pow((3 - pos_raw.z), 2), 0.2);
+	vec3 radiance = vec3(10, 20, 40) / pow(distance, 2);
 
 	vec3 h = normalize(c + l);
 	float cost = clamp(dot(l, normals_final), 0.01, 0.98);

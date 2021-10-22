@@ -29,6 +29,8 @@ public:
 	glm::vec3 getPosition();
 	glm::vec3 getRotation();
 	glm::quat getQuatRotation();
+	glm::vec3 getWorldRotation();
+	glm::quat getQuatWorldRotation();
 	glm::vec3 getScale();
 	void setPosition(float x, float y, float z);
 	void setRotation(float x, float y, float z);

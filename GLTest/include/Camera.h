@@ -41,6 +41,7 @@ public:
 	glm::mat4 getTransMat(bool motion = true);
 	glm::mat4 getTransMatOrtho(bool motion = true);
 	glm::vec3 getForwardDir();
+	glm::vec3 getRightDir();
 
 	void computeVectors();
 private:

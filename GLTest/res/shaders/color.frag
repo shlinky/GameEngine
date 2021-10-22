@@ -6,12 +6,12 @@ uniform vec3 col;
 
 void main() {
 	color = vec4(col, 1);
-	float id = 255;
-	if (col.z > 0) {
-		id -= 2;
+	float id = 1;
+	if (col.y > 0) {
+		id += 1;
 	}
-	else if (col.y > 0) {
-		id -= 1;
+	else if (col.z > 0) {
+		id += 2;
 	}
 	icolor = vec4(id / 255, id / 255, id / 255, 1);
 }    
