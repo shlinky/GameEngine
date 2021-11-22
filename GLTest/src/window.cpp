@@ -114,7 +114,7 @@ unsigned int screenindex[6] = {
 
 int main(void)
 {
-    WindowsWindowing window(1920, 1080, "Application", true);
+    WindowsWindowing window(1920, 1080, "Application", false);
 
     startGLDebug();
 
@@ -132,9 +132,9 @@ int main(void)
     cout << "started1" << endl;
 
     OGLImageTexture brdff = OGLImageTexture("res/shaders/brdf.png");
-    OGLCubeMapTexture cm = OGLCubeMapTexture("res/shaders/bob1.hdr", 512);
-    OGLCubeMapTexture* irr = cm.createIrradianceMap(100);
-    OGLCubeMapTexture* spec = cm.createPrefilteredSpec(100);
+    OGLCubeMapTexture cm = OGLCubeMapTexture("res/shaders/bob2.hdr", 512);
+    OGLCubeMapTexture* irr = cm.createIrradianceMap(256);
+    OGLCubeMapTexture* spec = cm.createPrefilteredSpec(256);
     EnvCube env = EnvCube(&cm);
 
     SceneMeshObject* sp[8] = { 0 };
@@ -165,9 +165,11 @@ int main(void)
 
     SceneMeshObject knf = SceneMeshObject("res/models/knife.txt");
     knf.createShader("res/shaders/b.vert", "res/shaders/pbr_mixed.frag", 6, 8);
-    knf.setPosition(-4, 0, 0);
-    knf.setScale(2, 2, 2);
-    knf.setRotation(0, 0, 0);
+    knf.setPosition(3.2, -4.5, -2.8);
+    knf.setScale(1, 1, 1);
+    knf.setRotation(90, -88, 0);
+    knf.setIsComponent(true);
+    knf.setParent(&player);
     knf.getShader()->addTexture("res/models/revolv1_low_Material_BaseColor.png");
     knf.getShader()->addTexture("res/models/revolv1_low_Material_Normal.png");
     knf.getShader()->addTexture("res/models/revolv1_low_Material_OcclusionRoughnessMetallic.png");
@@ -179,8 +181,8 @@ int main(void)
     SceneMeshObject random = SceneMeshObject(0.45, -0.3, -2.3);
     random.setRotation(0, 180, 0);
     random.setScale(0.2, 0.2, 0.2);
-    random.setIsComponent(true);
-    random.setParent(&player);
+    //random.setIsComponent(true);
+    //random.setParent(&player);
     random.setMesh("res/models/test.txt");
     random.createShader("res/shaders/b.vert", "res/shaders/pgun_mixed.frag", 6, 6);
     random.getShader()->addTexture("res/models/v_portalgun.png");
@@ -191,9 +193,9 @@ int main(void)
     random.getShader()->addTexture(spec);
     random.getShader()->addUniform<OGLUniform3FV>("colorId");
 
-    sp[5] = &knf;
-    sp[6] = &floor;
-    sp[7] = &random;
+    sp[5] = &floor;
+    sp[6] = &random;
+    sp[7] = &knf;
 
     OGLFrameBuffer fb;
     OGLImageTexture rend(sizex, sizey);
@@ -259,7 +261,7 @@ int main(void)
     int curr_object = 0;
     int arrow = 0;
     bool was_pressed = false;
-    /* Loop until the user closes the window */
+    // Loop until the user closes the window 
     while (!window.isWindowClosing())
     {
         //cout << "started" << endl;
@@ -321,7 +323,6 @@ int main(void)
         }
         delete[] pixels;
 
-        cout << "a " << arrow << endl;
         if ((arrow) && (curr_object)) {
             glm::vec4 aDir = glm::toMat4(arrs[arrow - 1].getQuatWorldRotation()) * glm::vec4(0, 1, 0, 1);
             glm::vec3 adir = aDir;
