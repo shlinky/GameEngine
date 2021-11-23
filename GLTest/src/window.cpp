@@ -114,7 +114,7 @@ unsigned int screenindex[6] = {
 
 int main(void)
 {
-    WindowsWindowing window(1920, 1080, "Application", false);
+    WindowsWindowing window(640, 480, "Application", false);
 
     startGLDebug();
 
@@ -132,7 +132,7 @@ int main(void)
     cout << "started1" << endl;
 
     OGLImageTexture brdff = OGLImageTexture("res/shaders/brdf.png");
-    OGLCubeMapTexture cm = OGLCubeMapTexture("res/shaders/bob2.hdr", 512);
+    OGLCubeMapTexture cm = OGLCubeMapTexture("res/shaders/bob.hdr", 512);
     OGLCubeMapTexture* irr = cm.createIrradianceMap(256);
     OGLCubeMapTexture* spec = cm.createPrefilteredSpec(256);
     EnvCube env = EnvCube(&cm);
@@ -331,7 +331,6 @@ int main(void)
             float change = glm::dot(mouseDir, sDir);
             adir = adir * change * 0.01f * glm::distance(cam.getPosition(), select.getPosition());
             glm::vec3 spos = sp[curr_object - 1]->getPosition() + adir;
-            select.setPosition(spos.x, spos.y, spos.z);
             sp[curr_object - 1]->setPosition(spos.x, spos.y, spos.z);
             cout << glm::to_string(sDir) << endl;
             cout << glm::to_string(mouseDir) << endl;
@@ -342,8 +341,8 @@ int main(void)
             fbout.clear();
             sp[curr_object - 1]->render(&cam);
             fbout.unbind();
-            glm::vec3 spos = sp[curr_object - 1]->getPosition();
-            select.setPosition(spos.x, spos.y, spos.z);
+            select.setIsComponent(true);
+            select.setParent(sp[curr_object - 1]);
         }
         else {
             fbout.bind();

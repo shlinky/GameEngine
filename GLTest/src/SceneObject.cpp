@@ -25,10 +25,11 @@ glm::quat SceneObject::getQuatRotation()
 	return rotation;
 }
 
+//remove these non quaternion functions instead implement a converter
 glm::vec3 SceneObject::getWorldRotation()
 {
 	if (isComponent) {
-		glm::quat wRot = (parentObject->getQuatRotation() * rotation);
+		glm::quat wRot = (parentObject->getQuatWorldRotation() * rotation);
 		glm::vec3 pyl = glm::degrees(glm::eulerAngles(rotation));
 		return (glm::vec3(pyl.y, pyl.x, pyl.z));
 	}
@@ -40,8 +41,8 @@ glm::vec3 SceneObject::getWorldRotation()
 glm::quat SceneObject::getQuatWorldRotation()
 {
 	if (isComponent) {
-		cout << glm::to_string(getRotation()) << endl;
-		return (rotation);
+		//cout << "parent rotation " << glm::to_string((glm::normalize(parentObject->getQuatWorldRotation()) * glm::normalize(rotation))) << endl;
+		return ((glm::normalize(parentObject->getQuatWorldRotation()) * glm::normalize(rotation)));
 	}
 	else {
 		return (rotation);
@@ -84,6 +85,18 @@ glm::vec3 SceneObject::Rotate(glm::vec3 r1, glm::vec3 r2)
 	glm::quat r = glm::normalize(newrot * glm::quat(glm::radians(r1)));
 	glm::vec3 pyl = glm::eulerAngles(r);
 	return (glm::degrees(pyl));
+}
+
+glm::mat4 SceneObject::generateModelMat()
+{
+	cout << glm::to_string(scale) << endl;
+	glm::mat4 modelmat = glm::scale(getScale());
+	modelmat = glm::toMat4(rotation) * modelmat;
+	modelmat = glm::translate(getPosition()) * modelmat;
+	if (isComponent) {
+		modelmat = parentObject->generateModelMat() * modelmat;
+	}
+	return (modelmat);
 }
 
 void SceneObject::setIsComponent(bool isComp)

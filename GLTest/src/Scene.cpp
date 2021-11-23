@@ -11,6 +11,8 @@ Scene::Scene(WindowsWindowing* win)
     mainBuffer = new OGLFrameBuffer();
     renderTexture = OGLImageTexture(sizex, sizey);
     mainBuffer->attachColorTexture(&renderTexture);
+    
+    objManipulator.setIsComponent(true);
 }
 
 void Scene::addSceneObject(SceneObject* obj)
@@ -42,10 +44,11 @@ void Scene::renderWithEditorFunctionality()
     glClear(GL_DEPTH_BUFFER_BIT);
     //will be done in separate arrow class maybe
     float arrowScale = 0.07;
-    float sscale = arrowScale * glm::distance(renderCam->getPosition(), objManipulator->getPosition());
-    objManipulator->setScale(sscale, sscale, sscale);
+    //make based on world position
+    float sscale = arrowScale * glm::distance(renderCam->getPosition(), objManipulator.getPosition());
+    objManipulator.setScale(sscale, sscale, sscale);
     for (int i = 0; i < 3; i++) {
-        arrows[i]->render(renderCam);
+        arrows[i].render(renderCam);
     }
     mainBuffer->unbind();
 
@@ -56,8 +59,8 @@ void Scene::renderWithEditorFunctionality()
         outlineBuffer->unbind();
 
         // do in function for setting selected object
-        glm::vec3 spos = selectedObject->getPosition();
-        objManipulator->setPosition(spos.x, spos.y, spos.z);
+        //glm::vec3 spos = selectedObject->getPosition();
+        //objManipulator.setPosition(spos.x, spos.y, spos.z);
     }
     else {
         outlineBuffer->bind();
@@ -97,19 +100,23 @@ void Scene::applyObjectEdits(float x, float y, float x1, float y1)
 
         if (arrow) {
             //make rotation scale and movement different functions
-            glm::vec4 aDir = glm::toMat4(arrows[arrow - 1]->getQuatWorldRotation()) * glm::vec4(0, 1, 0, 1);
+            glm::vec4 aDir = glm::toMat4(arrows[arrow - 1].getQuatWorldRotation()) * glm::vec4(0, 1, 0, 1);
             glm::vec3 adir = aDir;
             glm::vec2 sDir = glm::vec2(glm::dot(renderCam->getRightDir(), adir), glm::dot(glm::normalize(glm::cross(renderCam->getRightDir(), renderCam->getForwardDir())), adir));
             glm::vec2 mouseDir = glm::vec2(dmousex, -1 * dmousey);
             float change = glm::dot(mouseDir, sDir);
-            adir = adir * change * 0.01f * glm::distance(renderCam->getPosition(), objManipulator->getPosition());
+            adir = adir * change * 0.01f * glm::distance(renderCam->getPosition(), objManipulator.getPosition());
             glm::vec3 spos = selectedObject->getPosition() + adir;
 
-            //make objManipulator a component of slelected OBject
-            objManipulator->setPosition(spos.x, spos.y, spos.z);
             selectedObject->setPosition(spos.x, spos.y, spos.z);
         }
     }
+}
+
+void Scene::setSelectedObject(int id)
+{
+    selectedObject = sceneObjects[id];
+    objManipulator.setParent(selectedObject);
 }
 
 Camera* Scene::getCamera()

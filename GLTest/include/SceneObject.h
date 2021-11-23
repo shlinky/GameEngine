@@ -38,6 +38,8 @@ public:
 	void Rotate(float x, float y, float z);
 	static glm::vec3 Rotate(glm::vec3 r1, glm::vec3 r2);
 
+	glm::mat4 generateModelMat();
+
 	void setIsComponent(bool isComp);
 	void setParent(SceneObject* parent);
 protected:

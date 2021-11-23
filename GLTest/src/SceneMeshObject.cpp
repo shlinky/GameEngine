@@ -78,14 +78,7 @@ void SceneMeshObject::render(Camera* cam)
 {
 	//creating mvp matrix
 	glm::mat4 vp = cam->getTransMat();
-	glm::mat4 modelmat = glm::scale(getScale());
-	modelmat = glm::toMat4(rotation) * modelmat;
-	modelmat = glm::translate(getPosition()) * modelmat;
-	if (isComponent) {
-		modelmat = glm::scale(parentObject->getScale()) * modelmat;
-		modelmat = glm::toMat4(parentObject->getQuatRotation()) * modelmat;
-		modelmat = glm::translate(parentObject->getPosition()) * modelmat;
-	}
+	glm::mat4 modelmat = generateModelMat();
 	mvp = vp * modelmat;
 
 	glm::vec3 campos = cam->getPosition();

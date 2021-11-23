@@ -36,10 +36,11 @@ public:
 	void renderWithEditorFunctionality();
 	SceneObject* getMouseTrace(float x, float y);
 	void applyObjectEdits(float x, float y, float x1, float y1);
+	void setSelectedObject(int id);
 	SceneObject* getObject(int id);
 	Camera* getCamera();
 
-	//maybe make it automatically render with functionality if this flag is set to true
+	//maybe make it automatically render with functionality if this flag is set to true, in other words else in the function
 	void setEditorFunctionality(bool on);
 private:
 	//maybe make into non pointers, but this will require no parameter constructors for these classes
@@ -56,8 +57,8 @@ private:
 	OGLVertexObject* screenquad;
 	OGLTexturedShader* postprocess;
 
-	SceneMeshObject* arrows[3];
-	SceneMeshObject* objManipulator;
+	SceneMeshObject arrows[3];
+	SceneMeshObject objManipulator;
 
 	Camera* renderCam;
 	bool editorFunctionality = false;

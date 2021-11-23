@@ -1,14 +1,24 @@
 ﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(459,5): warning MSB8028: The intermediate directory (Release\) contains files shared from another project (GLTest.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-  Scene.cpp
+  window.cpp
 C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\shared\minwindef.h(130,1): warning C4005: 'APIENTRY': macro redefinition
 C:\Users\shloks\source\repos\GLTest\Dependencies\glfw\include\GLFW\glfw3.h(123): message : see previous definition of 'APIENTRY'
-C:\Users\shloks\source\repos\GLTest\GLTest\src\Scene.cpp(8,35): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\shloks\source\repos\GLTest\GLTest\src\Scene.cpp(23,23): warning C4018: '<': signed/unsigned mismatch
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(86,22): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(87,24): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(124,28): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(143,30): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(168,36): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(181,62): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(183,34): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(239,26): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(243,39): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(272,23): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(273,23): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(292,22): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 LINK : warning LNK4098: defaultlib 'LIBCMT' conflicts with use of other libs; use /NODEFAULTLIB:library
   Generating code
-  0 of 921 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+  1 of 894 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    6 functions had inline decision re-evaluated but remain unchanged
+    10 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
 LINK : warning LNK4286: symbol '___glewUseProgram' defined in 'glew32s.lib(glew.obj)' is imported by 'EnvCube.obj'
 LINK : warning LNK4286: symbol '___glewGenerateMipmap' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLCubeMapTexture.obj'
