@@ -36,6 +36,7 @@ public:
 	void renderWithEditorFunctionality();
 	SceneObject* getMouseTrace(float x, float y);
 	void applyObjectEdits(float x, float y, float x1, float y1);
+	void selectObjManipulator(float x, float y);
 	void setSelectedObject(int id);
 	SceneObject* getObject(int id);
 	Camera* getCamera();
@@ -45,13 +46,17 @@ public:
 private:
 	//maybe make into non pointers, but this will require no parameter constructors for these classes
 	vector<SceneObject*> sceneObjects;
-	OGLFrameBuffer* mainBuffer;
+	OGLFrameBuffer* sceneBuffer;
+	OGLFrameBuffer* finalBuffer = nullptr;
 	OGLFrameBuffer* outlineBuffer;
-	OGLImageTexture renderTexture;
-	OGLImageTexture colorIDTexture;
-	OGLImageTexture arrowTexture;
-	OGLImageTexture outlineTexture;
+	OGLFrameBuffer* outlineClearBuffer;
+	OGLImageTexture* renderTexture;
+	OGLImageTexture* colorIDTexture;
+	OGLImageTexture* arrowTexture;
+	OGLImageTexture* outlineTexture;
+	OGLImageTexture* blank;
 	SceneObject* selectedObject;
+	//final buffer
 
 	//make this into separate class for screen space elements
 	OGLVertexObject* screenquad;
@@ -59,8 +64,10 @@ private:
 
 	SceneMeshObject arrows[3];
 	SceneMeshObject objManipulator;
+	SceneMeshObject* selectedArrow;
 
 	Camera* renderCam;
+	//colorids flag that is turned on when editorfunc is turned on
 	bool editorFunctionality = false;
 };
 

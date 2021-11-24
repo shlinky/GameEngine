@@ -24,6 +24,8 @@
 #include "SceneMeshObject.h"
 #include "EnvCube.h"
 #include "Windows.h"
+
+#include "Scene.h"
 using namespace std;
 
 //main file
@@ -149,7 +151,6 @@ int main(void)
         sp[i]->getShader()->addTexture(&brdff);
         sp[i]->getShader()->addTexture(spec);
         sp[i]->getShader()->addUniform<OGLUniform3FV>("colorId");
-
     }
 
     SceneMeshObject floor = SceneMeshObject("res/models/floor.txt");
@@ -261,103 +262,47 @@ int main(void)
     int curr_object = 0;
     int arrow = 0;
     bool was_pressed = false;
+
+    Scene scn = Scene(&window);
+    for (int i = 0; i < 8; i++) {
+        scn.addSceneObject(sp[i]);
+    }
+    scn.setEditorFunctionality(true);
     // Loop until the user closes the window 
     while (!window.isWindowClosing())
     {
         //cout << "started" << endl;
         window.getMousePos(cmpos);
-        bool is_pressed = keyInput(&window, &random, &cam);
+        bool is_pressed = keyInput(&window, &random, scn.getCamera());
         bool is_clicked = window.isMouseClicked();
-        updateCameraAngle(&window, cmpos, lmpos, &player, &cam);
+        updateCameraAngle(&window, cmpos, lmpos, &player, scn.getCamera());
         float dmousex = cmpos[0] - lmpos[0];
         float dmousey = cmpos[1] - lmpos[1];
         lmpos[0] = cmpos[0];
         lmpos[1] = cmpos[1];
 
-        //cout << cmpos[0] << endl;
-        //cout << glm::to_string(cam.getForwardDir()) << endl;
-
-        //scene class handles
-
-        fb.bind();
-        fb.clear();
-        for (int i = 0; i < 8; i++) {
-            float cid = ((float)i + 1) / 255.0f;
-            glm::vec3 c = glm::vec3(cid, cid, cid);
-            sp[i]->getShader()->updateUniformData("colorId", &(c[0]));
-            sp[i]->render(&cam);
-        }
-        glClear(GL_DEPTH_BUFFER_BIT);
-        //will be done in separate arrow class maybe
-        float sscale = 0.07 * glm::distance(cam.getPosition(), select.getPosition());
-        select.setScale(sscale, sscale, sscale);
-        for (int i = 0; i < 3; i++) {
-            arrs[i].render(&cam);
-        }
-        fb.unbind();
-
- 
-
-        //scene will handle and return pointer to object given mouse position
-        //selection functionality in scene uses this function
-        unsigned char* pixels = nullptr;
         if (is_pressed) {
+            scn.applyObjectEdits(cmpos[0] - dmousex, cmpos[1] - dmousey, cmpos[0], cmpos[1]);
             if (!was_pressed) {
-                arr.read(&pixels);
-                if (((cmpos[0] < sizex) && (cmpos[0] > 0)) && ((cmpos[1] > 0) && (cmpos[1] < sizey))) {
-                    int sel = (int)pixels[(sizey - (int)cmpos[1]) * sizex * 3 + (int)cmpos[0] * 3];
-                    arrow = sel;
-                }
+                scn.selectObjManipulator(cmpos[0], cmpos[1]);
             }
             was_pressed = true;
         }
         else {
-            arrow = 0;
             was_pressed = false;
         }
 
         if (is_clicked) {
-            colid.read(&pixels);
-            curr_object = (int)pixels[(sizey - (int)cmpos[1]) * sizex * 3 + (int)cmpos[0] * 3];
-            cout << curr_object << endl;
-        }
-        delete[] pixels;
-
-        if ((arrow) && (curr_object)) {
-            glm::vec4 aDir = glm::toMat4(arrs[arrow - 1].getQuatWorldRotation()) * glm::vec4(0, 1, 0, 1);
-            glm::vec3 adir = aDir;
-            glm::vec2 sDir = glm::vec2(glm::dot(cam.getRightDir(), adir), glm::dot(glm::normalize(glm::cross(cam.getRightDir(), cam.getForwardDir())), adir));
-            glm::vec2 mouseDir = glm::vec2(dmousex, -1 * dmousey);
-            float change = glm::dot(mouseDir, sDir);
-            adir = adir * change * 0.01f * glm::distance(cam.getPosition(), select.getPosition());
-            glm::vec3 spos = sp[curr_object - 1]->getPosition() + adir;
-            sp[curr_object - 1]->setPosition(spos.x, spos.y, spos.z);
-            cout << glm::to_string(sDir) << endl;
-            cout << glm::to_string(mouseDir) << endl;
+            SceneObject* sel = scn.getMouseTrace(cmpos[0], cmpos[1]);
+            if (sel)
+                scn.setSelectedObject(sel->getId());
+            else {
+                scn.setSelectedObject(-1);
+            }
         }
 
-        if ((curr_object > 0) && (curr_object <= 8)) {
-            fbout.bind();
-            fbout.clear();
-            sp[curr_object - 1]->render(&cam);
-            fbout.unbind();
-            select.setIsComponent(true);
-            select.setParent(sp[curr_object - 1]);
-        }
-        else {
-            fbout.bind();
-            fbout.clear();
-            fbout.unbind();
-        }
-        //OGLImageTexture necol(colbb.getWidth(), colbb.getHeight());
-        //necol.write(pixels);
-
-        screenquad.bind();
-        postprocess.bindShaderProgram();
-        glDrawElements(GL_TRIANGLES, screenquad.getIndexCount(), GL_UNSIGNED_INT, (void*)0);
-
+        scn.renderWithEditorFunctionality();
         window.prepareForNextFrame();
-
     }
 
     return 0;

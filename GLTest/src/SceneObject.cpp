@@ -89,7 +89,6 @@ glm::vec3 SceneObject::Rotate(glm::vec3 r1, glm::vec3 r2)
 
 glm::mat4 SceneObject::generateModelMat()
 {
-	cout << glm::to_string(scale) << endl;
 	glm::mat4 modelmat = glm::scale(getScale());
 	modelmat = glm::toMat4(rotation) * modelmat;
 	modelmat = glm::translate(getPosition()) * modelmat;
@@ -107,4 +106,14 @@ void SceneObject::setIsComponent(bool isComp)
 void SceneObject::setParent(SceneObject* parent)
 {
 	parentObject = parent;
+}
+
+void SceneObject::setId(int eid)
+{
+	id = eid;
+}
+
+int SceneObject::getId()
+{
+	return id;
 }

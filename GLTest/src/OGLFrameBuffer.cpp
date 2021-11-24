@@ -27,6 +27,7 @@ OGLFrameBuffer::~OGLFrameBuffer()
 void OGLFrameBuffer::attachColorTexture(OGLImageTexture* text)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, fbid);
+	cout << text->getId() << endl;
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + numColorTextures, GL_TEXTURE_2D, text->getId(), 0);
 	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	numColorTextures++;
@@ -41,6 +42,8 @@ void OGLFrameBuffer::attachColorTexture(OGLImageTexture* text)
 		width = text->getWidth();
 		height = text->getHeight();
 	}
+
+	unbind();
 }
 
 void OGLFrameBuffer::attachColorTextureCM(OGLCubeMapTexture* text, int face, int mip)
@@ -59,6 +62,8 @@ void OGLFrameBuffer::attachColorTextureCM(OGLCubeMapTexture* text, int face, int
 		width = text->getWidth() * std::pow(0.5, mip);
 		height = text->getHeight() * std::pow(0.5, mip);
 	}
+
+	unbind();
 }
 
 void OGLFrameBuffer::createDepthStencilRenderBuffer()

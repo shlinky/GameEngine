@@ -42,6 +42,9 @@ public:
 
 	void setIsComponent(bool isComp);
 	void setParent(SceneObject* parent);
+	
+	void setId(int eid);
+	int getId();
 protected:
 	glm::vec3 position;
 	glm::vec3 scale;
@@ -49,5 +52,7 @@ protected:
 
 	bool isComponent;
 	SceneObject* parentObject;
+	int id = -1;
+	//properties hash table
 };
 
