@@ -198,31 +198,8 @@ int main(void)
     sp[6] = &random;
     sp[7] = &knf;
 
-    OGLFrameBuffer fb;
-    OGLImageTexture rend(sizex, sizey);
-    OGLImageTexture colid(sizex, sizey);
-    OGLImageTexture arr(sizex, sizey);
-    fb.attachColorTexture(&rend);
-    fb.attachColorTexture(&colid);
-    fb.attachColorTexture(&arr);
-    fb.unbind();
 
-    OGLFrameBuffer fbout;
-    OGLImageTexture outline(sizex, sizey);
-    fbout.attachColorTexture(&colid);
-    fbout.attachColorTexture(&outline);
-    fbout.unbind();
 
-    OGLTexturedShader postprocess = OGLTexturedShader("res/shaders/pp.vert", "res/shaders/pp.frag", 1, 3);
-    postprocess.addUniform<OGLUniform3FV>("selected");
-    postprocess.addTexture(&rend);
-    postprocess.addTexture(&outline);
-
-    OGLVertexObject screenquad = OGLVertexObject(4);
-    screenquad.addAttribute(0, 3, screenvp);
-    screenquad.addIndexing(screenindex, 6);
-
-    cam.setRotation(-70, -10);
 
 
     //OGLImageTexture necol(colbb.getWidth(), colbb.getHeight(), pixels);
@@ -233,34 +210,6 @@ int main(void)
 
     window.prepareForNextFrame();
 
-    //arrows
-    OGLVertexObject arw("res/models/arr.txt", true, 7);
-    SceneMeshObject arrs[3];
-    SceneObject select;
-    float selscale = 0.01;
-    for (int i = 0; i < 3; i++) {
-        arrs[i].setIsComponent(true);
-        arrs[i].setMesh(&arw);
-        arrs[i].setScale(0.1, 0.1, 0.1);
-        arrs[i].setParent(&select);
-        arrs[i].createShader("res/shaders/b.vert", "res/shaders/color.frag", 1, 0);
-        arrs[i].getShader()->addUniform<OGLUniform3FV>("col");
-    }
-    arrs[0].setRotation(0, 0, -90);
-    arrs[1].setRotation(90, 0, 0);
-    arrs[2].setRotation(0, 0, 0);
-
-    float col[3] = { 1.0f, 0, 0 };
-    arrs[0].getShader()->updateUniformData("col", col);
-    col[0] = 0;
-    col[1] = 1;
-    arrs[1].getShader()->updateUniformData("col", col);
-    col[1] = 0;
-    col[2] = 1;
-    arrs[2].getShader()->updateUniformData("col", col);
-
-    int curr_object = 0;
-    int arrow = 0;
     bool was_pressed = false;
 
     Scene scn = Scene(&window);
