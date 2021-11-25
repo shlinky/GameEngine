@@ -216,6 +216,7 @@ int main(void)
     for (int i = 0; i < 8; i++) {
         scn.addSceneObject(sp[i]);
     }
+    //scn.addSceneObject(&env);
     scn.setEditorFunctionality(true);
     // Loop until the user closes the window 
     while (!window.isWindowClosing())

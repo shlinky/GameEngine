@@ -17,8 +17,10 @@ inline void GLAPIENTRY errorCallback(GLenum source,
 #ifdef USING_MICROSOFT_BRKPTS
     __debugbreak();
 #else
-    int __r;
-    cin >> __r;
+    if (severity == GL_DEBUG_SEVERITY_HIGH) {
+        int __r;
+        cin >> __r;
+    }
 #endif
 }
 

@@ -53,6 +53,7 @@ protected:
 	bool isComponent;
 	SceneObject* parentObject;
 	int id = -1;
+	bool renderable;
 	//properties hash table
 };
 

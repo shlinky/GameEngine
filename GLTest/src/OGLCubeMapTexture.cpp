@@ -1,6 +1,7 @@
 #include "OGLCubeMapTexture.h"
 #include "SceneMeshObject.h"
 #include "OGLFrameBuffer.h"
+#include "Scene.h"
 #include <Windows.h>
 
 OGLCubeMapTexture::OGLCubeMapTexture()
