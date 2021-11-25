@@ -85,7 +85,6 @@ void Scene::render()
     for (int i = 0; i < sceneObjects.size(); i++) {
         if (sceneObjects[i]->getRenderable())
             ((RenderableSceneObject*)sceneObjects[i])->render(renderCam);
-    
     }
 }
 

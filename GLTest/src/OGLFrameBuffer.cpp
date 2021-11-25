@@ -22,12 +22,14 @@ OGLFrameBuffer::OGLFrameBuffer()
 OGLFrameBuffer::~OGLFrameBuffer()
 {
 	glDeleteFramebuffers(1, &fbid);
+	if (depth_stencil_rbid >= 0) {
+		glDeleteRenderbuffers(1, &depth_stencil_rbid);
+	}
 }
 
 void OGLFrameBuffer::attachColorTexture(OGLImageTexture* text)
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, fbid);
-	cout << text->getId() << endl;
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + numColorTextures, GL_TEXTURE_2D, text->getId(), 0);
 	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	numColorTextures++;

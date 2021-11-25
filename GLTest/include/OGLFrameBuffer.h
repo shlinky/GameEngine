@@ -22,7 +22,7 @@ public:
 	void resetColorTextures();
 private:
 	unsigned int fbid;
-	unsigned int depth_stencil_rbid;
+	unsigned int depth_stencil_rbid = -1;
 	bool depth_assigned;
 	int width;
 	int height;

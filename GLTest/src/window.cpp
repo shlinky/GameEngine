@@ -239,6 +239,8 @@ int main(void)
 
     int refcount = 0;
     // Loop until the user closes the window 
+
+    OGLCubeMapTexture scnCapture(100, true);
     while (!window.isWindowClosing())
     {
         //cout << "started" << endl;
@@ -285,12 +287,9 @@ int main(void)
         }
         scn.getCamera()->setPosition(pos.x, pos.y, pos.z);
         sp[refcount]->setHidden(true);
-        OGLCubeMapTexture scnCapture(100, true);
         scnCapture.renderIntoCubemap(&scn);
         scnCapture.createIrradianceMap(50, irrscn[refcount]);
         scnCapture.createPrefilteredSpec(50, specscn[refcount]);
-        sp[refcount]->getShader()->changeTexture(irrscn[refcount], 3);
-        sp[refcount]->getShader()->changeTexture(specscn[refcount], 5);
         sp[refcount]->setHidden(false);
         scn.renderHDR(false);
         scn.getCamera()->setPosition(opos.x, opos.y, opos.z);
