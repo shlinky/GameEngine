@@ -46,6 +46,8 @@ public:
 	void setEditorFunctionality(bool on);
 
 	void setRenderBuffer(OGLFrameBuffer* rb);
+
+	void renderHDR(bool on);
 private:
 	//maybe make into non pointers, but this will require no parameter constructors for these classes
 	vector<SceneObject*> sceneObjects;

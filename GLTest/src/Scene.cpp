@@ -228,3 +228,12 @@ void Scene::setRenderBuffer(OGLFrameBuffer* rb)
 {
     finalBuffer = rb;
 }
+
+void Scene::renderHDR(bool on)
+{
+    for (int i = 0; i < sceneObjects.size(); i++) {
+        if (sceneObjects[i]->getRenderable()) {
+            ((RenderableSceneObject*)sceneObjects[i])->setHDRRendering(on);
+        }
+    }
+}

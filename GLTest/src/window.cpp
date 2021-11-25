@@ -274,8 +274,7 @@ int main(void)
         scn.renderWithEditorFunctionality();
         window.prepareForNextFrame();
 
-        env.setHDRRendering(true);
-        sp[6]->setHDRRendering(true);
+        scn.renderHDR(true);
         glm::vec3 opos = scn.getCamera()->getPosition();
         glm::vec3 pos;
         if (refcount == 5) {
@@ -293,8 +292,7 @@ int main(void)
         sp[refcount]->getShader()->changeTexture(irrscn[refcount], 3);
         sp[refcount]->getShader()->changeTexture(specscn[refcount], 5);
         sp[refcount]->setHidden(false);
-        env.setHDRRendering(false);
-        sp[6]->setHDRRendering(false);
+        scn.renderHDR(false);
         scn.getCamera()->setPosition(opos.x, opos.y, opos.z);
         refcount++;
         refcount = refcount % 6;
