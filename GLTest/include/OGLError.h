@@ -14,7 +14,7 @@ inline void GLAPIENTRY errorCallback(GLenum source,
     const void* userParam) {
     cout << "OPENGL ERROR: " << type << ':' << endl;
     cout << message << endl;
-#ifdef USING_MICROSOFT_BRKPTS
+#ifdef USING_MICROSOFT_BRKPTS_GOOD
     __debugbreak();
 #else
     if (severity == GL_DEBUG_SEVERITY_HIGH) {
@@ -29,7 +29,7 @@ inline void applicationErrorCallback(const string message) {
     cout << endl;
     cout << "Application Error: " << endl;
     cout << message << endl;
-#ifdef USING_MICROSOFT_BRKPTS 
+#ifdef USING_MICROSOFT_BRKPTS_GOOD 
     __debugbreak();
 #else
     int __r;

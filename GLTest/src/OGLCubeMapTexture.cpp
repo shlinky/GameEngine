@@ -140,6 +140,40 @@ OGLCubeMapTexture::OGLCubeMapTexture(int w, bool mipmap)
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 }
 
+void OGLCubeMapTexture::renderIntoCubemap(Scene* scn)
+{
+    glm::vec3 pos = scn->getCamera()->getPosition();
+    Camera cam = Camera(pos.x, pos.y, pos.z, 1, 1);
+    cam.setFOV(90.0f);
+
+    Camera* ocam = scn->getCamera();
+    scn->setCamera(&cam);
+
+    OGLFrameBuffer fb;
+    scn->setRenderBuffer(&fb);
+
+    float renderViews[30] = { 0,  0, 0, -1,  0,
+                             180,  0, 0, -1,  0,
+                               0, 90, 0,  0,  1,
+                               0,-90, 0,  0, -1,
+                              90,  0, 0, -1,  0,
+                             -90,  0, 0, -1,  0 };
+
+    for (unsigned int i = 0; i < 6; i++)
+    {
+        cam.setUpDir(renderViews[(5 * i) + 2], renderViews[(5 * i) + 3], renderViews[(5 * i) + 4]);
+        cam.setRotation(renderViews[5 * i], renderViews[(5 * i) + 1]);
+        fb.resetColorTextures();
+        fb.attachColorTextureCM(this, i);
+        scn->render();
+    }
+    glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
+    glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+    scn->setRenderBuffer(nullptr);
+    scn->setCamera(ocam);
+}
+
 void OGLCubeMapTexture::save(string fname)
 {
     glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
@@ -161,7 +195,7 @@ void OGLCubeMapTexture::save(string fname)
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 }
 
-OGLCubeMapTexture* OGLCubeMapTexture::createIrradianceMap(int w)
+OGLCubeMapTexture* OGLCubeMapTexture::createIrradianceMap(int w, OGLCubeMapTexture* cm)
 {
     int irWidth = w;
     if (w == 0) {
@@ -177,8 +211,10 @@ OGLCubeMapTexture* OGLCubeMapTexture::createIrradianceMap(int w)
     cam.setFOV(90.0f);
     OGLFrameBuffer fb;
 
-    OGLCubeMapTexture* irMap = new OGLCubeMapTexture(irWidth);
-
+    OGLCubeMapTexture* irMap = cm;
+    if (!cm) 
+        irMap = new OGLCubeMapTexture(irWidth);
+    
     float renderViews[30] = {  0,  0, 0, -1,  0,
                              180,  0, 0, -1,  0,
                                0, 90, 0,  0,  1,
@@ -201,7 +237,7 @@ OGLCubeMapTexture* OGLCubeMapTexture::createIrradianceMap(int w)
     return (irMap);
 }
 
-OGLCubeMapTexture* OGLCubeMapTexture::createPrefilteredSpec(int w)
+OGLCubeMapTexture* OGLCubeMapTexture::createPrefilteredSpec(int w, OGLCubeMapTexture* cm)
 {
     int sWidth = w;
     if (w == 0) {
@@ -217,7 +253,9 @@ OGLCubeMapTexture* OGLCubeMapTexture::createPrefilteredSpec(int w)
     cam.setFOV(90.0f);
     OGLFrameBuffer fb;
 
-    OGLCubeMapTexture* sMap = new OGLCubeMapTexture(sWidth, true);
+    OGLCubeMapTexture* sMap = cm;
+    if (!cm)
+        sMap = new OGLCubeMapTexture(sWidth, true);
 
 
     float renderViews[30] = {  0,  0, 0, -1,  0,
@@ -240,7 +278,7 @@ OGLCubeMapTexture* OGLCubeMapTexture::createPrefilteredSpec(int w)
             float roughness = ((float)m) / (float)(4);
             cube.getShader()->updateUniformData("r", &roughness);
             cube.render(&cam);
-            cout << "pone" << endl;
+            //cout << "pone" << endl;
         }
 
     }

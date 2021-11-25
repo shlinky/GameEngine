@@ -7,6 +7,7 @@ in vec2 UV;
 vec3 l;
 vec3 c;
 float la = 1.6;
+uniform float HDR;
 uniform samplerCube skybox;
 
 vec3 display_world_vector(vec3 v) {
@@ -15,11 +16,17 @@ vec3 display_world_vector(vec3 v) {
 
 void main() {
 	// /texture(skybox, vec3(normalize(pos_raw)))
-	vec3 hdrColor = texture(skybox, vec3(pos_raw)).rgb;
+	vec3 lightout = texture(skybox, vec3(pos_raw)).rgb;
 
-	vec3 mapped = hdrColor / (hdrColor + vec3(1.0));
-    // gamma correction 
-    mapped = pow(mapped, vec3(1.0 / 2.2));
+	vec3 mapped;
+
+    if (HDR < 0.5) {
+		mapped = lightout / (lightout + vec3(1.0));
+    	mapped = pow(mapped, vec3(1.0 / 2.2));
+	}
+	else {
+		mapped = lightout;
+	}
 
     color = vec4(mapped, 1);
 

@@ -14,6 +14,7 @@ uniform mat4 mvp;
 uniform vec3 light_color;
 uniform vec3 light_position;
 uniform vec3 camera_position;
+uniform float HDR;
 float PI = 3.14159265;
 
 layout(binding=0)uniform sampler2D colorTex;
@@ -110,8 +111,15 @@ void main() {
 
 	vec3 lightout = diffuse + spec;
 
-	vec3 mapped = lightout / (lightout + vec3(1.0));
-    mapped = pow(mapped, vec3(1.0 / 2.2));
+	vec3 mapped;
+
+    if (HDR < 0.5) {
+		mapped = lightout / (lightout + vec3(1.0));
+    	mapped = pow(mapped, vec3(1.0 / 2.2));
+	}
+	else {
+		mapped = lightout;
+	}
 
 	color = vec4(mapped, 1);
 }    

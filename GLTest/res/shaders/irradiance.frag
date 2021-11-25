@@ -43,7 +43,7 @@ void main()
     vec3 right = normalize(cross(up, uv));
     up         = normalize(cross(uv, right));
 
-    float sampleDelta = 0.008;
+    float sampleDelta = 0.04;
     float nrSamples = 0.0; 
     for(float b = 0.0; b < 2.0 * PI; b += sampleDelta)
     {

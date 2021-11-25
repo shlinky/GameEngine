@@ -30,6 +30,7 @@ Camera::Camera(int winsizex, int winsizey, float* pos)
 	this->winsizex = winsizex;
 	this->winsizey = winsizey;
 
+	//make FOV variable
 	projMat = glm::perspective<float>(glm::radians(30.0f), (float)winsizex / winsizey, 0.1f, 1000.f);
 	projMatOrtho = glm::ortho<float>(0.0f, (float)winsizex, 0.0f, (float)winsizey);
 }

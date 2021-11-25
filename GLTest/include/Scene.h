@@ -40,9 +40,12 @@ public:
 	void setSelectedObject(int id);
 	SceneObject* getObject(int id);
 	Camera* getCamera();
+	void setCamera(Camera* cam);
 
 	//maybe make it automatically render with functionality if this flag is set to true, in other words else in the function
 	void setEditorFunctionality(bool on);
+
+	void setRenderBuffer(OGLFrameBuffer* rb);
 private:
 	//maybe make into non pointers, but this will require no parameter constructors for these classes
 	vector<SceneObject*> sceneObjects;

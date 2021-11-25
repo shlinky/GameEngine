@@ -16,6 +16,7 @@ uniform vec3 light_color;
 uniform vec3 light_position;
 uniform vec3 camera_position;
 uniform vec3 colorId;
+uniform float HDR;
 float PI = 3.14159265;
 
 layout(binding=0)uniform sampler2D colorTex;
@@ -107,11 +108,16 @@ void main() {
 	diffuse = diffuse * (1 - (0.4 * cost)) + dp * 0.4 * cost;
 	spec = spec * (1 - (0.4 * cost)) + sp * 0.4 * cost;
 
-	vec3 lightout = diffuse + spec;
+	vec3 lightout = textureLod(prespec, R,  0.7).rgb;
 
-	vec3 mapped = lightout / (lightout + vec3(1.0));
-    mapped = pow(mapped, vec3(1.0 / 2.2));
-
+	vec3 mapped;
+	if (HDR < 0.5) {
+		mapped = lightout / (lightout + vec3(1.0));
+    	mapped = pow(mapped, vec3(1.0 / 2.2));
+	}
+	else {
+		mapped = lightout;
+	}
 	color = vec4(mapped, 1);
 	icolor = vec4(colorId, 1);
 }    

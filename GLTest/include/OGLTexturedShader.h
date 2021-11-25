@@ -15,6 +15,7 @@ public:
 	void addTexture(OGLImageTexture* texture);
 	void addCubemapTexture(string* tNames);
 	void bindShaderProgram();
+	void changeTexture(OGLImageTexture* texture, int index);
 private:
 	int numTextures;
 	OGLImageTexture** textures;

@@ -117,3 +117,13 @@ int SceneObject::getId()
 {
 	return id;
 }
+
+bool SceneObject::getRenderable()
+{
+	return renderable;
+}
+
+bool SceneObject::getEditorMovable()
+{
+	return editorMovableObject;
+}

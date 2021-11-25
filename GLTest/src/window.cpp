@@ -116,7 +116,7 @@ unsigned int screenindex[6] = {
 
 int main(void)
 {
-    WindowsWindowing window(640, 480, "Application", false);
+    WindowsWindowing window(1920, 1080, "Application", false);
 
     startGLDebug();
 
@@ -134,7 +134,7 @@ int main(void)
     cout << "started1" << endl;
 
     OGLImageTexture brdff = OGLImageTexture("res/shaders/brdf.png");
-    OGLCubeMapTexture cm = OGLCubeMapTexture("res/shaders/bob.hdr", 512);
+    OGLCubeMapTexture cm = OGLCubeMapTexture("res/shaders/bob1.hdr", 512);
     OGLCubeMapTexture* irr = cm.createIrradianceMap(256);
     OGLCubeMapTexture* spec = cm.createPrefilteredSpec(256);
     EnvCube env = EnvCube(&cm);
@@ -194,9 +194,9 @@ int main(void)
     random.getShader()->addTexture(spec);
     random.getShader()->addUniform<OGLUniform3FV>("colorId");
 
-    sp[5] = &floor;
-    sp[6] = &random;
-    sp[7] = &knf;
+    sp[5] = &knf;
+    sp[6] = &floor;
+    sp[7] = &random;
 
 
 
@@ -213,11 +213,31 @@ int main(void)
     bool was_pressed = false;
 
     Scene scn = Scene(&window);
+    scn.addSceneObject(&env);
+    env.setHDRRendering(true);
+    //sp[5]->setHDRRendering(true);
     for (int i = 0; i < 8; i++) {
         scn.addSceneObject(sp[i]);
     }
-    //scn.addSceneObject(&env);
+    OGLCubeMapTexture* irrscn[6]; 
+    OGLCubeMapTexture* specscn[6];
+    for (int i = 0; i < 6; i++) {
+        glm::vec3 pos = sp[i]->getPosition();
+        scn.getCamera()->setPosition(pos.x, pos.y, pos.z);
+        sp[i]->setHidden(true);
+        OGLCubeMapTexture scnCapture(256, true);
+        scnCapture.renderIntoCubemap(&scn);
+        irrscn[i] = scnCapture.createIrradianceMap(100);
+        specscn[i] = scnCapture.createPrefilteredSpec(100);
+        sp[i]->getShader()->changeTexture(irrscn[i], 3);
+        sp[i]->getShader()->changeTexture(specscn[i], 5);
+        sp[i]->setHidden(false);
+    }
+
     scn.setEditorFunctionality(true);
+    env.setCubeMap(&cm);
+
+    int refcount = 0;
     // Loop until the user closes the window 
     while (!window.isWindowClosing())
     {
@@ -253,6 +273,31 @@ int main(void)
 
         scn.renderWithEditorFunctionality();
         window.prepareForNextFrame();
+
+        env.setHDRRendering(true);
+        sp[6]->setHDRRendering(true);
+        glm::vec3 opos = scn.getCamera()->getPosition();
+        glm::vec3 pos;
+        if (refcount == 5) {
+            pos = player.getPosition();
+        }
+        else {
+            pos = sp[refcount]->getPosition();
+        }
+        scn.getCamera()->setPosition(pos.x, pos.y, pos.z);
+        sp[refcount]->setHidden(true);
+        OGLCubeMapTexture scnCapture(100, true);
+        scnCapture.renderIntoCubemap(&scn);
+        scnCapture.createIrradianceMap(50, irrscn[refcount]);
+        scnCapture.createPrefilteredSpec(50, specscn[refcount]);
+        sp[refcount]->getShader()->changeTexture(irrscn[refcount], 3);
+        sp[refcount]->getShader()->changeTexture(specscn[refcount], 5);
+        sp[refcount]->setHidden(false);
+        env.setHDRRendering(false);
+        sp[6]->setHDRRendering(false);
+        scn.getCamera()->setPosition(opos.x, opos.y, opos.z);
+        refcount++;
+        refcount = refcount % 6;
     }
 
     return 0;

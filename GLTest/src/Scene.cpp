@@ -83,21 +83,26 @@ void Scene::render()
         finalBuffer->clear();
     }
     for (int i = 0; i < sceneObjects.size(); i++) {
-        //if object renderable (make this a virtual base class)
-        ((SceneMeshObject*)sceneObjects[i])->render(renderCam);
+        if (sceneObjects[i]->getRenderable())
+            ((RenderableSceneObject*)sceneObjects[i])->render(renderCam);
     
     }
 }
 
 void Scene::renderWithEditorFunctionality()
 {
+    //RENDERING THE SCENE INTO SCENE BUFFER
     sceneBuffer->bind();
     sceneBuffer->clear();
     for (int i = 0; i < sceneObjects.size(); i++) {
-        float cid = ((float)i + 1) / 255.0f;
-        glm::vec3 c = glm::vec3(cid, cid, cid);
-        ((SceneMeshObject*)sceneObjects[i])->getShader()->updateUniformData("colorId", &(c[0]));
-        ((SceneMeshObject*)sceneObjects[i])->render(renderCam);
+        if (sceneObjects[i]->getRenderable()) {
+            if (sceneObjects[i]->getEditorMovable()) {
+                float cid = ((float)i + 1) / 255.0f;
+                glm::vec3 c = glm::vec3(cid, cid, cid);
+                ((SceneMeshObject*)sceneObjects[i])->getShader()->updateUniformData("colorId", &(c[0]));
+            }
+            ((RenderableSceneObject*)sceneObjects[i])->render(renderCam);
+        }
     }
 
     glClear(GL_DEPTH_BUFFER_BIT);
@@ -111,6 +116,7 @@ void Scene::renderWithEditorFunctionality()
     }
     sceneBuffer->unbind();
 
+    //RENDERING THE OUTLINE
     if (selectedObject) {
         outlineBuffer->bind();
         outlineBuffer->clear();
@@ -123,6 +129,7 @@ void Scene::renderWithEditorFunctionality()
         outlineBuffer->unbind();
     }
 
+    //FINAL RENDER
     screenquad->bind();
     postprocess->bindShaderProgram();
     if (finalBuffer) {
@@ -199,6 +206,11 @@ Camera* Scene::getCamera()
     return renderCam;
 }
 
+void Scene::setCamera(Camera* cam)
+{
+    renderCam = cam;
+}
+
 void Scene::setEditorFunctionality(bool on)
 {
     editorFunctionality = on;
@@ -210,4 +222,9 @@ void Scene::setEditorFunctionality(bool on)
         sceneBuffer->resetColorTextures();
         sceneBuffer->attachColorTexture(renderTexture);
     }
+}
+
+void Scene::setRenderBuffer(OGLFrameBuffer* rb)
+{
+    finalBuffer = rb;
 }

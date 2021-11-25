@@ -1,13 +1,13 @@
 #pragma once
 #include "SceneObject.h"
-
+#include "RenderableSceneObject.h"
 //Mesh Objects that are in the scene (have pos rot scale)
 
 //hidden objects
 //inherits from renderable scene object
 //has outline option
 class SceneMeshObject :
-	public SceneObject
+	public RenderableSceneObject
 {
 public:
 	SceneMeshObject();
@@ -28,6 +28,7 @@ public:
 	void bind();
 
 	void setDepthTest(bool depth);
+	void setHDRRendering(bool HDR);
 private:
 	OGLVertexObject* mesh;
 	OGLTexturedShader* shader;

@@ -48,3 +48,8 @@ void OGLTexturedShader::bindShaderProgram()
 		textures[i]->bindTexture(i);
 	}
 }
+
+void OGLTexturedShader::changeTexture(OGLImageTexture* texture, int index)
+{
+	textures[index] = texture;
+}

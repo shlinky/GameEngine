@@ -17,8 +17,8 @@ public:
 	void renderIntoCubemap(Scene* scn);
 
 	void save(string fname);
-	OGLCubeMapTexture* createIrradianceMap(int w = 0);
-	OGLCubeMapTexture* createPrefilteredSpec(int w = 0);
+	OGLCubeMapTexture* createIrradianceMap(int w, OGLCubeMapTexture* cm = nullptr);
+	OGLCubeMapTexture* createPrefilteredSpec(int w, OGLCubeMapTexture* cm = nullptr);
 
 	//OGLCubeMapTexture(int w);
 	void bindTexture(unsigned int textureSlot = 0);

@@ -45,6 +45,8 @@ public:
 	
 	void setId(int eid);
 	int getId();
+	bool getRenderable();
+	bool getEditorMovable();
 protected:
 	glm::vec3 position;
 	glm::vec3 scale;
@@ -53,7 +55,8 @@ protected:
 	bool isComponent;
 	SceneObject* parentObject;
 	int id = -1;
-	bool renderable;
+	bool renderable = false;
+	bool editorMovableObject = false;
 	//properties hash table
 };
 

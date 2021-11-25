@@ -7,6 +7,8 @@ SceneMeshObject::SceneMeshObject()
 	setPosition(0, 0, 0);
 	setScale(1, 1, 1);
 	setScale(0, 0, 0);
+	renderable = true;
+	editorMovableObject = true;
 }
 
 SceneMeshObject::SceneMeshObject(string model)
@@ -15,6 +17,8 @@ SceneMeshObject::SceneMeshObject(string model)
 	setPosition(0, 0, 0);
 	setScale(1, 1, 1);
 	setScale(0, 0, 0);
+	renderable = true;
+	editorMovableObject = true;
 }
 
 SceneMeshObject::SceneMeshObject(OGLVertexObject* model)
@@ -23,6 +27,8 @@ SceneMeshObject::SceneMeshObject(OGLVertexObject* model)
 	setPosition(0, 0, 0);
 	setScale(1, 1, 1);
 	setRotation(0, 0, 0);
+	renderable = true;
+	editorMovableObject = true;
 }
 
 SceneMeshObject::SceneMeshObject(float x, float y, float z)
@@ -30,6 +36,8 @@ SceneMeshObject::SceneMeshObject(float x, float y, float z)
 	setPosition(x, y, z);
 	setScale(1, 1, 1);
 	setRotation(0, 0, 0);
+	renderable = true;
+	editorMovableObject = true;
 }
 
 SceneMeshObject::SceneMeshObject(string model, float x, float y, float z)
@@ -38,6 +46,8 @@ SceneMeshObject::SceneMeshObject(string model, float x, float y, float z)
 	setPosition(x, y, z);
 	setScale(1, 1, 1);
 	setRotation(0, 0, 0);
+	renderable = true;
+	editorMovableObject = true;
 }
 
 void SceneMeshObject::setMesh(OGLVertexObject* model)
@@ -57,10 +67,14 @@ void SceneMeshObject::setShader(OGLTexturedShader* shader)
 
 void SceneMeshObject::createShader(string vs, string fs, int numUniforms, int numTextures)
 {
-	shader = new OGLTexturedShader(vs, fs, numUniforms + 3, numTextures);
+	shader = new OGLTexturedShader(vs, fs, numUniforms + 4, numTextures);
 	shader->addUniform<OGLUniformMat4FV>("mvp");
 	shader->addUniform<OGLUniform3FV>("camera_position");
 	shader->addUniform<OGLUniformMat4FV>("world");
+	shader->addUniform<OGLUniformFloat>("HDR");
+	
+	float hdrOn = 0.0f;
+	shader->updateUniformData("HDR", &hdrOn);
 }
 
 OGLTexturedShader* SceneMeshObject::getShader()
@@ -100,4 +114,12 @@ void SceneMeshObject::bind()
 void SceneMeshObject::setDepthTest(bool depth)
 {
 	depthtest = depth;
+}
+
+void SceneMeshObject::setHDRRendering(bool HDR)
+{
+	HDRRendering = HDR;
+	float hbool;
+	hbool = (float)(HDR ? 1 : 0);
+	shader->updateUniformData("HDR", &hbool);
 }
