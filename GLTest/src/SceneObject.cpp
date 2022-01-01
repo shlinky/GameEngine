@@ -29,7 +29,7 @@ glm::quat SceneObject::getQuatRotation()
 glm::vec3 SceneObject::getWorldRotation()
 {
 	if (isComponent) {
-		glm::quat wRot = (parentObject->getQuatWorldRotation() * rotation);
+		glm::quat wRot = getQuatWorldRotation();
 		glm::vec3 pyl = glm::degrees(glm::eulerAngles(rotation));
 		return (glm::vec3(pyl.y, pyl.x, pyl.z));
 	}

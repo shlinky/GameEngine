@@ -14,15 +14,8 @@ uniform vec3 light_position;
 uniform vec3 light_color;
 uniform vec3 camera_position;
 
-uniform float TwoD;
-
 void main() {
-	if (TwoD > 0.5) {
-		gl_Position = vec4(uv * 2 - 1, 0, 1);  
-	}
-	else {
-		gl_Position = mvp * vec4(position, 1);                                                               
-	}
+	gl_Position = mvp * vec4(position, 1);                                                               
 
 	pos_raw = world * vec4(position, 1);
 	normals_raw = vec3(world * vec4(normals, 0));

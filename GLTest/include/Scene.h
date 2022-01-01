@@ -4,7 +4,7 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
-#include "OGLError.h"
+//#include "OGLError.h"
 #include "OGLShaderProgram.h"
 #include "OGLVertexObject.h"
 #include "WindowsWindowing.h"
@@ -27,6 +27,7 @@
 
 //every object has names and ids maybe (only assigned an id when in a scene always has a name)
 //stores all settings for rendering a specific scene
+//change vertex shader for uv rendering
 class Scene
 {
 public:
@@ -46,26 +47,38 @@ public:
 	void setEditorFunctionality(bool on);
 
 	void setRenderBuffer(OGLFrameBuffer* rb);
+	
+	//gives the scene buffer for objects to render onto
+	OGLFrameBuffer* getRenderBuffer();
+	OGLFrameBuffer* getFinalBuffer();
 
+	//change this to render with post
 	void renderHDR(bool on);
 private:
 	//maybe make into non pointers, but this will require no parameter constructors for these classes
 	vector<SceneObject*> sceneObjects;
 	OGLFrameBuffer* sceneBuffer;
+	//make it so that the render is called by render engine func and it sets final buffer to another buffer
 	OGLFrameBuffer* finalBuffer = nullptr;
 	OGLFrameBuffer* outlineBuffer;
-	OGLFrameBuffer* outlineClearBuffer;
+	OGLFrameBuffer preOverlayBuffer;
+
+	OGLImageTexture* preOverlayTexture;
 	OGLImageTexture* renderTexture;
 	OGLImageTexture* colorIDTexture;
 	OGLImageTexture* arrowTexture;
 	OGLImageTexture* outlineTexture;
 	OGLImageTexture* blank;
+
 	SceneObject* selectedObject;
+
+	
 	//final buffer
 
 	//make this into separate class for screen space elements
 	OGLVertexObject* screenquad;
 	OGLTexturedShader* postprocess;
+	OGLTexturedShader* eprocess;
 
 	SceneMeshObject arrows[3];
 	SceneMeshObject objManipulator;

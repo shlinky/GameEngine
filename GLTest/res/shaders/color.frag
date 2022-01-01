@@ -2,7 +2,7 @@
 #extension GL_ARB_shading_language_420pack: enable
 
 layout(location = 0) out vec4 color;
-layout(location = 2) out vec4 icolor;
+layout(location = 1) out vec4 icolor;
 uniform vec3 col;
 
 void main() {

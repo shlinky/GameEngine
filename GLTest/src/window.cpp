@@ -26,6 +26,7 @@
 #include "Windows.h"
 
 #include "Scene.h"
+#include "PortalObject.h"
 using namespace std;
 
 //main file
@@ -120,13 +121,6 @@ int main(void)
 
     startGLDebug();
 
-    int sizex = window.getSizeX();
-    int sizey = window.getSizeY();
-    Camera cam(0.0f, 3.0f, 8.0f, sizex, sizey);
-    cam.setSensitivity(0.05);
-    cam.setPitchLimits(-87, 87);
-    cam.setRotation(180, 0);
-
     OGLVertexObject model1("res/models/gucci.txt", true);
 
     SceneObject player = SceneObject();
@@ -214,7 +208,6 @@ int main(void)
 
     Scene scn = Scene(&window);
     scn.addSceneObject(&env);
-    env.setHDRRendering(true);
     //sp[5]->setHDRRendering(true);
     for (int i = 0; i < 8; i++) {
         scn.addSceneObject(sp[i]);
@@ -233,6 +226,24 @@ int main(void)
         sp[i]->getShader()->changeTexture(specscn[i], 5);
         sp[i]->setHidden(false);
     }
+    //scn.getObject(0);
+    /*SceneMeshObject* first = ((SceneMeshObject*)scn.getObject(6));
+    first->getShader()->addUniform<OGLUniformFloat>("TwoD");
+    float td = 1.0f;
+    first->getShader()->updateUniformData("TwoD", &td);
+
+    OGLFrameBuffer tdBuffer;
+    OGLImageTexture tdT(1000, 1000);
+    tdBuffer.attachColorTexture(&tdT);
+    tdBuffer.bind();
+    tdBuffer.clear();
+    first->render(scn.getCamera());
+    tdBuffer.unbind();
+
+    tdT.save("uvrender.jpg");
+
+    td = 0.0f;
+    first->getShader()->updateUniformData("TwoD", &td);*/
 
     scn.setEditorFunctionality(true);
     env.setCubeMap(&cm);
@@ -241,6 +252,22 @@ int main(void)
     // Loop until the user closes the window 
 
     OGLCubeMapTexture scnCapture(100, true);
+    scn.renderHDR(false);
+
+    PortalObject p1(window.getSizeX(), window.getSizeY());
+    PortalObject p2(window.getSizeX(), window.getSizeY());
+    p1.setSecondPortal(&p2);
+    p2.setSecondPortal(&p1);
+    p1.setPosition(10, 10, -10);
+    p2.setPosition(-10, 10, -10);
+    p1.setScale(3, 3, 3);
+    p2.setScale(3, 3, 3);
+    p1.setScene(&scn);
+    p2.setScene(&scn);
+
+    scn.addSceneObject(&p1);
+    scn.addSceneObject(&p2);
+
     while (!window.isWindowClosing())
     {
         //cout << "started" << endl;
@@ -266,16 +293,20 @@ int main(void)
 
         if (is_clicked) {
             SceneObject* sel = scn.getMouseTrace(cmpos[0], cmpos[1]);
-            if (sel)
+            if (sel) {
                 scn.setSelectedObject(sel->getId());
+            }
             else {
                 scn.setSelectedObject(-1);
             }
         }
+        p1.captureView();
+        p2.captureView();
 
         scn.renderWithEditorFunctionality();
         window.prepareForNextFrame();
 
+        //cahgne to not getting objects from swp but from scene using ids and object movable.
         scn.renderHDR(true);
         glm::vec3 opos = scn.getCamera()->getPosition();
         glm::vec3 pos;

@@ -11,7 +11,7 @@ public:
 	OGLImageTexture(string textPath);
 	OGLImageTexture(int width, int height, unsigned char* img);
 	OGLImageTexture(unsigned int id, int width = NULL, int height = NULL);
-	OGLImageTexture(int width, int height, int textureFormat = GL_RGB);
+	OGLImageTexture(int width, int height, bool HDR = false, int textureFormat = GL_RGB);
 	OGLImageTexture();
 	~OGLImageTexture();
 	virtual void bindTexture(unsigned int textureSlot = 0);

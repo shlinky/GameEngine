@@ -61,7 +61,7 @@ OGLImageTexture::OGLImageTexture(unsigned int id, int width, int height)
 }
 
 //incorporate mipmapping
-OGLImageTexture::OGLImageTexture(int width, int height, int textureFormat)
+OGLImageTexture::OGLImageTexture(int width, int height, bool HDR, int textureFormat)
 {
 	this->width = width;
 	this->height = height;
@@ -72,8 +72,10 @@ OGLImageTexture::OGLImageTexture(int width, int height, int textureFormat)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, textureFormat, width, height, 0, textureFormat, GL_UNSIGNED_BYTE, NULL);
+	if (HDR)
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, NULL);
+	else 
+		glTexImage2D(GL_TEXTURE_2D, 0, textureFormat, width, height, 0, textureFormat, GL_UNSIGNED_BYTE, NULL);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 

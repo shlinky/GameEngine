@@ -1,5 +1,6 @@
 #include "Scene.h"
 
+//disable post processing
 float screenVps[12] = {
     1, -1, 0,
     1,  1, 0,
@@ -21,25 +22,33 @@ Scene::Scene(WindowsWindowing* win)
     renderCam->setPitchLimits(-87, 87);
     renderCam->setRotation(180, 0);
     sceneBuffer = new OGLFrameBuffer();
-    renderTexture = new OGLImageTexture(sizex, sizey);
+    renderTexture = new OGLImageTexture(sizex, sizey, true);
     colorIDTexture = new OGLImageTexture(sizex, sizey);
     arrowTexture = new OGLImageTexture(sizex, sizey);
     outlineTexture = new OGLImageTexture(sizex, sizey);
     blank = new OGLImageTexture(sizex, sizey);
 
     sceneBuffer->attachColorTexture(renderTexture);
+    sceneBuffer->attachColorTexture(colorIDTexture);
 
     outlineBuffer = new OGLFrameBuffer();
     outlineBuffer->attachColorTexture(blank);
     outlineBuffer->attachColorTexture(outlineTexture);
 
-    outlineClearBuffer = new OGLFrameBuffer();
-    outlineClearBuffer->attachColorTexture(outlineTexture);
+    preOverlayTexture = new OGLImageTexture(sizex, sizey);
+    preOverlayBuffer.attachColorTexture(preOverlayTexture);
+    preOverlayBuffer.attachColorTexture(arrowTexture);
 
-    postprocess =  new OGLTexturedShader("res/shaders/pp.vert", "res/shaders/pp.frag", 1, 3);
-    postprocess->addUniform<OGLUniform3FV>("selected");
+    postprocess =  new OGLTexturedShader("res/shaders/pp.vert", "res/shaders/ppempty.frag", 1, 3);
+    postprocess->addUniform<OGLUniformFloat>("HDR");
+    float hdrOn = 0.0f;
+    postprocess->updateUniformData("HDR", &hdrOn);
     postprocess->addTexture(renderTexture);
-    postprocess->addTexture(outlineTexture);
+
+    eprocess = new OGLTexturedShader("res/shaders/pp.vert", "res/shaders/pp.frag", 1, 3);
+    eprocess->addUniform<OGLUniform3FV>("selected");
+    eprocess->addTexture(preOverlayTexture);
+    eprocess->addTexture(outlineTexture);
 
     screenquad =  new OGLVertexObject(4);
     screenquad->addAttribute(0, 3, screenVps);
@@ -74,23 +83,13 @@ void Scene::addSceneObject(SceneObject* obj)
 {
     sceneObjects.push_back(obj);
     obj->setId(sceneObjects.size() - 1);
+    if (obj->getRenderable()) {
+        ((RenderableSceneObject*)obj)->setHDRRendering(true);
+    }
 }
 
 void Scene::render()
 {
-    if (finalBuffer) {
-        finalBuffer->bind();
-        finalBuffer->clear();
-    }
-    for (int i = 0; i < sceneObjects.size(); i++) {
-        if (sceneObjects[i]->getRenderable())
-            ((RenderableSceneObject*)sceneObjects[i])->render(renderCam);
-    }
-}
-
-void Scene::renderWithEditorFunctionality()
-{
-    //RENDERING THE SCENE INTO SCENE BUFFER
     sceneBuffer->bind();
     sceneBuffer->clear();
     for (int i = 0; i < sceneObjects.size(); i++) {
@@ -103,7 +102,26 @@ void Scene::renderWithEditorFunctionality()
             ((RenderableSceneObject*)sceneObjects[i])->render(renderCam);
         }
     }
+    sceneBuffer->unbind();
 
+    screenquad->bind();
+    postprocess->bindShaderProgram();
+    if (finalBuffer) {
+        finalBuffer->bind();
+        finalBuffer->clear();
+    }
+    glDrawElements(GL_TRIANGLES, screenquad->getIndexCount(), GL_UNSIGNED_INT, (void*)0);
+}
+
+void Scene::renderWithEditorFunctionality()
+{
+    //RENDERING THE SCENE INTO SCENE BUFFER
+    OGLFrameBuffer* tempBuffer = finalBuffer;
+    finalBuffer = &preOverlayBuffer;
+    render();
+    finalBuffer = tempBuffer;
+
+    preOverlayBuffer.bind();
     glClear(GL_DEPTH_BUFFER_BIT);
     //will be done in separate arrow class maybe
     float arrowScale = 0.07;
@@ -113,7 +131,7 @@ void Scene::renderWithEditorFunctionality()
     for (int i = 0; i < 3; i++) {
         arrows[i].render(renderCam);
     }
-    sceneBuffer->unbind();
+    preOverlayBuffer.unbind();
 
     //RENDERING THE OUTLINE
     if (selectedObject) {
@@ -130,7 +148,7 @@ void Scene::renderWithEditorFunctionality()
 
     //FINAL RENDER
     screenquad->bind();
-    postprocess->bindShaderProgram();
+    eprocess->bindShaderProgram();
     if (finalBuffer) {
         finalBuffer->bind();
         finalBuffer->clear();
@@ -145,6 +163,7 @@ SceneObject* Scene::getMouseTrace(float x, float y)
     colorIDTexture->read(&pixels);
     if (((x < renderTexture->getWidth()) && (x > 0)) && ((y > 0) && (y < renderTexture->getHeight()))) {
         int sel = (int)pixels[(renderTexture->getHeight() - (int)y) * renderTexture->getWidth() * 3 + (int)x * 3];
+        cout << sel;
         if (sel)
             return (sceneObjects[sel - 1]);
     }
@@ -200,6 +219,11 @@ void Scene::setSelectedObject(int id)
     }
 }
 
+SceneObject* Scene::getObject(int id)
+{
+    return sceneObjects[id];
+}
+
 Camera* Scene::getCamera()
 {
     return renderCam;
@@ -213,14 +237,6 @@ void Scene::setCamera(Camera* cam)
 void Scene::setEditorFunctionality(bool on)
 {
     editorFunctionality = on;
-    if (on) {
-        sceneBuffer->attachColorTexture(colorIDTexture);
-        sceneBuffer->attachColorTexture(arrowTexture);
-    }
-    else {
-        sceneBuffer->resetColorTextures();
-        sceneBuffer->attachColorTexture(renderTexture);
-    }
 }
 
 void Scene::setRenderBuffer(OGLFrameBuffer* rb)
@@ -228,11 +244,19 @@ void Scene::setRenderBuffer(OGLFrameBuffer* rb)
     finalBuffer = rb;
 }
 
+OGLFrameBuffer* Scene::getRenderBuffer()
+{
+    return sceneBuffer;
+}
+
+OGLFrameBuffer* Scene::getFinalBuffer()
+{
+    return finalBuffer;
+}
+
 void Scene::renderHDR(bool on)
 {
-    for (int i = 0; i < sceneObjects.size(); i++) {
-        if (sceneObjects[i]->getRenderable()) {
-            ((RenderableSceneObject*)sceneObjects[i])->setHDRRendering(on);
-        }
-    }
+    float hbool;
+    hbool = (float)(on ? 1.0f : 0.0f);
+    postprocess->updateUniformData("HDR", &hbool);
 }
