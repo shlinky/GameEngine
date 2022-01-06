@@ -17,6 +17,7 @@ PortalObject::PortalObject(int sizex, int sizey)
     getShader()->addTexture("res/shaders/frame.png");
 
     pcam = new Camera(0, 0, 0, sizex, sizey);
+    setRotation(0, 0, 0);
 }
 
 void PortalObject::render(Camera* cam)
@@ -37,26 +38,29 @@ void PortalObject::setScene(Scene* s)
 
 void PortalObject::captureView()
 {
+    //portal camera positon transformations
     Camera* cam = scn->getCamera();
     glm::vec3 diff = (cam->getPosition() - getPosition());
-    if (glm::length(getQuatWorldRotation()) < 0.01) {
-        diff = (diff * glm::toMat3(getQuatWorldRotation()));
-    }
-    else {
-        diff = (diff * glm::toMat3(glm::inverse(getQuatWorldRotation())));
-    }
+    diff = diff * glm::toMat3(glm::normalize(getQuatWorldRotation()));
     diff.x *= -1;
     diff.z *= -1;
-    diff = diff * glm::toMat3(portalb->getQuatWorldRotation());
+    diff = glm::toMat3(portalb->getQuatWorldRotation()) * diff;
 
     glm::vec3 ppos = diff + portalb->getPosition();
     pcam->setPosition(ppos.x, ppos.y, ppos.z);
 
-    float newYaw = (cam->getYaw() - getRotation().x) + 180 + portalb->getRotation().x;
-    float newPitch = (getRotation().y + cam->getPitch()) - portalb->getRotation().y;
 
-    pcam->setRotation(newYaw, newPitch);
+    //portal camera rotation transformations (Make the camera all quaternion based; no yaw pitch nonsense)
+    glm::quat oQuat = glm::angleAxis(glm::radians(cam->getPitch()), glm::vec3(1.0, 0.0, 0.0));
+    oQuat = glm::angleAxis(glm::radians(-90-cam->getYaw()), glm::vec3(0.0, 1.0, 0.0)) * oQuat;
 
+    oQuat = glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0)) * (glm::normalize(glm::inverse(getQuatWorldRotation())) * oQuat);
+    oQuat = portalb->getQuatWorldRotation() * oQuat;
+
+    pcam->setQuatRotation(oQuat);
+
+
+    //rendering into portal texture
     this->setHidden(true);
     portalb->setHidden(true);
     OGLFrameBuffer* ob = scn->getFinalBuffer();

@@ -1,10 +1,14 @@
 #pragma once
 #include <iostream>
+#include <math.h>
 #include <GLM/glm.hpp>
 #include <GLM/gtc/matrix_transform.hpp>
 #include <GLM/ext.hpp>
 #include <GLM/gtx/string_cast.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/gtc/quaternion.hpp> 
+#include <glm/gtx/quaternion.hpp>
 #include "OGLError.h"
 
 
@@ -33,6 +37,7 @@ public:
 	void setYawLimits(float min, float max);
 	void setPitchLimits(float min, float max);
 	void setFOV(float fov);
+	void setQuatRotation(glm::quat q);
 
 	void getPosition(float* pos);
 	glm::vec3 getPosition();

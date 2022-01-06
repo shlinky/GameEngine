@@ -77,7 +77,7 @@ void main() {
 
 	vec3 nnorm = vec3(texture(normalTex, UV)) * 2 - 1;
 	vec3 normals_final = normalize(nnorm.x * tangents_raww + nnorm.y * bitangents_raw + nnorm.z * ngoodr);
-	normals_final = ngoodr;
+	//normals_final = ngoodr;
 
 	vec3 c = normalize(camera_position - pos_raw.xyz);
 	float rough = vec3(texture(ORM, UV)).y;
@@ -108,7 +108,7 @@ void main() {
 	diffuse = diffuse * (1 - (0.4 * cost)) + dp * 0.4 * cost;
 	spec = spec * (1 - (0.4 * cost)) + sp * 0.4 * cost;
 
-	vec3 lightout = textureLod(prespec, R, 0.5).rgb * fresnelSchlick(max(dot(normals_final, c), 0.0), vec3(1, 0, 0));
+	vec3 lightout = diffuse + spec;
 
 	vec3 mapped;
 	if (HDR < 0.5) {

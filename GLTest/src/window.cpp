@@ -115,6 +115,11 @@ unsigned int screenindex[6] = {
     0, 3, 2
 };
 
+glm::vec3 line_plane(glm::vec3 b, glm::vec3 m, glm::vec3 n, glm::vec3 p) {
+    float d = glm::dot((p - b), n) / glm::dot(m, n);
+    return (b + (m * d));
+}
+
 int main(void)
 {
     WindowsWindowing window(1920, 1080, "Application", false);
@@ -258,12 +263,13 @@ int main(void)
     PortalObject p2(window.getSizeX(), window.getSizeY());
     p1.setSecondPortal(&p2);
     p2.setSecondPortal(&p1);
-    p1.setPosition(10, 10, -10);
+    p1.setPosition(10, 0.05, -10);
     p2.setPosition(-10, 10, -10);
     p1.setScale(3, 3, 3);
     p2.setScale(3, 3, 3);
     p1.setScene(&scn);
     p2.setScene(&scn);
+    p1.setRotation(-90, 0, 0);
 
     scn.addSceneObject(&p1);
     scn.addSceneObject(&p2);
@@ -292,21 +298,22 @@ int main(void)
         }
 
         if (is_clicked) {
-            SceneObject* sel = scn.getMouseTrace(cmpos[0], cmpos[1]);
+            SceneObject* sel = scn.getMouseTrace(window.getSizeX() / 2, window.getSizeY() / 2);
             if (sel) {
-                scn.setSelectedObject(sel->getId());
+                //scn.setSelectedObject(sel->getId());
+
+                if (sel->getId() == 7) {
+                    glm::vec3 npl = line_plane(scn.getCamera()->getPosition(), scn.getCamera()->getForwardDir(), glm::vec3(0, 1, 0), glm::vec3(0, 0, 0));
+                    p1.setPosition(npl.x, npl.y + 0.05, npl.z);
+                }
             }
             else {
-                scn.setSelectedObject(-1);
+                //scn.setSelectedObject(-1);
             }
         }
         p1.captureView();
         p2.captureView();
 
-        scn.renderWithEditorFunctionality();
-        window.prepareForNextFrame();
-
-        //cahgne to not getting objects from swp but from scene using ids and object movable.
         scn.renderHDR(true);
         glm::vec3 opos = scn.getCamera()->getPosition();
         glm::vec3 pos;
@@ -326,6 +333,11 @@ int main(void)
         scn.getCamera()->setPosition(opos.x, opos.y, opos.z);
         refcount++;
         refcount = refcount % 6;
+
+        scn.renderWithEditorFunctionality();
+        window.prepareForNextFrame();
+
+        //cahgne to not getting objects from swp but from scene using ids and object movable.
     }
 
     return 0;
