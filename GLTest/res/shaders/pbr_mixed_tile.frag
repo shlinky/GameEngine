@@ -17,6 +17,10 @@ uniform vec3 light_color;
 uniform vec3 light_position;
 uniform vec3 camera_position;
 uniform float HDR;
+uniform vec3 portalLoc;
+uniform vec3 portalNorm;
+uniform float isPortalCapture;
+
 float PI = 3.14159265;
 
 layout(binding=0)uniform sampler2D colorTex;
@@ -70,6 +74,12 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0)
 }  
 
 void main() {
+	if (isPortalCapture > 0.5) {
+		if (dot(portalNorm, pos_raw.xyz) < dot(portalNorm, portalLoc)) {
+			discard;
+		}
+	}
+
 	vec2 UVt = UV * 50;
 
 	ngoodr = normalize(normals_raw);
@@ -96,11 +106,11 @@ void main() {
 	vec3 R = reflect(-c, normals_final); 
 	vec3 spec = textureLod(prespec, R,  rough * 4.0).rgb * f;
 
-	
+	vec3 lpos = vec3(4, 2, 3);
 
-	l = normalize(vec3(4, 2, 3) - pos_raw.xyz);
+	l = normalize(vec3(4, 4, 3) - pos_raw.xyz);
 	float distance = pow(pow((4 - pos_raw.x), 2) + pow((2 - pos_raw.y), 2) + pow((3 - pos_raw.z), 2), 0.2);
-	vec3 radiance = vec3(10, 20, 40) / pow(distance, 2);
+	vec3 radiance = vec3(30, 30, 30) / pow(distance, 2);
 
 	vec3 h = normalize(c + l);
 	float cost = clamp(dot(l, normals_final), 0.01, 0.98);

@@ -6,7 +6,7 @@ SceneMeshObject::SceneMeshObject()
 {
 	setPosition(0, 0, 0);
 	setScale(1, 1, 1);
-	setScale(0, 0, 0);
+	setRotation(0, 0, 0);
 	renderable = true;
 	editorMovableObject = true;
 }
@@ -16,7 +16,7 @@ SceneMeshObject::SceneMeshObject(string model)
 	mesh = new OGLVertexObject(model, true, 4);
 	setPosition(0, 0, 0);
 	setScale(1, 1, 1);
-	setScale(0, 0, 0);
+	setRotation(0, 0, 0);
 	renderable = true;
 	editorMovableObject = true;
 }

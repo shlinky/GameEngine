@@ -12,6 +12,7 @@ public:
 	void setSecondPortal(PortalObject* portalb);
 	void setScene(Scene* s);
 	void captureView();
+	void movePortal(glm::vec3 p, glm::quat r);
 private:
 	OGLFrameBuffer* fb;
 	OGLImageTexture* col;

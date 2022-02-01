@@ -15,6 +15,7 @@ uniform vec3 light_color;
 uniform vec3 light_position;
 uniform vec3 camera_position;
 uniform vec3 colorId;
+uniform float HDR;
 float PI = 3.14159265;
 
 layout(binding=0)uniform sampler2D colorTex;
@@ -75,7 +76,7 @@ void main() {
 
 	vec3 nnorm = vec3(texture(normalTex, UV)) * 2 - 1;
 	vec3 normals_final = normalize(nnorm.x * tangents_raww + nnorm.y * bitangents_raw + nnorm.z * ngoodr);
-	normals_final = ngoodr;
+	//normals_final = ngoodr;
 
 	vec3 c = normalize(camera_position - pos_raw.xyz);
 	float rough = vec3(texture(ORM, UV)).y;
@@ -95,9 +96,9 @@ void main() {
 
 	
 
-	l = normalize(vec3(4, 0.5, 3) - pos_raw.xyz);
-	float distance = pow(pow((0 - pos_raw.x), 2) + pow((0.2 - pos_raw.y), 2) + pow((1 - pos_raw.z), 2), 0.2);
-	vec3 radiance = vec3(10, 0, 10) / pow(distance, 2);
+	l = normalize(vec3(4, 4, 3) - pos_raw.xyz);
+	float distance = pow(pow((4 - pos_raw.x), 2) + pow((2 - pos_raw.y), 2) + pow((3 - pos_raw.z), 2), 0.2);
+	vec3 radiance = vec3(30, 30, 30) / pow(distance, 2);
 
 	vec3 h = normalize(c + l);
 	float cost = clamp(dot(l, normals_final), 0.01, 0.98);
@@ -110,8 +111,14 @@ void main() {
 
 	vec3 lightout = diffuse + spec;
 
-	vec3 mapped = lightout / (lightout + vec3(1.0));
-    mapped = pow(mapped, vec3(1.0 / 2.2));
+	vec3 mapped;
+	if (HDR < 0.5) {
+		mapped = lightout / (lightout + vec3(1.0));
+    	mapped = pow(mapped, vec3(1.0 / 2.2));
+	}
+	else {
+		mapped = lightout;
+	}
 
 	color = vec4(mapped, 1);
 	icolor = vec4(colorId, 1);

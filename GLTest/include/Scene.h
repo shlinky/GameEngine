@@ -41,6 +41,7 @@ public:
 	void setSelectedObject(int id);
 	SceneObject* getObject(int id);
 	Camera* getCamera();
+	int getObjectCount();
 	void setCamera(Camera* cam);
 
 	//maybe make it automatically render with functionality if this flag is set to true, in other words else in the function

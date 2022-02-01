@@ -95,9 +95,9 @@ void main() {
 
 	
 
-	l = normalize(vec3(4, 2, 3) - pos_raw.xyz);
+	l = normalize(vec3(4, 4, 3) - pos_raw.xyz);
 	float distance = pow(pow((4 - pos_raw.x), 2) + pow((2 - pos_raw.y), 2) + pow((3 - pos_raw.z), 2), 0.2);
-	vec3 radiance = vec3(10, 20, 40) / pow(distance, 2);
+	vec3 radiance = vec3(30, 30, 30) / pow(distance, 2);
 
 	vec3 h = normalize(c + l);
 	float cost = clamp(dot(l, normals_final), 0.01, 0.98);
@@ -118,6 +118,6 @@ void main() {
 	else {
 		mapped = lightout;
 	}
-	color = vec4(mapped, 1);
+	color = vec4((normals_final + 1) / 2, 1);
 	icolor = vec4(colorId, 1);
 }    

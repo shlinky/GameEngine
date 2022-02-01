@@ -122,7 +122,7 @@ glm::vec3 line_plane(glm::vec3 b, glm::vec3 m, glm::vec3 n, glm::vec3 p) {
 
 int main(void)
 {
-    WindowsWindowing window(1920, 1080, "Application", false);
+    WindowsWindowing window(1920, 1080, "Application", true);
 
     startGLDebug();
 
@@ -133,12 +133,13 @@ int main(void)
     cout << "started1" << endl;
 
     OGLImageTexture brdff = OGLImageTexture("res/shaders/brdf.png");
-    OGLCubeMapTexture cm = OGLCubeMapTexture("res/shaders/bob1.hdr", 512);
+    OGLCubeMapTexture cm = OGLCubeMapTexture(512);
+    //OGLCubeMapTexture c("res/shaders/bob1.hdr", 512);
     OGLCubeMapTexture* irr = cm.createIrradianceMap(256);
     OGLCubeMapTexture* spec = cm.createPrefilteredSpec(256);
     EnvCube env = EnvCube(&cm);
 
-    SceneMeshObject* sp[8] = { 0 };
+    /*SceneMeshObject* sp[8] = { 0 };
     for (int i = 0; i < 5; i++) {
         sp[i] = new SceneMeshObject(&model1);
         sp[i]->setPosition(1 + (2 * i), 1, 1);
@@ -150,20 +151,64 @@ int main(void)
         sp[i]->getShader()->addTexture(&brdff);
         sp[i]->getShader()->addTexture(spec);
         sp[i]->getShader()->addUniform<OGLUniform3FV>("colorId");
-    }
+    }*/
+
+    SceneMeshObject ceiling = SceneMeshObject("res/models/floor.txt");
+    ceiling.createShader("res/shaders/b.vert", "res/shaders/pbr_mixed_tile.frag", 6, 8);
+    ceiling.setScale(80, 80, 80);
+    ceiling.setPosition(0, 20, 0);
+    ceiling.setRotation(180, 0, 0);
+    ceiling.getShader()->addTexture("res/models/plane_divided_DefaultMaterial_BaseColor.png");
+    ceiling.getShader()->addTexture("res/models/plane_divided_DefaultMaterial_Normal.png");
+    ceiling.getShader()->addTexture("res/models/plane_divided_DefaultMaterial_OcclusionRoughnessMetallic.png");
+    ceiling.getShader()->addTexture(irr);
+    ceiling.getShader()->addTexture(&brdff);
+    ceiling.getShader()->addTexture(spec);
+    ceiling.getShader()->addUniform<OGLUniform3FV>("colorId");
 
     SceneMeshObject floor = SceneMeshObject("res/models/floor.txt");
     floor.createShader("res/shaders/b.vert", "res/shaders/pbr_mixed_tile.frag", 6, 8);
-    floor.setScale(200, 200, 200);
-    floor.getShader()->addTexture("res/models/plane_divided_DefaultMaterial_BaseColor.png");
-    floor.getShader()->addTexture("res/models/plane_divided_DefaultMaterial_Normal.png");
-    floor.getShader()->addTexture("res/models/plane_divided_DefaultMaterial_OcclusionRoughnessMetallic.png");
+    floor.setScale(120, 120, 120);
+    floor.setPosition(0, 0, 0);
+    floor.setRotation(0, 0, 0);
+    floor.getShader()->addTexture("res/models/carpet_BaseColor.png");
+    floor.getShader()->addTexture("res/models/carpet_Normal.png");
+    floor.getShader()->addTexture("res/models/carpet_OcclusionRoughnessMetallic.png");
     floor.getShader()->addTexture(irr);
     floor.getShader()->addTexture(&brdff);
     floor.getShader()->addTexture(spec);
     floor.getShader()->addUniform<OGLUniform3FV>("colorId");
 
-    SceneMeshObject knf = SceneMeshObject("res/models/knife.txt");
+    Scene scn = Scene(&window);
+    //scn.addSceneObject(&env);
+    scn.addSceneObject(&floor);
+    scn.addSceneObject(&ceiling);
+
+    SceneMeshObject walls[4];
+    for (int i = 0; i < 4; i++) {
+        walls[i].setMesh("res/models/floor.txt");
+        walls[i].createShader("res/shaders/b.vert", "res/shaders/pbr_mixed_tile.frag", 6, 8);
+        walls[i].setScale(80, 80, 80);
+        walls[i].getShader()->addTexture("res/models/plane_divided_DefaultMaterial_BaseColor.png");
+        walls[i].getShader()->addTexture("res/models/plane_divided_DefaultMaterial_Normal.png");
+        walls[i].getShader()->addTexture("res/models/plane_divided_DefaultMaterial_OcclusionRoughnessMetallic.png");
+        walls[i].getShader()->addTexture(irr);
+        walls[i].getShader()->addTexture(&brdff);
+        walls[i].getShader()->addTexture(spec);
+        walls[i].getShader()->addUniform<OGLUniform3FV>("colorId");
+        scn.addSceneObject(&walls[i]);
+    }
+
+    walls[0].setRotation(90, 0, 0);
+    walls[0].setPosition(0, 0, -20);
+    walls[1].setRotation(-90, 0, 0);
+    walls[1].setPosition(0, 0, 20);
+    walls[2].setRotation(0, 0, 90);
+    walls[2].setPosition(20, 0, 0);
+    walls[3].setRotation(0, 0, -90);
+    walls[3].setPosition(-20, 0, 0);
+
+    /*SceneMeshObject knf = SceneMeshObject("res/models/knife.txt");
     knf.createShader("res/shaders/b.vert", "res/shaders/pbr_mixed.frag", 6, 8);
     knf.setPosition(3.2, -4.5, -2.8);
     knf.setScale(1, 1, 1);
@@ -176,13 +221,13 @@ int main(void)
     knf.getShader()->addTexture(irr);
     knf.getShader()->addTexture(&brdff);
     knf.getShader()->addTexture(spec);
-    knf.getShader()->addUniform<OGLUniform3FV>("colorId");
+    knf.getShader()->addUniform<OGLUniform3FV>("colorId");*/
 
     SceneMeshObject random = SceneMeshObject(0.45, -0.3, -2.3);
     random.setRotation(0, 180, 0);
     random.setScale(0.2, 0.2, 0.2);
-    //random.setIsComponent(true);
-    //random.setParent(&player);
+    random.setIsComponent(true);
+    random.setParent(&player);
     random.setMesh("res/models/test.txt");
     random.createShader("res/shaders/b.vert", "res/shaders/pgun_mixed.frag", 6, 6);
     random.getShader()->addTexture("res/models/v_portalgun.png");
@@ -193,9 +238,57 @@ int main(void)
     random.getShader()->addTexture(spec);
     random.getShader()->addUniform<OGLUniform3FV>("colorId");
 
-    sp[5] = &knf;
+    SceneMeshObject knf = SceneMeshObject("res/models/chair.txt");
+    knf.createShader("res/shaders/b.vert", "res/shaders/pbr_mixed.frag", 6, 8);
+    knf.setPosition(3.2, 1, 0);
+    knf.setScale(0.2, 0.2, 0.2);
+    knf.getShader()->addTexture("res/models/chair_BaseColor.png");
+    knf.getShader()->addTexture("res/models/chair_Normal.png");
+    knf.getShader()->addTexture("res/models/chair_OcclusionRoughnessMetallic.png");
+    knf.getShader()->addTexture(irr);
+    knf.getShader()->addTexture(&brdff);
+    knf.getShader()->addTexture(spec);
+    knf.getShader()->addUniform<OGLUniform3FV>("colorId");
+    
+    SceneMeshObject book = SceneMeshObject("res/models/book.txt");
+    book.setPosition(3.2, 1.5, -7);
+    book.setScale(0.1, 0.1, 0.1);
+    book.createShader("res/shaders/b.vert", "res/shaders/pbr_mixed.frag", 6, 8);
+    book.getShader()->addTexture("res/models/book1_DefaultMaterial_BaseColor.png");
+    book.getShader()->addTexture("res/models/book1_DefaultMaterial_Normal.png");
+    book.getShader()->addTexture("res/models/book1_DefaultMaterial_OcclusionRoughnessMetallic.png");
+    book.getShader()->addTexture(irr);
+    book.getShader()->addTexture(&brdff);
+    book.getShader()->addTexture(spec);
+    book.getShader()->addUniform<OGLUniform3FV>("colorId");
+
+    //irr = c.createIrradianceMap(256);
+    //spec = c.createPrefilteredSpec(256);
+
+    SceneMeshObject spk = SceneMeshObject("res/models/spk.txt");
+    spk.setPosition(-3.2, 1.5, -7);
+    spk.setScale(1, 1, 1);
+    spk.setRotation(0, 180, 0);
+    spk.createShader("res/shaders/b.vert", "res/shaders/pbr_mixed.frag", 6, 8);
+    spk.getShader()->addTexture("res/models/speakers_low_DefaultMaterial_BaseColor.png");
+    spk.getShader()->addTexture("res/models/speakers_low_DefaultMaterial_Normal.png");
+    spk.getShader()->addTexture("res/models/speakers_low_DefaultMaterial_OcclusionRoughnessMetallic.png");
+    spk.getShader()->addTexture(irr);
+    spk.getShader()->addTexture(&brdff);
+    spk.getShader()->addTexture(spec);
+    spk.getShader()->addUniform<OGLUniform3FV>("colorId");
+
+    //SceneMeshObject spk1 = spk;
+    //spk1.setPosition(-4.2, 1.5, -7);
+
+    scn.addSceneObject(&random);
+    scn.addSceneObject(&knf);
+    scn.addSceneObject(&book);
+    scn.addSceneObject(&spk);
+    //scn.addSceneObject(&spk1);
+    /*sp[5] = &knf;
     sp[6] = &floor;
-    sp[7] = &random;
+    sp[7] = &random;*/
 
 
 
@@ -211,26 +304,30 @@ int main(void)
 
     bool was_pressed = false;
 
-    Scene scn = Scene(&window);
-    scn.addSceneObject(&env);
     //sp[5]->setHDRRendering(true);
-    for (int i = 0; i < 8; i++) {
-        scn.addSceneObject(sp[i]);
-    }
+    //for (int i = 0; i < 8; i++) {
+    //    scn.addSceneObject(sp[i]);
+    //}
     OGLCubeMapTexture* irrscn[6]; 
     OGLCubeMapTexture* specscn[6];
-    for (int i = 0; i < 6; i++) {
-        glm::vec3 pos = sp[i]->getPosition();
+    scn.renderHDR(true);
+    for (int i = 0; i < scn.getObjectCount(); i++) {
+        SceneMeshObject* m = (SceneMeshObject*)scn.getObject(i);
+        glm::vec3 pos = m->getPosition();
         scn.getCamera()->setPosition(pos.x, pos.y, pos.z);
-        sp[i]->setHidden(true);
+        m->setHidden(true);
         OGLCubeMapTexture scnCapture(256, true);
         scnCapture.renderIntoCubemap(&scn);
         irrscn[i] = scnCapture.createIrradianceMap(100);
         specscn[i] = scnCapture.createPrefilteredSpec(100);
-        sp[i]->getShader()->changeTexture(irrscn[i], 3);
-        sp[i]->getShader()->changeTexture(specscn[i], 5);
-        sp[i]->setHidden(false);
+        m->getShader()->changeTexture(irrscn[i], 3);
+        m->getShader()->changeTexture(specscn[i], 5);
+        m->setHidden(false);
+        m->getShader()->addUniform<OGLUniformFloat>("isPortalCapture");
+        m->getShader()->addUniform<OGLUniform3FV>("portalLoc");
+        m->getShader()->addUniform<OGLUniform3FV>("portalNorm");
     }
+    scn.renderHDR(false);
     //scn.getObject(0);
     /*SceneMeshObject* first = ((SceneMeshObject*)scn.getObject(6));
     first->getShader()->addUniform<OGLUniformFloat>("TwoD");
@@ -263,22 +360,35 @@ int main(void)
     PortalObject p2(window.getSizeX(), window.getSizeY());
     p1.setSecondPortal(&p2);
     p2.setSecondPortal(&p1);
-    p1.setPosition(10, 0.05, -10);
+    p1.setPosition(10, 10, -10);
     p2.setPosition(-10, 10, -10);
     p1.setScale(3, 3, 3);
     p2.setScale(3, 3, 3);
     p1.setScene(&scn);
     p2.setScene(&scn);
-    p1.setRotation(-90, 0, 0);
+    p1.setRotation(30, 0, 0);
+    //p2.setRotation(-90, 0, 0);
 
     scn.addSceneObject(&p1);
     scn.addSceneObject(&p2);
 
+
+
+
+    //create a separate file that does the engine stuff only
+    //create an object using the window and scene
+    //and call render (which also take care of rendering the scene)
+    //add tick
+    //initialization list for object
     while (!window.isWindowClosing())
     {
         //cout << "started" << endl;
         window.getMousePos(cmpos);
         bool is_pressed = keyInput(&window, &random, scn.getCamera());
+        bool is_right_clicked = false;
+        if (window.isMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT)) {
+            is_right_clicked = true;
+        }
         bool is_clicked = window.isMouseClicked();
         updateCameraAngle(&window, cmpos, lmpos, &player, scn.getCamera());
         float dmousex = cmpos[0] - lmpos[0];
@@ -300,21 +410,25 @@ int main(void)
         if (is_clicked) {
             SceneObject* sel = scn.getMouseTrace(window.getSizeX() / 2, window.getSizeY() / 2);
             if (sel) {
-                //scn.setSelectedObject(sel->getId());
 
-                if (sel->getId() == 7) {
+                if (sel->getId() == 0) {
                     glm::vec3 npl = line_plane(scn.getCamera()->getPosition(), scn.getCamera()->getForwardDir(), glm::vec3(0, 1, 0), glm::vec3(0, 0, 0));
-                    p1.setPosition(npl.x, npl.y + 0.05, npl.z);
+                    //p1.setPosition(npl.x, npl.y + 0.05, npl.z);
+                    //it should take only object and camera
+                    p1.movePortal(npl, glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+                }
+                else {
+                    scn.setSelectedObject(sel->getId());
                 }
             }
             else {
-                //scn.setSelectedObject(-1);
+                scn.setSelectedObject(-1);
             }
         }
         p1.captureView();
         p2.captureView();
 
-        scn.renderHDR(true);
+        /*scn.renderHDR(true);
         glm::vec3 opos = scn.getCamera()->getPosition();
         glm::vec3 pos;
         if (refcount == 5) {
@@ -332,7 +446,7 @@ int main(void)
         scn.renderHDR(false);
         scn.getCamera()->setPosition(opos.x, opos.y, opos.z);
         refcount++;
-        refcount = refcount % 6;
+        refcount = refcount % 6;*/
 
         scn.renderWithEditorFunctionality();
         window.prepareForNextFrame();

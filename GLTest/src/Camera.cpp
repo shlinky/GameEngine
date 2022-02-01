@@ -245,5 +245,4 @@ void Camera::setQuatRotation(glm::quat q)
 	forwardDir = glm::toMat3(q) * glm::vec3(0, 0, -1);
 	rightDir = glm::toMat3(q) * glm::vec3(1, 0, 0);
 	upDir = glm::cross(rightDir, forwardDir);
-	cout << to_string(forwardDir) << endl;
 }

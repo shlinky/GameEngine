@@ -126,8 +126,15 @@ void Scene::renderWithEditorFunctionality()
     //will be done in separate arrow class maybe
     float arrowScale = 0.07;
     //make based on world position
-    float sscale = arrowScale * glm::distance(renderCam->getPosition(), objManipulator.getPosition());
-    objManipulator.setScale(sscale, sscale, sscale);
+    glm::mat4 aMat = objManipulator.generateModelMat();
+    glm::vec3 aPos = aMat * glm::vec4(objManipulator.getPosition(), 1);
+    float sscale = arrowScale * glm::distance(renderCam->getPosition(), aPos);
+    glm::vec3 s = glm::vec3(1, 1, 1);
+    if (selectedObject) {
+        s = selectedObject->getScale();
+    }
+    objManipulator.setScale(sscale / s.x, sscale / s.y, sscale / s.z);
+
     for (int i = 0; i < 3; i++) {
         arrows[i].render(renderCam);
     }
@@ -163,7 +170,6 @@ SceneObject* Scene::getMouseTrace(float x, float y)
     colorIDTexture->read(&pixels);
     if (((x < renderTexture->getWidth()) && (x > 0)) && ((y > 0) && (y < renderTexture->getHeight()))) {
         int sel = (int)pixels[(renderTexture->getHeight() - (int)y) * renderTexture->getWidth() * 3 + (int)x * 3];
-        cout << sel;
         if (sel)
             return (sceneObjects[sel - 1]);
     }
@@ -227,6 +233,11 @@ SceneObject* Scene::getObject(int id)
 Camera* Scene::getCamera()
 {
     return renderCam;
+}
+
+int Scene::getObjectCount()
+{
+    return (sceneObjects.size());
 }
 
 void Scene::setCamera(Camera* cam)
