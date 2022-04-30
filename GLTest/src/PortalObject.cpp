@@ -50,9 +50,9 @@ void PortalObject::captureView()
 
 
     //portal camera rotation transformations (Make the camera all quaternion based; no yaw pitch nonsense)
-    glm::quat oQuat = glm::angleAxis(glm::radians(cam->getPitch()), glm::vec3(1.0, 0.0, 0.0));
-    oQuat = glm::angleAxis(glm::radians(-90-cam->getYaw()), glm::vec3(0.0, 1.0, 0.0)) * oQuat;
-
+    //glm::quat oQuat = glm::angleAxis(glm::radians(cam->getPitch()), glm::vec3(1.0, 0.0, 0.0));
+    //oQuat = glm::angleAxis(glm::radians(-90-cam->getYaw()), glm::vec3(0.0, 1.0, 0.0)) * oQuat;
+    glm::quat oQuat = cam->getQuatRotation();
     oQuat = glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0)) * (glm::normalize(glm::inverse(getQuatWorldRotation())) * oQuat);
     oQuat = portalb->getQuatWorldRotation() * oQuat;
 

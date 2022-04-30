@@ -64,8 +64,14 @@ void SceneObject::setRotation(float x, float y, float z)
 	glm::quat QuatAroundX = glm::angleAxis(glm::radians(x), glm::vec3(1.0, 0.0, 0.0));
 	glm::quat QuatAroundY = glm::angleAxis(glm::radians(y), glm::vec3(0.0, 1.0, 0.0));
 	glm::quat QuatAroundZ = glm::angleAxis(glm::radians(z), glm::vec3(0.0, 0.0, 1.0));
-	rotation = QuatAroundZ * QuatAroundY * QuatAroundX;
+	rotation = QuatAroundX * QuatAroundZ;
+	rotation = QuatAroundY * rotation;
 	//cout << glm::to_string(glm::eulerAngles(rotation)) << endl;
+}
+
+void SceneObject::setQuatRotation(glm::quat rot)
+{
+	rotation = rot;
 }
 
 void SceneObject::setScale(float x, float y, float z)

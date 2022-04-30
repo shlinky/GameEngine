@@ -47,6 +47,7 @@ public:
 	glm::mat4 getTransMatOrtho(bool motion = true);
 	glm::vec3 getForwardDir();
 	glm::vec3 getRightDir();
+	glm::quat getQuatRotation();
 
 	void computeVectors();
 private:
@@ -65,5 +66,6 @@ private:
 	float pitchLim[2];
 	int winsizex;
 	int winsizey;
+	glm::quat rotation;
 };
 

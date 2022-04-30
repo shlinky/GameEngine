@@ -118,6 +118,6 @@ void main() {
 	else {
 		mapped = lightout;
 	}
-	color = vec4((normals_final + 1) / 2, 1);
+	color = vec4(mapped, 1);
 	icolor = vec4(colorId, 1);
 }    

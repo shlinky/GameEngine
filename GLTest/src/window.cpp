@@ -84,17 +84,13 @@ void updateCameraAngle(WindowsWindowing* w, double* cPos, double* lPos, SceneObj
         double dX = cPos[0] - lPos[0];
         double dY = -1 * (cPos[1] - lPos[1]);
 
-        float y = c->getYaw();
-        float p = c->getPitch();
-        c->rotateYaw(dX);
         c->rotatePitch(dY);
-        c->computeVectors();
-
+        c->rotateYaw(dX);
 
         float yaw = c->getYaw();
         float ptch = c->getPitch();
         //cout << yaw << endl;
-        g->setRotation(ptch, -90 - yaw, 0);
+        g->setQuatRotation(c->getQuatRotation());
     }
     else {
         w->setMouseHidden(false);
@@ -122,7 +118,7 @@ glm::vec3 line_plane(glm::vec3 b, glm::vec3 m, glm::vec3 n, glm::vec3 p) {
 
 int main(void)
 {
-    WindowsWindowing window(1920, 1080, "Application", true);
+    WindowsWindowing window(1920, 1080, "Application", false);
 
     startGLDebug();
 
@@ -134,9 +130,9 @@ int main(void)
 
     OGLImageTexture brdff = OGLImageTexture("res/shaders/brdf.png");
     OGLCubeMapTexture cm = OGLCubeMapTexture(512);
-    //OGLCubeMapTexture c("res/shaders/bob1.hdr", 512);
-    OGLCubeMapTexture* irr = cm.createIrradianceMap(256);
-    OGLCubeMapTexture* spec = cm.createPrefilteredSpec(256);
+    OGLCubeMapTexture c("res/shaders/bob1.hdr", 512);
+    OGLCubeMapTexture* irr = c.createIrradianceMap(256);
+    OGLCubeMapTexture* spec = c.createPrefilteredSpec(256);
     EnvCube env = EnvCube(&cm);
 
     /*SceneMeshObject* sp[8] = { 0 };
@@ -181,6 +177,9 @@ int main(void)
 
     Scene scn = Scene(&window);
     //scn.addSceneObject(&env);
+    OGLCubeMapTexture scnCapture(256, true);
+    EnvCube e(&c);
+    scn.addSceneObject(&e);
     scn.addSceneObject(&floor);
     scn.addSceneObject(&ceiling);
 
@@ -280,7 +279,6 @@ int main(void)
 
     //SceneMeshObject spk1 = spk;
     //spk1.setPosition(-4.2, 1.5, -7);
-
     scn.addSceneObject(&random);
     scn.addSceneObject(&knf);
     scn.addSceneObject(&book);
@@ -311,12 +309,11 @@ int main(void)
     OGLCubeMapTexture* irrscn[6]; 
     OGLCubeMapTexture* specscn[6];
     scn.renderHDR(true);
-    for (int i = 0; i < scn.getObjectCount(); i++) {
+    for (int i = 1; i < scn.getObjectCount(); i++) {
         SceneMeshObject* m = (SceneMeshObject*)scn.getObject(i);
         glm::vec3 pos = m->getPosition();
         scn.getCamera()->setPosition(pos.x, pos.y, pos.z);
         m->setHidden(true);
-        OGLCubeMapTexture scnCapture(256, true);
         scnCapture.renderIntoCubemap(&scn);
         irrscn[i] = scnCapture.createIrradianceMap(100);
         specscn[i] = scnCapture.createPrefilteredSpec(100);
@@ -353,7 +350,7 @@ int main(void)
     int refcount = 0;
     // Loop until the user closes the window 
 
-    OGLCubeMapTexture scnCapture(100, true);
+    //OGLCubeMapTexture scnCapture(100, true);
     scn.renderHDR(false);
 
     PortalObject p1(window.getSizeX(), window.getSizeY());
@@ -411,7 +408,7 @@ int main(void)
             SceneObject* sel = scn.getMouseTrace(window.getSizeX() / 2, window.getSizeY() / 2);
             if (sel) {
 
-                if (sel->getId() == 0) {
+                if (sel->getId() == 1) {
                     glm::vec3 npl = line_plane(scn.getCamera()->getPosition(), scn.getCamera()->getForwardDir(), glm::vec3(0, 1, 0), glm::vec3(0, 0, 0));
                     //p1.setPosition(npl.x, npl.y + 0.05, npl.z);
                     //it should take only object and camera

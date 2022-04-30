@@ -4,6 +4,24 @@
 #include "Scene.h"
 #include <Windows.h>
 
+
+float renderViews[30] = { -90, 0, 180,
+                            90, 0, 180,
+                          0, 90, 0,
+                          0,-90, 0,
+                           180,  0, 180,
+                        0,  0, 180};
+
+void setCamViewForCube(float* p, Camera* c) {
+    glm::quat q;
+    glm::quat QuatAroundX = glm::angleAxis(glm::radians(*(p + 1)), glm::vec3(1.0, 0.0, 0.0));
+    glm::quat QuatAroundY = glm::angleAxis(glm::radians(*p), glm::vec3(0.0, 1.0, 0.0));
+    glm::quat QuatAroundZ = glm::angleAxis(glm::radians(*(p + 2)), glm::vec3(0.0, 0.0, 1.0));
+    q = QuatAroundX * QuatAroundZ;
+    q = QuatAroundY * q;
+    c->setQuatRotation(q);
+}
+
 OGLCubeMapTexture::OGLCubeMapTexture()
 {
 
@@ -83,18 +101,15 @@ OGLCubeMapTexture::OGLCubeMapTexture(string path, int w)
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
-    float renderViews[30] = { 0,  0, 0, -1, 0,
-                            180,  0, 0, -1, 0,
-                              0, 90, 0, 0, 1,
-                              0,-90, 0, 0, -1,
-                              90,0, 0, -1, 0,
-                              -90, 0, 0, -1, 0 };
 
 
     for (unsigned int i = 0; i < 6; i++)
     {
-        cam.setUpDir(renderViews[(5 * i) + 2], renderViews[(5 * i) + 3], renderViews[(5 * i) + 4]);
-        cam.setRotation(renderViews[5 * i], renderViews[(5 * i) + 1]);
+        float* cPtr = renderViews + (3 * i);
+        setCamViewForCube(cPtr, &cam);
+
+        //cam.setRotation(renderViews[5 * i], renderViews[(5 * i) + 1]);
+        //cam.setUpDir(renderViews[(5 * i) + 2], renderViews[(5 * i) + 3], renderViews[(5 * i) + 4]);
         fb.resetColorTextures();
         fb.attachColorTextureCM(this, i);
         fb.bind();
@@ -152,17 +167,13 @@ void OGLCubeMapTexture::renderIntoCubemap(Scene* scn)
     OGLFrameBuffer fb;
     scn->setRenderBuffer(&fb);
 
-    float renderViews[30] = { 0,  0, 0, -1,  0,
-                             180,  0, 0, -1,  0,
-                               0, 90, 0,  0,  1,
-                               0,-90, 0,  0, -1,
-                              90,  0, 0, -1,  0,
-                             -90,  0, 0, -1,  0 };
-
     for (unsigned int i = 0; i < 6; i++)
     {
-        cam.setUpDir(renderViews[(5 * i) + 2], renderViews[(5 * i) + 3], renderViews[(5 * i) + 4]);
-        cam.setRotation(renderViews[5 * i], renderViews[(5 * i) + 1]);
+        float* cPtr = renderViews + (3 * i);
+        setCamViewForCube(cPtr, &cam);
+
+        //cam.setUpDir(renderViews[(5 * i) + 2], renderViews[(5 * i) + 3], renderViews[(5 * i) + 4]);
+        //cam.setRotation(renderViews[5 * i], renderViews[(5 * i) + 1]);
         fb.resetColorTextures();
         fb.attachColorTextureCM(this, i);
         scn->render();
@@ -215,17 +226,13 @@ OGLCubeMapTexture* OGLCubeMapTexture::createIrradianceMap(int w, OGLCubeMapTextu
     if (!cm) 
         irMap = new OGLCubeMapTexture(irWidth);
     
-    float renderViews[30] = {  0,  0, 0, -1,  0,
-                             180,  0, 0, -1,  0,
-                               0, 90, 0,  0,  1,
-                               0,-90, 0,  0, -1,
-                              90,  0, 0, -1,  0,
-                             -90,  0, 0, -1,  0};
 
     for (unsigned int i = 0; i < 6; i++)
     {
-        cam.setUpDir(renderViews[(5 * i) + 2], renderViews[(5 * i) + 3], renderViews[(5 * i) + 4]);
-        cam.setRotation(renderViews[5 * i], renderViews[(5 * i) + 1]);
+        float* cPtr = renderViews + (3 * i);
+        setCamViewForCube(cPtr, &cam);
+
+
         fb.resetColorTextures();
         fb.attachColorTextureCM(irMap, i);
         fb.bind();
@@ -258,18 +265,12 @@ OGLCubeMapTexture* OGLCubeMapTexture::createPrefilteredSpec(int w, OGLCubeMapTex
         sMap = new OGLCubeMapTexture(sWidth, true);
 
 
-    float renderViews[30] = {  0,  0, 0, -1,  0,
-                             180,  0, 0, -1,  0,
-                               0, 90, 0,  0,  1,
-                               0,-90, 0,  0, -1,
-                              90,  0, 0, -1,  0,
-                             -90,  0, 0, -1,  0 };
-
     for (int m = 0; m < 5; m++)
     {
         for (unsigned int f = 0; f < 6; f++) {
-            cam.setUpDir(renderViews[(5 * f) + 2], renderViews[(5 * f) + 3], renderViews[(5 * f) + 4]);
-            cam.setRotation(renderViews[5 * f], renderViews[(5 * f) + 1]);
+            float* cPtr = renderViews + (3 * f);
+            setCamViewForCube(cPtr, &cam);
+
             fb.resetColorTextures();
             fb.attachColorTextureCM(sMap, f, m);
             fb.bind();

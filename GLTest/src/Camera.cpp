@@ -33,6 +33,7 @@ Camera::Camera(int winsizex, int winsizey, float* pos)
 	//make FOV variable
 	projMat = glm::perspective<float>(glm::radians(30.0f), (float)winsizex / winsizey, 0.1f, 1000.f);
 	projMatOrtho = glm::ortho<float>(0.0f, (float)winsizex, 0.0f, (float)winsizey);
+	rotation = glm::angleAxis(0.0f, glm::vec3(0, 1, 0));
 }
 
 Camera::Camera(float x, float y, float z, int winsizex, int winsizey)
@@ -57,6 +58,7 @@ Camera::Camera(float x, float y, float z, int winsizex, int winsizey)
 
 	projMat = glm::perspective<float>(glm::radians(30.0f), (float)winsizex / winsizey, 0.1f, 1000.f);
 	projMatOrtho = glm::ortho<float>(0.0f, (float)winsizex, 0.0f, (float)winsizey);
+	rotation = glm::angleAxis(0.0f, glm::vec3(0, 1, 0));
 }
 
 Camera::~Camera()
@@ -69,6 +71,7 @@ void Camera::rotateYaw(float degrees)
 	if ((newValue < yawLim[1]) && (newValue > yawLim[0])) {
 		camYaw = fmod(newValue, (glm::pi<float>() * 2));
 	}
+	rotation = glm::angleAxis((float)camYaw, glm::vec3(0, -1, 0)) * glm::angleAxis((float)camPitch, glm::vec3(1, 0, 0));
 	computeVectors();
 }
 
@@ -78,6 +81,7 @@ void Camera::rotatePitch(float degrees)
 	if ((newValue < pitchLim[1]) && (newValue > pitchLim[0])) {
 		camPitch = fmod(newValue, (glm::pi<float>() * 2));
 	}
+	rotation = glm::angleAxis((float)camYaw, glm::vec3(0, -1, 0)) * glm::angleAxis((float)camPitch, glm::vec3(1, 0, 0));
 	computeVectors();
 }
 
@@ -148,6 +152,7 @@ void Camera::setRotation(float yaw, float pitch)
 {
 	this->camYaw = glm::radians(yaw);
 	this->camPitch = glm::radians(pitch);
+	rotation = glm::angleAxis((float)camYaw, glm::vec3(0, 1, 0)) * glm::angleAxis((float)camPitch, glm::vec3(1, 0, 0));
 	computeVectors();
 }
 
@@ -210,12 +215,20 @@ glm::vec3 Camera::getRightDir()
 	return rightDir;
 }
 
+glm::quat Camera::getQuatRotation()
+{
+	return rotation;
+}
+
 void Camera::computeVectors()
 {
-	forwardDir.x = cos(camYaw) * cos(camPitch);
+	/*forwardDir.x = cos(camYaw) * cos(camPitch);
 	forwardDir.y = sin(camPitch);
 	forwardDir.z = sin(camYaw) * cos(camPitch);
-	rightDir = glm::normalize(glm::cross(forwardDir, upDir));
+	rightDir = glm::normalize(glm::cross(forwardDir, upDir));*/
+	forwardDir = rotation * glm::vec3(0, 0, -1);
+	rightDir = rotation * glm::vec3(1, 0, 0);
+	upDir = rotation * glm::vec3(0, 1, 0);
 }
 
 void Camera::setSensitivity(float s)
@@ -245,4 +258,5 @@ void Camera::setQuatRotation(glm::quat q)
 	forwardDir = glm::toMat3(q) * glm::vec3(0, 0, -1);
 	rightDir = glm::toMat3(q) * glm::vec3(1, 0, 0);
 	upDir = glm::cross(rightDir, forwardDir);
+	rotation = q;
 }
