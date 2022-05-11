@@ -78,7 +78,6 @@ void PortalObject::captureView()
         }
     }
 
-    this->setHidden(true);
     portalb->setHidden(true);
     OGLFrameBuffer* ob = scn->getFinalBuffer();
 
@@ -90,7 +89,6 @@ void PortalObject::captureView()
     scn->setCamera(cam);
     scn->renderHDR(false);
     scn->setRenderBuffer(ob);
-    this->setHidden(false);
     portalb->setHidden(false);
 
     p = 0.0f;

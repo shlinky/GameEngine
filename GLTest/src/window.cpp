@@ -394,13 +394,13 @@ int main(void)
     PortalObject p2(window.getSizeX(), window.getSizeY());
     p1.setSecondPortal(&p2);
     p2.setSecondPortal(&p1);
-    p1.setPosition(10, 10, -10);
-    p2.setPosition(-10, 10, -10);
+    p1.setPosition(10, 10, 19.9);
+    p2.setPosition(-10, 10, -19.9);
     p1.setScale(3, 3, 3);
     p2.setScale(3, 3, 3);
     p1.setScene(&scn);
     p2.setScene(&scn);
-    p1.setRotation(0, 30, 0);
+    p1.setRotation(0, 180, 0);
     //p2.setRotation(-90, 0, 0);
 
     scn.addSceneObject(&p1);
