@@ -135,6 +135,8 @@ bool entered_portal(PortalObject* p, glm::vec3 pos, glm::vec3 ppos) {
     return true;
 }
 
+//make scene object as the parameter in addition to camera within the portalobject class
+//make portalable scene object class that contains code for duplication and culling when within a portal
 void teleport(PortalObject* p, Camera* c) {
     PortalObject* p2 = p->getSecondPortal();
     glm::vec3 diff = (c->getPosition() - p->getPosition());
@@ -468,23 +470,11 @@ int main(void)
             glm::vec3 p = scn.getCamera()->getPosition();
             player.setPosition(p.x, p.y, p.z);
 
-            //make the cam set quat also conver to euler angles
         }
         else if (entered_portal(&p2, player.getPosition(), prevP)) {
-            glm::vec3 diff = (scn.getCamera()->getPosition() - p2.getPosition());
-            diff = diff * glm::toMat3(glm::normalize(p2.getQuatRotation()));
-            diff.x *= -1;
-            diff.z *= -1;
-            diff = glm::toMat3(p1.getQuatWorldRotation()) * diff;
-
-            glm::vec3 ppos = diff + p1.getPosition();
-            player.setPosition(ppos.x, ppos.y, ppos.z);
-            scn.getCamera()->setPosition(ppos.x, ppos.y, ppos.z);
-
-            glm::quat oQuat = scn.getCamera()->getQuatRotation();
-            oQuat = glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0)) * (glm::normalize(glm::inverse(p2.getQuatRotation())) * oQuat);
-            oQuat = p1.getQuatWorldRotation() * oQuat;
-            scn.getCamera()->setQuatRotation(oQuat);
+            teleport(&p2, scn.getCamera());
+            glm::vec3 p = scn.getCamera()->getPosition();
+            player.setPosition(p.x, p.y, p.z);
 
         }
         prevP = player.getPosition();
