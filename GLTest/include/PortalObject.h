@@ -10,6 +10,7 @@ public:
 	PortalObject(int sizex, int sizey);
 	void render(Camera* cam);
 	void setSecondPortal(PortalObject* portalb);
+	PortalObject* getSecondPortal();
 	void setScene(Scene* s);
 	void captureView();
 	void movePortal(glm::vec3 p, glm::quat r);

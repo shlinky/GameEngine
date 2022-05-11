@@ -29,6 +29,11 @@ void PortalObject::setSecondPortal(PortalObject* portalb)
     this->portalb = portalb;
 }
 
+PortalObject* PortalObject::getSecondPortal()
+{
+    return portalb;
+}
+
 //might be in all renderable objects
 void PortalObject::setScene(Scene* s)
 {

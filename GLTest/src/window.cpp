@@ -116,6 +116,41 @@ glm::vec3 line_plane(glm::vec3 b, glm::vec3 m, glm::vec3 n, glm::vec3 p) {
     return (b + (m * d));
 }
 
+//move entered_portal and teleport to the portal object where someone can pass these parameters with respect to that portal
+bool entered_portal(PortalObject* p, glm::vec3 pos, glm::vec3 ppos) {
+    glm::vec3 portalOffset = pos - p->getPosition();
+    glm::vec3 prevPortalOffset = ppos - p->getPosition();
+    glm::vec3 portalDir = glm::normalize(glm::toMat3(p->getQuatRotation()) * glm::vec3(0, 0, 1));
+    float distFromPortal = glm::dot(portalDir, portalOffset);
+    float prevDistFromPortal = glm::dot(portalDir, prevPortalOffset);
+    if (!((distFromPortal < 0) && (prevDistFromPortal > 0))) return false;
+
+    glm::vec3 rightDir = glm::toMat3(p->getQuatRotation()) * glm::vec3(1, 0, 0);
+    glm::vec3 upDir = glm::toMat3(p->getQuatRotation()) * glm::vec3(0, 1, 0);
+
+    glm::vec2 xyoff = glm::vec2(glm::dot(rightDir, portalOffset), glm::dot(upDir, portalOffset));
+
+    if ((fabs(xyoff.x) > 3) || (fabs(xyoff.y) > 3)) return false;
+
+    return true;
+}
+
+void teleport(PortalObject* p, Camera* c) {
+    PortalObject* p2 = p->getSecondPortal();
+    glm::vec3 diff = (c->getPosition() - p->getPosition());
+    diff = diff * glm::toMat3(glm::normalize(p->getQuatRotation()));
+    diff.x *= -1;
+    diff.z *= -1;
+    diff = glm::toMat3(p2->getQuatWorldRotation()) * diff;
+
+    glm::vec3 ppos = diff + p2->getPosition();
+    c->setPosition(ppos.x, ppos.y, ppos.z);
+
+    glm::quat oQuat = c->getQuatRotation();
+    oQuat = glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0)) * (glm::normalize(glm::inverse(p->getQuatRotation())) * oQuat);
+    oQuat = p2->getQuatWorldRotation() * oQuat;
+    c->setQuatRotation(oQuat);
+}
 int main(void)
 {
     WindowsWindowing window(1920, 1080, "Application", false);
@@ -363,7 +398,7 @@ int main(void)
     p2.setScale(3, 3, 3);
     p1.setScene(&scn);
     p2.setScene(&scn);
-    p1.setRotation(30, 0, 0);
+    p1.setRotation(0, 30, 0);
     //p2.setRotation(-90, 0, 0);
 
     scn.addSceneObject(&p1);
@@ -377,8 +412,13 @@ int main(void)
     //and call render (which also take care of rendering the scene)
     //add tick
     //initialization list for object
+
+    glm::vec3 prevP = player.getPosition();
+    random.setHidden(true);
     while (!window.isWindowClosing())
     {
+        float dist = 0;
+
         //cout << "started" << endl;
         window.getMousePos(cmpos);
         bool is_pressed = keyInput(&window, &random, scn.getCamera());
@@ -422,6 +462,33 @@ int main(void)
                 scn.setSelectedObject(-1);
             }
         }
+
+        if (entered_portal(&p1, player.getPosition(), prevP)) {
+            teleport(&p1, scn.getCamera());
+            glm::vec3 p = scn.getCamera()->getPosition();
+            player.setPosition(p.x, p.y, p.z);
+
+            //make the cam set quat also conver to euler angles
+        }
+        else if (entered_portal(&p2, player.getPosition(), prevP)) {
+            glm::vec3 diff = (scn.getCamera()->getPosition() - p2.getPosition());
+            diff = diff * glm::toMat3(glm::normalize(p2.getQuatRotation()));
+            diff.x *= -1;
+            diff.z *= -1;
+            diff = glm::toMat3(p1.getQuatWorldRotation()) * diff;
+
+            glm::vec3 ppos = diff + p1.getPosition();
+            player.setPosition(ppos.x, ppos.y, ppos.z);
+            scn.getCamera()->setPosition(ppos.x, ppos.y, ppos.z);
+
+            glm::quat oQuat = scn.getCamera()->getQuatRotation();
+            oQuat = glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0)) * (glm::normalize(glm::inverse(p2.getQuatRotation())) * oQuat);
+            oQuat = p1.getQuatWorldRotation() * oQuat;
+            scn.getCamera()->setQuatRotation(oQuat);
+
+        }
+        prevP = player.getPosition();
+
         p1.captureView();
         p2.captureView();
 
@@ -447,7 +514,6 @@ int main(void)
 
         scn.renderWithEditorFunctionality();
         window.prepareForNextFrame();
-
         //cahgne to not getting objects from swp but from scene using ids and object movable.
     }
 

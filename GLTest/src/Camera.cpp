@@ -229,6 +229,10 @@ void Camera::computeVectors()
 	forwardDir = rotation * glm::vec3(0, 0, -1);
 	rightDir = rotation * glm::vec3(1, 0, 0);
 	upDir = rotation * glm::vec3(0, 1, 0);
+
+
+	camYaw = atan2(glm::dot(rightDir, glm::vec3(1, 0, 0)), glm::dot(rightDir, glm::vec3(0, 0, 1)));
+	camPitch =  atan2(glm::dot(upDir, glm::cross(rightDir, glm::vec3(0, 1, 0))), glm::dot(upDir, glm::vec3(0, 1, 0)));
 }
 
 void Camera::setSensitivity(float s)
@@ -259,4 +263,8 @@ void Camera::setQuatRotation(glm::quat q)
 	rightDir = glm::toMat3(q) * glm::vec3(1, 0, 0);
 	upDir = glm::cross(rightDir, forwardDir);
 	rotation = q;
+	//glm::vec3 a = glm::eulerAngles(rotation);
+	//camYaw = a.y;
+	//camPitch = a.x;
+	computeVectors();
 }
