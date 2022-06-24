@@ -38,6 +38,7 @@ public:
 	void setPitchLimits(float min, float max);
 	void setFOV(float fov);
 	void setQuatRotation(glm::quat q);
+	void setNearClip(float d);
 
 	void getPosition(float* pos);
 	glm::vec3 getPosition();
@@ -67,5 +68,7 @@ private:
 	int winsizex;
 	int winsizey;
 	glm::quat rotation;
+	float fov;
+	float nearclip;
 };
 

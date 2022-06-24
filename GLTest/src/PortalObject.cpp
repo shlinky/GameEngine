@@ -1,4 +1,5 @@
 #include "PortalObject.h"
+#include <string>
 
 PortalObject::PortalObject(int sizex, int sizey)
 {
@@ -9,7 +10,9 @@ PortalObject::PortalObject(int sizex, int sizey)
 
     fb = new OGLFrameBuffer();
     col = new OGLImageTexture(sizex, sizey, true);
+    altCol = new OGLImageTexture(sizex, sizey, true);
     fb->attachColorTexture(col);
+    currBoundTexture = col;
 
     createShader("res/shaders/p.vert", "res/shaders/p.frag");
     getShader()->addTexture(col);
@@ -21,6 +24,8 @@ PortalObject::PortalObject(int sizex, int sizey)
 
 void PortalObject::render(Camera* cam)
 {
+    //currBoundTexture->save("portalt" + std::to_string(id) + ".jpg");
+
     this->SceneMeshObject::render(cam);
 }
 
@@ -44,27 +49,22 @@ void PortalObject::captureView()
 {
     //portal camera positon transformations
     Camera* cam = scn->getCamera();
-    glm::vec3 diff = (cam->getPosition() - getPosition());
-    diff = diff * glm::toMat3(glm::normalize(getQuatWorldRotation()));
-    diff.x *= -1;
-    diff.z *= -1;
-    diff = glm::toMat3(portalb->getQuatWorldRotation()) * diff;
-
-    glm::vec3 ppos = diff + portalb->getPosition();
-    pcam->setPosition(ppos.x, ppos.y, ppos.z);
-
-
-    //portal camera rotation transformations (Make the camera all quaternion based; no yaw pitch nonsense)
-    //glm::quat oQuat = glm::angleAxis(glm::radians(cam->getPitch()), glm::vec3(1.0, 0.0, 0.0));
-    //oQuat = glm::angleAxis(glm::radians(-90-cam->getYaw()), glm::vec3(0.0, 1.0, 0.0)) * oQuat;
-    glm::quat oQuat = cam->getQuatRotation();
-    oQuat = glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0)) * (glm::normalize(glm::inverse(getQuatWorldRotation())) * oQuat);
-    oQuat = portalb->getQuatWorldRotation() * oQuat;
-
-    pcam->setQuatRotation(oQuat);
+    glm::vec3 cpos = cam->getPosition();
+    pcam->setPosition(cpos.x, cpos.y, cpos.z);
+    pcam->setQuatRotation(cam->getQuatRotation());
+    teleport(pcam);
 
 
     //rendering into portal texture
+    currBoundTexture = (currBoundTexture == col) ? altCol : col;
+    fb->bind();
+    //fb->clear();
+    fb->resetColorTextures();
+    fb->attachColorTexture(currBoundTexture);
+    fb->bind();
+    fb->clear();
+    fb->unbind();
+
     float p = 1.0f;
     glm::vec3 sNormal = glm::toMat3(portalb->getQuatRotation()) * glm::vec3(0, 0, 1);
     glm::vec3 l = portalb->getPosition();
@@ -99,6 +99,8 @@ void PortalObject::captureView()
             m->getShader()->updateUniformData("isPortalCapture", &p);
         }
     }
+
+    getShader()->changeTexture(currBoundTexture, 0);
 }
 
 void PortalObject::movePortal(glm::vec3 p, glm::quat r)
@@ -120,3 +122,66 @@ void PortalObject::movePortal(glm::vec3 p, glm::quat r)
     rotation = portalFinalRot;
 }
 
+bool PortalObject::abovePortal(glm::vec3 pos)
+{
+    glm::vec3 portalDir = glm::normalize(glm::toMat3(getQuatRotation()) * glm::vec3(0, 0, 1));
+    if (portalDir.y <= 0) return false;
+    if (pos.y < getPosition().y) return false;
+
+    glm::vec3 portalOffset = pos - getPosition();
+    glm::vec2 pOffFlat = glm::vec2(portalOffset.x, portalOffset.z);
+    glm::vec3 rightDir = glm::toMat3(getQuatRotation()) * glm::vec3(1, 0, 0);
+    glm::vec3 upDir = glm::toMat3(getQuatRotation()) * glm::vec3(0, 1, 0);
+    glm::vec2 rightFlat = glm::vec2(rightDir.x, rightDir.z);
+    glm::vec2 upFlat = glm::vec2(upDir.x, upDir.z);
+
+    glm::vec2 hOffsets = glm::vec2(dot(rightFlat, pOffFlat), dot(upFlat, pOffFlat));
+
+    if ((fabs(hOffsets.x) > 3) || (fabs(hOffsets.y) > 3)) return false;
+
+    return true;
+}
+
+void PortalObject::transform_vector_portal(glm::vec3& v)
+{
+    v = v * glm::toMat3(glm::normalize(getQuatRotation()));
+    v.x *= -1;
+    v.z *= -1;
+    v = glm::toMat3(getSecondPortal()->getQuatWorldRotation()) * v;
+}
+
+void PortalObject::teleport(Camera* c)
+{
+    PortalObject* p2 = getSecondPortal();
+    glm::vec3 diff = (c->getPosition() - getPosition());
+
+    transform_vector_portal(diff);
+
+    glm::vec3 ppos = diff + p2->getPosition();
+    c->setPosition(ppos.x, ppos.y, ppos.z);
+
+    glm::quat oQuat = c->getQuatRotation();
+    oQuat = glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0)) * (glm::normalize(glm::inverse(getQuatRotation())) * oQuat);
+    oQuat = p2->getQuatWorldRotation() * oQuat;
+    c->setQuatRotation(oQuat);
+}
+
+bool PortalObject::enteredPortal(glm::vec3 pos, glm::vec3 ppos)
+{
+    glm::vec3 portalOffset = pos - getPosition();
+    glm::vec3 prevPortalOffset = ppos - getPosition();
+    glm::vec3 portalDir = glm::normalize(glm::toMat3(getQuatRotation()) * glm::vec3(0, 0, 1));
+    float distFromPortal = glm::dot(portalDir, portalOffset);
+    float prevDistFromPortal = glm::dot(portalDir, prevPortalOffset);
+
+    if (!((distFromPortal < 0) && (prevDistFromPortal > 0))) return false;
+
+    glm::vec3 rightDir = glm::toMat3(getQuatRotation()) * glm::vec3(1, 0, 0);
+    glm::vec3 upDir = glm::toMat3(getQuatRotation()) * glm::vec3(0, 1, 0);
+
+    glm::vec2 xyoff = glm::vec2(glm::dot(rightDir, portalOffset), glm::dot(upDir, portalOffset));
+
+    if ((fabs(xyoff.x) > 3) || (fabs(xyoff.y) > 3)) return false;
+
+    return true;
+}

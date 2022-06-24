@@ -26,3 +26,4 @@ void main() {
 		color = vec4(bc, 1);
 	}
 }    
+

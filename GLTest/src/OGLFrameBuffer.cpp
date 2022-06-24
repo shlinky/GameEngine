@@ -72,7 +72,7 @@ void OGLFrameBuffer::createDepthStencilRenderBuffer()
 {
 	glGenRenderbuffers(1, &depth_stencil_rbid);
 	glBindRenderbuffer(GL_RENDERBUFFER, depth_stencil_rbid);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, width, height);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH32F_STENCIL8, width, height);
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, fbid);

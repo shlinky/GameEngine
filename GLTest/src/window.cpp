@@ -54,22 +54,27 @@ string cubeMapNames[6] = {
 };
 
 
-bool keyInput(WindowsWindowing* w, SceneMeshObject* g, Camera* c) {
+bool keyInput(WindowsWindowing* w, SceneMeshObject* g, Camera* c, bool& jump) {
     glm::vec3 p = g->getPosition();
     glm::vec3 oc = c->getPosition();
     glm::vec3 dir = c->getForwardDir();
+    float a = 0;
     if (w->isKeyPressed(GLFW_KEY_W))
-        c->moveForward(0.5);
+        a = 0.5;
     if (w->isKeyPressed(GLFW_KEY_A))
         c->moveRight(-0.5);
     if (w->isKeyPressed(GLFW_KEY_S))
-        c->moveForward(-0.5);
+        a = -0.5;
     if (w->isKeyPressed(GLFW_KEY_D))
         c->moveRight(0.5);
     if ((w->isKeyPressed(GLFW_KEY_SPACE)) && (!w->isKeyPressed(GLFW_KEY_RIGHT_SHIFT)))
-        c->moveUp(0.5);
-    if ((w->isKeyPressed(GLFW_KEY_SPACE)) && (w->isKeyPressed(GLFW_KEY_RIGHT_SHIFT)))
-        c->moveUp(-0.5);
+        jump = true;
+    /*if ((w->isKeyPressed(GLFW_KEY_SPACE)) && (w->isKeyPressed(GLFW_KEY_RIGHT_SHIFT)))
+        c->moveUp(-0.5);*/
+    glm::vec3 planarForward = glm::vec3(c->getForwardDir().x, 0, c->getForwardDir().z);
+    glm::vec3 np = c->getPosition() + planarForward * a;
+    c->setPosition(np.x, np.y, np.z);
+
     if (w->isMouseButtonPressed(GLFW_MOUSE_BUTTON_LEFT)) {
         return true;
     }
@@ -116,43 +121,6 @@ glm::vec3 line_plane(glm::vec3 b, glm::vec3 m, glm::vec3 n, glm::vec3 p) {
     return (b + (m * d));
 }
 
-//move entered_portal and teleport to the portal object where someone can pass these parameters with respect to that portal
-bool entered_portal(PortalObject* p, glm::vec3 pos, glm::vec3 ppos) {
-    glm::vec3 portalOffset = pos - p->getPosition();
-    glm::vec3 prevPortalOffset = ppos - p->getPosition();
-    glm::vec3 portalDir = glm::normalize(glm::toMat3(p->getQuatRotation()) * glm::vec3(0, 0, 1));
-    float distFromPortal = glm::dot(portalDir, portalOffset);
-    float prevDistFromPortal = glm::dot(portalDir, prevPortalOffset);
-    if (!((distFromPortal < 0) && (prevDistFromPortal > 0))) return false;
-
-    glm::vec3 rightDir = glm::toMat3(p->getQuatRotation()) * glm::vec3(1, 0, 0);
-    glm::vec3 upDir = glm::toMat3(p->getQuatRotation()) * glm::vec3(0, 1, 0);
-
-    glm::vec2 xyoff = glm::vec2(glm::dot(rightDir, portalOffset), glm::dot(upDir, portalOffset));
-
-    if ((fabs(xyoff.x) > 3) || (fabs(xyoff.y) > 3)) return false;
-
-    return true;
-}
-
-//make scene object as the parameter in addition to camera within the portalobject class
-//make portalable scene object class that contains code for duplication and culling when within a portal
-void teleport(PortalObject* p, Camera* c) {
-    PortalObject* p2 = p->getSecondPortal();
-    glm::vec3 diff = (c->getPosition() - p->getPosition());
-    diff = diff * glm::toMat3(glm::normalize(p->getQuatRotation()));
-    diff.x *= -1;
-    diff.z *= -1;
-    diff = glm::toMat3(p2->getQuatWorldRotation()) * diff;
-
-    glm::vec3 ppos = diff + p2->getPosition();
-    c->setPosition(ppos.x, ppos.y, ppos.z);
-
-    glm::quat oQuat = c->getQuatRotation();
-    oQuat = glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0, 1.0, 0.0)) * (glm::normalize(glm::inverse(p->getQuatRotation())) * oQuat);
-    oQuat = p2->getQuatWorldRotation() * oQuat;
-    c->setQuatRotation(oQuat);
-}
 int main(void)
 {
     WindowsWindowing window(1920, 1080, "Application", false);
@@ -395,7 +363,7 @@ int main(void)
     p1.setSecondPortal(&p2);
     p2.setSecondPortal(&p1);
     p1.setPosition(10, 10, 19.9);
-    p2.setPosition(-10, 10, -19.9);
+    p2.setPosition(10, 40, -19.9);
     p1.setScale(3, 3, 3);
     p2.setScale(3, 3, 3);
     p1.setScene(&scn);
@@ -417,13 +385,47 @@ int main(void)
 
     glm::vec3 prevP = player.getPosition();
     random.setHidden(true);
+    ceiling.setHidden(true);
+    scn.getCamera()->setPosition(10, 9, -19.895);
+    
+    int captureCount = 0;
+    bool jump = false;
+    glm::vec3 v = glm::vec3(0, 0, 0);
+    float time = window.getTime();
     while (!window.isWindowClosing())
     {
         float dist = 0;
 
         //cout << "started" << endl;
         window.getMousePos(cmpos);
-        bool is_pressed = keyInput(&window, &random, scn.getCamera());
+        bool is_pressed = keyInput(&window, &random, scn.getCamera(), jump);
+        if (jump) {
+            if (scn.getCamera()->getPosition().y == 9) {
+                v.y = 40;
+            }
+            jump = false;
+        }
+        float t = window.getTime() - time;
+        //cout << 1 / t << endl;
+        float y = scn.getCamera()->getPosition().y;
+        float x = scn.getCamera()->getPosition().x + v.x * t;
+        float z = scn.getCamera()->getPosition().z + v.z * t;
+       // cout << vy << endl;
+        y += (v.y * t) - (25 * t * t);
+        v.y -= 50 * t;
+
+        if (y <= 9) {
+            if (!p1.abovePortal(scn.getCamera()->getPosition())) {
+                y = 9;
+                v.y = 0;
+                v.x = 0;
+                v.z = 0;
+            }
+        }
+        time += t;
+        glm::vec3 p = scn.getCamera()->getPosition();
+        scn.getCamera()->setPosition(x, y, z);
+
         bool is_right_clicked = false;
         if (window.isMouseButtonPressed(GLFW_MOUSE_BUTTON_RIGHT)) {
             is_right_clicked = true;
@@ -464,23 +466,44 @@ int main(void)
                 scn.setSelectedObject(-1);
             }
         }
+        
+        //ADJUSTNG CLIPPING
+        glm::vec3 portalOffset = player.getPosition() - p1.getPosition();
+        glm::vec3 portalDir = glm::normalize(glm::toMat3(p1.getQuatRotation()) * glm::vec3(0, 0, 1));
+        float distFromPortal = fabs(glm::dot(portalDir, portalOffset));
 
-        if (entered_portal(&p1, player.getPosition(), prevP)) {
-            teleport(&p1, scn.getCamera());
-            glm::vec3 p = scn.getCamera()->getPosition();
-            player.setPosition(p.x, p.y, p.z);
-
+        portalOffset = player.getPosition() - p2.getPosition();
+        portalDir = glm::normalize(glm::toMat3(p2.getQuatRotation()) * glm::vec3(0, 0, 1));
+        float distFromPortal2 = fabs(glm::dot(portalDir, portalOffset));
+        distFromPortal = (distFromPortal < distFromPortal2) ? distFromPortal : distFromPortal2;
+        if (distFromPortal < 0.1) {
+            scn.getCamera()->setNearClip(distFromPortal * 0.7);
         }
-        else if (entered_portal(&p2, player.getPosition(), prevP)) {
-            teleport(&p2, scn.getCamera());
+        else {
+            scn.getCamera()->setNearClip(0.1);
+        }
+
+        if (p1.enteredPortal(player.getPosition(), prevP)) {
+            p1.teleport(scn.getCamera());
             glm::vec3 p = scn.getCamera()->getPosition();
             player.setPosition(p.x, p.y, p.z);
-
+            //cout << "first: " << to_string(v) << endl;
+            p1.transform_vector_portal(v);
+            //cout << glm::to_string(v) << endl;
+        }
+        else if (p2.enteredPortal(player.getPosition(), prevP)) {
+            p2.teleport(scn.getCamera());
+            glm::vec3 p = scn.getCamera()->getPosition();
+            player.setPosition(p.x, p.y, p.z);
+            p2.transform_vector_portal(v);
         }
         prevP = player.getPosition();
 
-        p1.captureView();
-        p2.captureView();
+        if (captureCount > -1 ) {
+            p1.captureView();
+            p2.captureView();
+            captureCount++;
+        }
 
         /*scn.renderHDR(true);
         glm::vec3 opos = scn.getCamera()->getPosition();

@@ -31,7 +31,9 @@ Camera::Camera(int winsizex, int winsizey, float* pos)
 	this->winsizey = winsizey;
 
 	//make FOV variable
-	projMat = glm::perspective<float>(glm::radians(30.0f), (float)winsizex / winsizey, 0.1f, 1000.f);
+	fov = glm::radians(30.0f);
+	nearclip = 0.1f;
+	projMat = glm::perspective<float>(fov, (float)winsizex / winsizey, nearclip, 1000.f);
 	projMatOrtho = glm::ortho<float>(0.0f, (float)winsizex, 0.0f, (float)winsizey);
 	rotation = glm::angleAxis(0.0f, glm::vec3(0, 1, 0));
 }
@@ -56,7 +58,9 @@ Camera::Camera(float x, float y, float z, int winsizex, int winsizey)
 	this->winsizex = winsizex;
 	this->winsizey = winsizey;
 
-	projMat = glm::perspective<float>(glm::radians(30.0f), (float)winsizex / winsizey, 0.1f, 1000.f);
+	fov = glm::radians(30.0f);
+	nearclip = 0.1f;
+	projMat = glm::perspective<float>(fov, (float)winsizex / winsizey, nearclip , 1000.f);
 	projMatOrtho = glm::ortho<float>(0.0f, (float)winsizex, 0.0f, (float)winsizey);
 	rotation = glm::angleAxis(0.0f, glm::vec3(0, 1, 0));
 }
@@ -254,17 +258,25 @@ void Camera::setPitchLimits(float min, float max)
 
 void Camera::setFOV(float fov)
 {
-	projMat = glm::perspective<float>(glm::radians(fov), (float)winsizex / winsizey, 0.1f, 1000.f);
+	this->fov = glm::radians(fov);
+	projMat = glm::perspective<float>(this->fov, (float)winsizex / winsizey, nearclip, 1000.f);
 }
 
 void Camera::setQuatRotation(glm::quat q)
 {
-	forwardDir = glm::toMat3(q) * glm::vec3(0, 0, -1);
-	rightDir = glm::toMat3(q) * glm::vec3(1, 0, 0);
-	upDir = glm::cross(rightDir, forwardDir);
+	forwardDir = glm::normalize(glm::toMat3(q) * glm::vec3(0, 0, -1));
+	rightDir = glm::normalize(glm::toMat3(q) * glm::vec3(1, 0, 0));
+	upDir = glm::normalize(glm::cross(rightDir, forwardDir));
 	rotation = q;
 	//glm::vec3 a = glm::eulerAngles(rotation);
 	//camYaw = a.y;
 	//camPitch = a.x;
 	computeVectors();
 }
+
+void Camera::setNearClip(float d)
+{
+	nearclip = d;
+	projMat = glm::perspective<float>(fov, (float)winsizex / winsizey, nearclip, 1000.f);
+}
+

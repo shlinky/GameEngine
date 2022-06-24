@@ -17,7 +17,7 @@ Scene::Scene(WindowsWindowing* win)
 {
     int sizex = win->getSizeX();
     int sizey = win->getSizeY();
-    renderCam = new Camera(0.0f, 3.0f, 8.0f, sizex, sizey);
+    renderCam = new Camera(10.0f, 10.0f, 8.0f, sizex, sizey);
     renderCam->setSensitivity(0.05);
     renderCam->setPitchLimits(-87, 87);
     renderCam->setRotation(180, 0);
