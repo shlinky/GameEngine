@@ -108,7 +108,7 @@ void PortalObject::movePortal(glm::vec3 p, glm::quat r)
     glm::vec3 up = glm::toMat3(r) * glm::vec3(0, 1, 0);
     glm::vec3 right = glm::toMat3(r) * glm::vec3(1, 0, 0);
 
-    glm::vec3 camUp = glm::cross(scn->getCamera()->getRightDir(), scn->getCamera()->getForwardDir());
+    glm::vec3 camUp = glm::cross(scn->getCamera()->getRightDir(), glm::vec3(0, 0, -1));
     glm::vec2 portalSurfaceRotation = glm::normalize(glm::vec2(glm::dot(camUp, right), glm::dot(camUp, up)));
 
     float sTheta = atan2(portalSurfaceRotation.y, portalSurfaceRotation.x);
@@ -126,7 +126,6 @@ bool PortalObject::abovePortal(glm::vec3 pos)
 {
     glm::vec3 portalDir = glm::normalize(glm::toMat3(getQuatRotation()) * glm::vec3(0, 0, 1));
     if (portalDir.y <= 0) return false;
-    if (pos.y < getPosition().y) return false;
 
     glm::vec3 portalOffset = pos - getPosition();
     glm::vec2 pOffFlat = glm::vec2(portalOffset.x, portalOffset.z);
@@ -135,10 +134,12 @@ bool PortalObject::abovePortal(glm::vec3 pos)
     glm::vec2 rightFlat = glm::vec2(rightDir.x, rightDir.z);
     glm::vec2 upFlat = glm::vec2(upDir.x, upDir.z);
 
-    glm::vec2 hOffsets = glm::vec2(dot(rightFlat, pOffFlat), dot(upFlat, pOffFlat));
+    glm::vec2 hOffsets = glm::vec2(dot(rightFlat, pOffFlat) / pow(glm::length(rightFlat), 2), dot(upFlat, pOffFlat) / pow(glm::length(upFlat), 2));
 
-    if ((fabs(hOffsets.x) > 3) || (fabs(hOffsets.y) > 3)) return false;
+    if ((fabs(hOffsets.x) > 3) || (fabs(hOffsets.y) > 6)) return false;
+    float portalY = rightDir.y * hOffsets.x + upDir.y * hOffsets.y;
 
+    if (portalY > pos.y) return false;
     return true;
 }
 
@@ -181,7 +182,7 @@ bool PortalObject::enteredPortal(glm::vec3 pos, glm::vec3 ppos)
 
     glm::vec2 xyoff = glm::vec2(glm::dot(rightDir, portalOffset), glm::dot(upDir, portalOffset));
 
-    if ((fabs(xyoff.x) > 3) || (fabs(xyoff.y) > 3)) return false;
+    if ((fabs(xyoff.x) > 3) || (fabs(xyoff.y) > 6)) return false;
 
     return true;
 }

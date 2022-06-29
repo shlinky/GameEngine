@@ -19,8 +19,8 @@ void main() {
 	vec3 f = vec3(texture(t2, UV));
 	vec3 bc = vec3(texture(t1, uv));
 	
-	if (((f.x + f.y + f.z) / 3) < 0.9) {
-		color = vec4(f, 1);
+	if ((abs(UV.x) > 0.95) || (abs(UV.y) > 0.95)) {
+		color = vec4(0, 100, 0, 1);
 	}
 	else {
 		color = vec4(bc, 1);

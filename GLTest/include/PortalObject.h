@@ -35,10 +35,10 @@ private:
 	Scene* scn;
 
 	float screenvp[12] = {
-		1, -1, 0,
-		1,  1, 0,
-	   -1,  1, 0,
-	   -1, -1, 0,
+		1, -2, 0,
+		1,  2, 0,
+	   -1,  2, 0,
+	   -1, -2, 0,
 	};
 
 	unsigned int screenindex[6] = {

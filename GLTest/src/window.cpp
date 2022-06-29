@@ -362,13 +362,14 @@ int main(void)
     PortalObject p2(window.getSizeX(), window.getSizeY());
     p1.setSecondPortal(&p2);
     p2.setSecondPortal(&p1);
-    p1.setPosition(10, 10, 19.9);
-    p2.setPosition(10, 40, -19.9);
+    p1.setPosition(10, 6, 19.9);
+    p2.setPosition(10, 100, -19.9);
     p1.setScale(3, 3, 3);
     p2.setScale(3, 3, 3);
     p1.setScene(&scn);
     p2.setScene(&scn);
-    p1.setRotation(0, 180, 0);
+    p1.setRotation(-60, 180, 0);
+    p2.setRotation(-30, 0, 0);
     //p2.setRotation(-90, 0, 0);
 
     scn.addSceneObject(&p1);
@@ -392,6 +393,9 @@ int main(void)
     bool jump = false;
     glm::vec3 v = glm::vec3(0, 0, 0);
     float time = window.getTime();
+    float playerHeight = 9;
+    float jumpVelocity = 40;
+    bool goingDownPortal = false;
     while (!window.isWindowClosing())
     {
         float dist = 0;
@@ -400,8 +404,8 @@ int main(void)
         window.getMousePos(cmpos);
         bool is_pressed = keyInput(&window, &random, scn.getCamera(), jump);
         if (jump) {
-            if (scn.getCamera()->getPosition().y == 9) {
-                v.y = 40;
+            if (scn.getCamera()->getPosition().y == playerHeight) {
+                v.y = jumpVelocity;
             }
             jump = false;
         }
@@ -414,12 +418,22 @@ int main(void)
         y += (v.y * t) - (25 * t * t);
         v.y -= 50 * t;
 
-        if (y <= 9) {
-            if (!p1.abovePortal(scn.getCamera()->getPosition())) {
-                y = 9;
-                v.y = 0;
-                v.x = 0;
-                v.z = 0;
+        if (y <= playerHeight) {
+            if (!p1.abovePortal(glm::vec3(x, y, z))) {
+                if (goingDownPortal) {
+                    x = prevP.x;
+                    z = prevP.z;
+                }
+                else {
+                    y = playerHeight;
+                    v.y = 0;
+                    v.x = 0;
+                    v.z = 0;
+                    goingDownPortal = false;
+                }
+            }
+            else {
+                goingDownPortal = true;
             }
         }
         time += t;
@@ -451,12 +465,12 @@ int main(void)
         if (is_clicked) {
             SceneObject* sel = scn.getMouseTrace(window.getSizeX() / 2, window.getSizeY() / 2);
             if (sel) {
-
-                if (sel->getId() == 1) {
-                    glm::vec3 npl = line_plane(scn.getCamera()->getPosition(), scn.getCamera()->getForwardDir(), glm::vec3(0, 1, 0), glm::vec3(0, 0, 0));
+                cout << walls[0].getId() << endl;
+                if (sel->getId() == 3) {
+                    glm::vec3 npl = line_plane(scn.getCamera()->getPosition(), scn.getCamera()->getForwardDir(), glm::vec3(0, 0, 1), glm::vec3(0, 0, -20));
                     //p1.setPosition(npl.x, npl.y + 0.05, npl.z);
                     //it should take only object and camera
-                    p1.movePortal(npl, glm::angleAxis(glm::radians(-90.0f), glm::vec3(1, 0, 0)));
+                    p1.movePortal(npl, glm::angleAxis(glm::radians(0.0f), glm::vec3(1, 0, 0)));
                 }
                 else {
                     scn.setSelectedObject(sel->getId());
@@ -487,15 +501,17 @@ int main(void)
             p1.teleport(scn.getCamera());
             glm::vec3 p = scn.getCamera()->getPosition();
             player.setPosition(p.x, p.y, p.z);
-            //cout << "first: " << to_string(v) << endl;
+            cout << "first: " << to_string(v) << endl;
             p1.transform_vector_portal(v);
             //cout << glm::to_string(v) << endl;
+            goingDownPortal = false;
         }
         else if (p2.enteredPortal(player.getPosition(), prevP)) {
             p2.teleport(scn.getCamera());
             glm::vec3 p = scn.getCamera()->getPosition();
             player.setPosition(p.x, p.y, p.z);
             p2.transform_vector_portal(v);
+            goingDownPortal = false;
         }
         prevP = player.getPosition();
 

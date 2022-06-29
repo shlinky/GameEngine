@@ -264,9 +264,6 @@ void Camera::setFOV(float fov)
 
 void Camera::setQuatRotation(glm::quat q)
 {
-	forwardDir = glm::normalize(glm::toMat3(q) * glm::vec3(0, 0, -1));
-	rightDir = glm::normalize(glm::toMat3(q) * glm::vec3(1, 0, 0));
-	upDir = glm::normalize(glm::cross(rightDir, forwardDir));
 	rotation = q;
 	//glm::vec3 a = glm::eulerAngles(rotation);
 	//camYaw = a.y;

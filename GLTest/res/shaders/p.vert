@@ -7,7 +7,8 @@ uniform mat4 mvp;
 void main() {
 	gl_Position = mvp * vec4(position, 1);
 	vec4 newpos = mvp * vec4(position, 1);
-	UV = (position.xy * 0.9 + 1) * 0.5;
+	UV = vec2(position.x, position.y / 2);
+	//UV = (UV.xy * 0.9 + 1) * 0.5;
 }
 
 
