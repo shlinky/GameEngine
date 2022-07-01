@@ -44,6 +44,7 @@ public:
 	glm::vec3 getPosition();
 	float getYaw();
 	float getPitch();
+	float getRoll();
 	glm::mat4 getTransMat(bool motion = true);
 	glm::mat4 getTransMatOrtho(bool motion = true);
 	glm::vec3 getForwardDir();
@@ -62,6 +63,7 @@ private:
 	glm::mat4 camTransMat;
 	double camYaw;
 	double camPitch;
+	double camRoll;
 	double sensitivity;
 	float yawLim[2];
 	float pitchLim[2];

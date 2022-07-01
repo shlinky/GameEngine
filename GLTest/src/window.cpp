@@ -396,6 +396,11 @@ int main(void)
     float playerHeight = 9;
     float jumpVelocity = 40;
     bool goingDownPortal = false;
+
+    glm::quat preTransitionRotation;
+    float pRollTransitionTime = 0.1;
+    float pRollTransitionAmount = 0;
+    float pRollTransitionStart = 0;
     while (!window.isWindowClosing())
     {
         float dist = 0;
@@ -445,7 +450,22 @@ int main(void)
             is_right_clicked = true;
         }
         bool is_clicked = window.isMouseClicked();
-        updateCameraAngle(&window, cmpos, lmpos, &player, scn.getCamera());
+        if (pRollTransitionAmount) {
+            if ((window.getTime() - pRollTransitionStart) < pRollTransitionTime) {
+                float dt = window.getTime() - pRollTransitionStart;
+                float currRoll = pRollTransitionAmount * (dt / pRollTransitionTime);
+                glm::quat currRot = glm::angleAxis(currRoll, scn.getCamera()->getForwardDir()) * preTransitionRotation;
+                scn.getCamera()->setQuatRotation(currRot);
+            }
+            else {
+                glm::quat currRot = glm::angleAxis(pRollTransitionAmount, scn.getCamera()->getForwardDir()) * preTransitionRotation;
+                scn.getCamera()->setQuatRotation(currRot);
+                pRollTransitionAmount = 0;
+            }
+        }
+        else {
+            updateCameraAngle(&window, cmpos, lmpos, &player, scn.getCamera());
+        }
         float dmousex = cmpos[0] - lmpos[0];
         float dmousey = cmpos[1] - lmpos[1];
         lmpos[0] = cmpos[0];
@@ -497,14 +517,15 @@ int main(void)
             scn.getCamera()->setNearClip(0.1);
         }
 
+        bool wentIntoPortal = false;
         if (p1.enteredPortal(player.getPosition(), prevP)) {
             p1.teleport(scn.getCamera());
             glm::vec3 p = scn.getCamera()->getPosition();
             player.setPosition(p.x, p.y, p.z);
-            cout << "first: " << to_string(v) << endl;
             p1.transform_vector_portal(v);
             //cout << glm::to_string(v) << endl;
             goingDownPortal = false;
+            wentIntoPortal = true;
         }
         else if (p2.enteredPortal(player.getPosition(), prevP)) {
             p2.teleport(scn.getCamera());
@@ -512,6 +533,14 @@ int main(void)
             player.setPosition(p.x, p.y, p.z);
             p2.transform_vector_portal(v);
             goingDownPortal = false;
+            wentIntoPortal = true;
+        }
+        float portalRoll = scn.getCamera()->getRoll();
+        if ((abs(portalRoll) > 0.01) && (wentIntoPortal)){
+            pRollTransitionAmount = portalRoll;
+            cout << pRollTransitionAmount << endl;
+            pRollTransitionStart = window.getTime();
+            preTransitionRotation = scn.getCamera()->getQuatRotation();
         }
         prevP = player.getPosition();
 

@@ -119,6 +119,11 @@ float Camera::getPitch()
 	return glm::degrees(camPitch);
 }
 
+float Camera::getRoll()
+{
+	return camRoll;
+}
+
 void Camera::moveForward(float amount)
 {
 	glm::float32 multiplier(amount);
@@ -233,10 +238,10 @@ void Camera::computeVectors()
 	forwardDir = rotation * glm::vec3(0, 0, -1);
 	rightDir = rotation * glm::vec3(1, 0, 0);
 	upDir = rotation * glm::vec3(0, 1, 0);
-
-
 	camYaw = atan2(glm::dot(rightDir, glm::vec3(1, 0, 0)), glm::dot(rightDir, glm::vec3(0, 0, 1)));
-	camPitch =  atan2(glm::dot(upDir, glm::cross(rightDir, glm::vec3(0, 1, 0))), glm::dot(upDir, glm::vec3(0, 1, 0)));
+	camPitch = atan2(glm::dot(upDir, glm::cross(rightDir, glm::vec3(0, 1, 0))), glm::dot(upDir, glm::vec3(0, 1, 0)));
+	camRoll = atan2(glm::dot(rightDir, glm::cross(glm::cross(forwardDir, glm::vec3(0, 1, 0)), forwardDir)), glm::dot(rightDir, glm::cross(forwardDir, glm::vec3(0, 1, 0))));
+	//cout << "gucci " << to_string(forwardDir) << ' ' << camRoll << endl;
 }
 
 void Camera::setSensitivity(float s)
