@@ -362,13 +362,13 @@ int main(void)
     PortalObject p2(window.getSizeX(), window.getSizeY());
     p1.setSecondPortal(&p2);
     p2.setSecondPortal(&p1);
-    p1.setPosition(10, 6, 19.9);
+    p1.setPosition(10, 0.1, 29.9);
     p2.setPosition(10, 100, -19.9);
     p1.setScale(3, 3, 3);
     p2.setScale(3, 3, 3);
     p1.setScene(&scn);
     p2.setScene(&scn);
-    p1.setRotation(-60, 180, 0);
+    p1.setRotation(-90, 180, 0);
     p2.setRotation(-30, 0, 0);
     //p2.setRotation(-90, 0, 0);
 
@@ -398,9 +398,10 @@ int main(void)
     bool goingDownPortal = false;
 
     glm::quat preTransitionRotation;
-    float pRollTransitionTime = 0.1;
+    float pRollTransitionTime = 0.5;
     float pRollTransitionAmount = 0;
     float pRollTransitionStart = 0;
+    glm::vec3 fp;
     while (!window.isWindowClosing())
     {
         float dist = 0;
@@ -453,13 +454,15 @@ int main(void)
         if (pRollTransitionAmount) {
             if ((window.getTime() - pRollTransitionStart) < pRollTransitionTime) {
                 float dt = window.getTime() - pRollTransitionStart;
-                float currRoll = pRollTransitionAmount * (dt / pRollTransitionTime);
-                glm::quat currRot = glm::angleAxis(currRoll, scn.getCamera()->getForwardDir()) * preTransitionRotation;
-                scn.getCamera()->setQuatRotation(currRot);
+                float currRoll = (2 * dt - pow(dt, 2) / pRollTransitionTime) / pRollTransitionTime;
+                currRoll = currRoll * pRollTransitionAmount;
+                glm::quat currRot = glm::angleAxis(currRoll, fp) * preTransitionRotation;
+                scn.getCamera()->setQuatRotation(normalize(currRot));
             }
             else {
-                glm::quat currRot = glm::angleAxis(pRollTransitionAmount, scn.getCamera()->getForwardDir()) * preTransitionRotation;
-                scn.getCamera()->setQuatRotation(currRot);
+                //applicationErrorCallback(to_string(pRollTransitionAmount));
+                glm::quat currRot = glm::angleAxis(pRollTransitionAmount, fp) * preTransitionRotation;
+                scn.getCamera()->setQuatRotation(normalize(currRot));
                 pRollTransitionAmount = 0;
             }
         }
@@ -536,11 +539,11 @@ int main(void)
             wentIntoPortal = true;
         }
         float portalRoll = scn.getCamera()->getRoll();
-        if ((abs(portalRoll) > 0.01) && (wentIntoPortal)){
+        if ((abs(portalRoll) > 0.01) && (pRollTransitionAmount == 0)){
             pRollTransitionAmount = portalRoll;
-            cout << pRollTransitionAmount << endl;
             pRollTransitionStart = window.getTime();
             preTransitionRotation = scn.getCamera()->getQuatRotation();
+            fp = scn.getCamera()->getForwardDir();
         }
         prevP = player.getPosition();
 

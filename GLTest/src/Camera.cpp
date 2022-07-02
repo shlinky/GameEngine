@@ -238,6 +238,7 @@ void Camera::computeVectors()
 	forwardDir = rotation * glm::vec3(0, 0, -1);
 	rightDir = rotation * glm::vec3(1, 0, 0);
 	upDir = rotation * glm::vec3(0, 1, 0);
+	//cout << glm::to_string(forwardDir) << ' ' << glm::to_string(upDir) << endl;
 	camYaw = atan2(glm::dot(rightDir, glm::vec3(1, 0, 0)), glm::dot(rightDir, glm::vec3(0, 0, 1)));
 	camPitch = atan2(glm::dot(upDir, glm::cross(rightDir, glm::vec3(0, 1, 0))), glm::dot(upDir, glm::vec3(0, 1, 0)));
 	camRoll = atan2(glm::dot(rightDir, glm::cross(glm::cross(forwardDir, glm::vec3(0, 1, 0)), forwardDir)), glm::dot(rightDir, glm::cross(forwardDir, glm::vec3(0, 1, 0))));

@@ -11,27 +11,26 @@ C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(248,31): warning C4305
 C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(258,34): warning C4305: 'argument': truncation from 'double' to 'float'
 C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(259,32): warning C4305: 'argument': truncation from 'double' to 'float'
 C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(273,34): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(365,31): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(365,33): warning C4305: 'argument': truncation from 'double' to 'float'
 C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(366,34): warning C4305: 'argument': truncation from 'double' to 'float'
 C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(390,48): warning C4305: 'argument': truncation from 'double' to 'float'
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(401,36): warning C4305: 'initializing': truncation from 'double' to 'float'
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(469,23): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(470,23): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(475,91): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(475,81): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(475,63): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(475,43): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(477,59): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(477,49): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(486,91): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(486,68): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(514,57): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
-C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(517,45): warning C4305: 'argument': truncation from 'double' to 'float'
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(472,23): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(473,23): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(478,91): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(478,81): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(478,63): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(478,43): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(480,59): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(480,49): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(489,91): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(489,68): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(517,57): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\shloks\source\repos\GLTest\GLTest\src\window.cpp(520,45): warning C4305: 'argument': truncation from 'double' to 'float'
 LINK : warning LNK4098: defaultlib 'LIBCMT' conflicts with use of other libs; use /NODEFAULTLIB:library
   Generating code
   1 of 990 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    20 functions had inline decision re-evaluated but remain unchanged
+    61 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
 LINK : warning LNK4286: symbol '___glewUseProgram' defined in 'glew32s.lib(glew.obj)' is imported by 'EnvCube.obj'
 LINK : warning LNK4286: symbol '___glewGenerateMipmap' defined in 'glew32s.lib(glew.obj)' is imported by 'OGLCubeMapTexture.obj'
