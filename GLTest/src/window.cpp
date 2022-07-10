@@ -453,6 +453,7 @@ int main(void)
         bool is_clicked = window.isMouseClicked();
         if (pRollTransitionAmount) {
             if ((window.getTime() - pRollTransitionStart) < pRollTransitionTime) {
+                //applicationErrorCallback(to_string(pRollTransitionAmount));
                 float dt = window.getTime() - pRollTransitionStart;
                 float currRoll = (2 * dt - pow(dt, 2) / pRollTransitionTime) / pRollTransitionTime;
                 currRoll = currRoll * pRollTransitionAmount;
@@ -460,7 +461,7 @@ int main(void)
                 scn.getCamera()->setQuatRotation(normalize(currRot));
             }
             else {
-                //applicationErrorCallback(to_string(pRollTransitionAmount));
+               // applicationErrorCallback(to_string(pRollTransitionAmount));
                 glm::quat currRot = glm::angleAxis(pRollTransitionAmount, fp) * preTransitionRotation;
                 scn.getCamera()->setQuatRotation(normalize(currRot));
                 pRollTransitionAmount = 0;
@@ -469,6 +470,7 @@ int main(void)
         else {
             updateCameraAngle(&window, cmpos, lmpos, &player, scn.getCamera());
         }
+       
         float dmousex = cmpos[0] - lmpos[0];
         float dmousey = cmpos[1] - lmpos[1];
         lmpos[0] = cmpos[0];

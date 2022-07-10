@@ -239,9 +239,7 @@ void Camera::computeVectors()
 	rightDir = rotation * glm::vec3(1, 0, 0);
 	upDir = rotation * glm::vec3(0, 1, 0);
 	//cout << glm::to_string(forwardDir) << ' ' << glm::to_string(upDir) << endl;
-	camYaw = atan2(glm::dot(rightDir, glm::vec3(1, 0, 0)), glm::dot(rightDir, glm::vec3(0, 0, 1)));
-	camPitch = atan2(glm::dot(upDir, glm::cross(rightDir, glm::vec3(0, 1, 0))), glm::dot(upDir, glm::vec3(0, 1, 0)));
-	camRoll = atan2(glm::dot(rightDir, glm::cross(glm::cross(forwardDir, glm::vec3(0, 1, 0)), forwardDir)), glm::dot(rightDir, glm::cross(forwardDir, glm::vec3(0, 1, 0))));
+	
 	//cout << "gucci " << to_string(forwardDir) << ' ' << camRoll << endl;
 }
 
@@ -275,6 +273,10 @@ void Camera::setQuatRotation(glm::quat q)
 	//camYaw = a.y;
 	//camPitch = a.x;
 	computeVectors();
+	camYaw = atan2(glm::dot(rightDir, glm::vec3(0, 0, 1)), glm::dot(rightDir, glm::vec3(1, 0, 0)));
+	camPitch = atan2(glm::dot(upDir, glm::cross(rightDir, glm::vec3(0, 1, 0))), glm::dot(upDir, glm::vec3(0, 1, 0)));
+	camRoll = atan2(glm::dot(rightDir, glm::cross(glm::cross(forwardDir, glm::vec3(0, 1, 0)), forwardDir)), glm::dot(rightDir, glm::cross(forwardDir, glm::vec3(0, 1, 0))));
+	//cout << "Yaw g " << glm::degrees(camYaw) << endl;
 }
 
 void Camera::setNearClip(float d)

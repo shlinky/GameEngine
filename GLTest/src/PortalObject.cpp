@@ -103,6 +103,7 @@ void PortalObject::captureView()
     getShader()->changeTexture(currBoundTexture, 0);
 }
 
+
 void PortalObject::movePortal(glm::vec3 p, glm::quat r)
 {
     glm::vec3 up = glm::toMat3(r) * glm::vec3(0, 1, 0);
@@ -122,6 +123,9 @@ void PortalObject::movePortal(glm::vec3 p, glm::quat r)
     rotation = portalFinalRot;
 }
 
+//its a question of making sure the whole collision object is inside the border of the portal, so that it is not colliding with anything else
+//it should be not just above bt should have multiple functions for different collision types and return wheter it is completely within borders
+//withinPortalBorders
 bool PortalObject::abovePortal(glm::vec3 pos)
 {
     glm::vec3 portalDir = glm::normalize(glm::toMat3(getQuatRotation()) * glm::vec3(0, 0, 1));
@@ -136,7 +140,7 @@ bool PortalObject::abovePortal(glm::vec3 pos)
 
     glm::vec2 hOffsets = glm::vec2(dot(rightFlat, pOffFlat) / pow(glm::length(rightFlat), 2), dot(upFlat, pOffFlat) / pow(glm::length(upFlat), 2));
 
-    if ((fabs(hOffsets.x) > 3) || (fabs(hOffsets.y) > 6)) return false;
+    if ((fabs(hOffsets.x) > 2.5) || (fabs(hOffsets.y) > 5)) return false;
     float portalY = rightDir.y * hOffsets.x + upDir.y * hOffsets.y;
 
     if (portalY > pos.y) return false;
